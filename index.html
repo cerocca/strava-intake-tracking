@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Strava Intake Tracking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-inner">
+        <div class="logo">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <path d="M14 3L6 10h4v8h8v-8h4L14 3z" fill="#FC4C02"/>
+            <path d="M10 18v4h8v-4" stroke="#FC4C02" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Intake<strong>Tracker</strong></span>
+        </div>
+        <div class="header-right">
+          <div id="athlete-info" class="athlete-info hidden">
+            <span class="athlete-dot"></span>
+            <span id="athlete-name"></span>
+          </div>
+          <button id="btn-connect" class="btn btn-strava" onclick="connectStrava()">
+            Connect Strava
+          </button>
+          <button id="btn-sync" class="btn btn-primary hidden" onclick="syncActivities()">
+            ↻ Sync
+          </button>
+          <button id="btn-disconnect" class="btn btn-ghost hidden" onclick="disconnect()">
+            Disconnect
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <nav class="tabs-nav">
+      <div class="tabs-inner">
+        <button class="tab active" data-tab="activities" onclick="switchTab('activities')">
+          Activities & Nutrition
+        </button>
+        <button class="tab" data-tab="foods" onclick="switchTab('foods')">
+          Food Database
+        </button>
+        <button class="tab" data-tab="stats" onclick="switchTab('stats')">
+          Statistics
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="main">
+
+      <!-- TAB: Activities -->
+      <section id="tab-activities" class="tab-content active">
+        <div id="activity-list-view">
+          <div class="section-header">
+            <h2>Recent Activities</h2>
+            <span id="activity-count" class="badge"></span>
+          </div>
+          <div id="no-activities" class="empty-state hidden">
+            <div class="empty-icon">🏃</div>
+            <p>No activities yet. Connect Strava and sync to get started.</p>
+          </div>
+          <div id="activities-grid" class="activities-grid"></div>
+          <div id="load-more-wrap" class="load-more-wrap hidden">
+            <button class="btn btn-ghost" onclick="loadMoreActivities()">Load more</button>
+          </div>
+        </div>
+
+        <!-- Activity Detail Panel -->
+        <div id="activity-detail-view" class="detail-view hidden">
+          <button class="back-btn" onclick="showActivityList()">← Back to Activities</button>
+          <div id="activity-detail-content"></div>
+          <div class="nutrition-panel">
+            <h3>Nutrition Log</h3>
+            <div class="nutrition-summary" id="nutrition-summary"></div>
+            <div class="add-food-form">
+              <h4>Add Food</h4>
+              <div class="form-row">
+                <div class="search-wrap">
+                  <input type="text" id="food-search-input" class="input" placeholder="Search food..." oninput="searchFoodForLog()" />
+                  <div id="food-search-results" class="dropdown hidden"></div>
+                </div>
+                <input type="number" id="food-quantity" class="input input-sm" placeholder="grams" min="1" step="1" />
+                <button class="btn btn-primary" onclick="addFoodToActivity()">Add</button>
+              </div>
+            </div>
+            <div id="nutrition-log-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: Food Database -->
+      <section id="tab-foods" class="tab-content hidden">
+        <div class="section-header">
+          <h2>Food Database</h2>
+          <div class="header-actions">
+            <button class="btn btn-ghost btn-sm" onclick="exportFoodsCSV()">↓ Export CSV</button>
+            <label class="btn btn-ghost btn-sm">
+              ↑ Import CSV
+              <input type="file" accept=".csv" style="display:none" onchange="importFoodsCSV(event)" />
+            </label>
+            <button class="btn btn-primary btn-sm" onclick="openFoodModal()">+ Add Food</button>
+          </div>
+        </div>
+
+        <div class="search-bar">
+          <input type="text" id="food-db-search" class="input" placeholder="Search foods..." oninput="loadFoods()" />
+        </div>
+
+        <div id="foods-table-wrap">
+          <div id="no-foods" class="empty-state hidden">
+            <div class="empty-icon">🥗</div>
+            <p>No foods yet. Add your first food or import a CSV.</p>
+          </div>
+          <table id="foods-table" class="data-table hidden">
+            <thead>
+              <tr>
+                <th>Name</th><th>Brand</th><th>kcal</th><th>Carbs</th>
+                <th>Sugars</th><th>Proteins</th><th>Fats</th><th>Salt</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="foods-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- TAB: Statistics -->
+      <section id="tab-stats" class="tab-content hidden">
+        <div class="section-header"><h2>Statistics</h2></div>
+        <div id="stats-grid" class="stats-grid">
+          <div class="stat-card"><div class="stat-value" id="stat-total-activities">—</div><div class="stat-label">Total Activities</div></div>
+          <div class="stat-card"><div class="stat-value" id="stat-total-distance">—</div><div class="stat-label">Total Distance (km)</div></div>
+          <div class="stat-card"><div class="stat-value" id="stat-total-calories">—</div><div class="stat-label">Total Calories Burned</div></div>
+          <div class="stat-card"><div class="stat-value" id="stat-total-foods">—</div><div class="stat-label">Foods in Database</div></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Food Modal -->
+  <div id="food-modal" class="modal-overlay hidden" onclick="closeFoodModal(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="food-modal-title">Add Food</h3>
+        <button class="modal-close" onclick="closeFoodModal()">×</button>
+      </div>
+      <form id="food-form" onsubmit="submitFoodForm(event)">
+        <div class="form-grid">
+          <div class="form-group span-2">
+            <label>Name *</label>
+            <input type="text" name="name" class="input" required />
+          </div>
+          <div class="form-group">
+            <label>Brand</label>
+            <input type="text" name="brand" class="input" />
+          </div>
+          <div class="form-group">
+            <label>Calories (kcal/100g) *</label>
+            <input type="number" name="calories" class="input" step="0.1" min="0" required />
+          </div>
+          <div class="form-group">
+            <label>Carbohydrates (g)</label>
+            <input type="number" name="carbohydrates" class="input" step="0.1" min="0" />
+          </div>
+          <div class="form-group">
+            <label>Sugars (g)</label>
+            <input type="number" name="sugars" class="input" step="0.1" min="0" />
+          </div>
+          <div class="form-group">
+            <label>Proteins (g)</label>
+            <input type="number" name="proteins" class="input" step="0.1" min="0" />
+          </div>
+          <div class="form-group">
+            <label>Fats (g)</label>
+            <input type="number" name="fats" class="input" step="0.1" min="0" />
+          </div>
+          <div class="form-group">
+            <label>Saturated Fats (g)</label>
+            <input type="number" name="saturated_fats" class="input" step="0.1" min="0" />
+          </div>
+          <div class="form-group">
+            <label>Salt (g)</label>
+            <input type="number" name="salt" class="input" step="0.01" min="0" />
+          </div>
+          <div class="form-group span-2">
+            <label>Notes</label>
+            <input type="text" name="notes" class="input" />
+          </div>
+        </div>
+        <input type="hidden" name="food_id" />
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="closeFoodModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

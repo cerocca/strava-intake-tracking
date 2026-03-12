@@ -1,0 +1,543 @@
+/* ============================================================
+   Variables & Reset
+   ============================================================ */
+:root {
+  --strava:       #FC4C02;
+  --strava-dark:  #D94000;
+  --bg:           #f2f4f7;
+  --surface:      #ffffff;
+  --border:       #e5e7eb;
+  --text:         #111827;
+  --text-muted:   #6b7280;
+  --text-light:   #9ca3af;
+  --radius:       12px;
+  --radius-sm:    8px;
+  --shadow:       0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:    0 4px 12px rgba(0,0,0,.1);
+  --header-h:     60px;
+  --tabs-h:       52px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 15px; }
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ============================================================
+   Layout
+   ============================================================ */
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* Header */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: #1a1a2e;
+  height: var(--header-h);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.header-inner {
+  max-width: 1200px; margin: 0 auto;
+  padding: 0 20px;
+  height: 100%;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.logo {
+  display: flex; align-items: center; gap: 10px;
+  color: #fff; font-size: 1rem; text-decoration: none;
+}
+.logo span { color: #cdd6e0; }
+.logo strong { color: #fff; font-weight: 600; }
+
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+.athlete-info {
+  display: flex; align-items: center; gap: 7px;
+  color: #9ca3af; font-size: .85rem;
+}
+.athlete-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+}
+
+/* Tabs nav */
+.tabs-nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  height: var(--tabs-h);
+}
+.tabs-inner {
+  max-width: 1200px; margin: 0 auto;
+  padding: 0 20px;
+  height: 100%;
+  display: flex; align-items: flex-end; gap: 4px;
+}
+.tab {
+  background: none; border: none; cursor: pointer;
+  padding: 10px 18px;
+  font-family: inherit; font-size: .9rem; font-weight: 500;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transition: background .15s, color .15s;
+  position: relative; bottom: 0;
+}
+.tab:hover { background: var(--bg); color: var(--text); }
+.tab.active {
+  background: var(--bg);
+  color: var(--strava);
+  font-weight: 600;
+  border-bottom: 2px solid var(--strava);
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  max-width: 1200px; margin: 0 auto;
+  padding: 28px 20px;
+  width: 100%;
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px;
+  border: none; border-radius: var(--radius-sm);
+  font-family: inherit; font-size: .875rem; font-weight: 500;
+  cursor: pointer; transition: background .15s, opacity .15s, transform .1s;
+  white-space: nowrap;
+}
+.btn:active { transform: scale(.97); }
+
+.btn-primary   { background: var(--strava); color: #fff; }
+.btn-primary:hover { background: var(--strava-dark); }
+
+.btn-strava    { background: var(--strava); color: #fff; }
+.btn-strava:hover { background: var(--strava-dark); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { background: var(--bg); color: var(--text); }
+
+.btn-danger    { background: #ef4444; color: #fff; }
+.btn-danger:hover { background: #dc2626; }
+
+.btn-sm { padding: 5px 12px; font-size: .8rem; }
+.btn-xs { padding: 3px 9px; font-size: .78rem; }
+
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+/* ============================================================
+   Section headers
+   ============================================================ */
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.section-header h2 { font-size: 1.25rem; font-weight: 600; }
+.header-actions { display: flex; gap: 8px; align-items: center; margin-left: auto; flex-wrap: wrap; }
+.badge {
+  background: var(--bg);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: .8rem; font-weight: 500;
+}
+
+/* ============================================================
+   Activity cards
+   ============================================================ */
+.activities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.activity-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: box-shadow .15s, border-color .15s;
+}
+.activity-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #d1d5db;
+}
+
+.activity-card-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.activity-sport-icon {
+  font-size: 1.4rem; margin-right: 10px; flex-shrink: 0;
+}
+.activity-name {
+  font-weight: 600; font-size: .95rem;
+  color: var(--text);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.activity-date {
+  font-size: .78rem; color: var(--text-light);
+  white-space: nowrap; margin-left: 8px;
+}
+
+.activity-stats {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  margin-top: 12px;
+}
+.activity-stat {
+  display: flex; flex-direction: column; gap: 1px;
+}
+.activity-stat-value {
+  font-family: 'DM Mono', monospace;
+  font-size: .9rem; font-weight: 500;
+  color: var(--text);
+}
+.activity-stat-label {
+  font-size: .72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em;
+}
+
+.activity-badges {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-top: 12px;
+}
+
+.activity-kcal-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #fff7ed; color: #c2410c;
+  border: 1px solid #fed7aa;
+  border-radius: 20px; padding: 3px 10px;
+  font-size: .8rem; font-weight: 500;
+}
+
+.activity-nutrition-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #f0fdf4; color: #15803d;
+  border: 1px solid #bbf7d0;
+  border-radius: 20px; padding: 3px 10px;
+  font-size: .8rem; font-weight: 500;
+}
+
+/* ============================================================
+   Detail view
+   ============================================================ */
+.detail-view { animation: fadeIn .2s ease; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.back-btn {
+  background: none; border: none; cursor: pointer;
+  font-family: inherit; font-size: .875rem;
+  color: var(--text-muted); padding: 0;
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-bottom: 20px;
+}
+.back-btn:hover { color: var(--text); }
+
+.activity-detail-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.activity-detail-title {
+  font-size: 1.4rem; font-weight: 700; margin-bottom: 6px;
+}
+.activity-detail-meta {
+  color: var(--text-muted); font-size: .875rem; margin-bottom: 16px;
+}
+.activity-detail-stats {
+  display: flex; gap: 20px; flex-wrap: wrap;
+}
+.activity-detail-stat {
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px; min-width: 100px;
+}
+.activity-detail-stat .value {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.1rem; font-weight: 600;
+}
+.activity-detail-stat .label {
+  font-size: .75rem; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .05em; margin-top: 2px;
+}
+.strava-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  color: var(--strava); font-size: .85rem;
+  text-decoration: none; margin-top: 14px;
+}
+.strava-link:hover { text-decoration: underline; }
+
+/* ============================================================
+   Nutrition panel
+   ============================================================ */
+.nutrition-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.nutrition-panel h3 { font-size: 1rem; font-weight: 600; margin-bottom: 16px; }
+
+.nutrition-summary {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.nutr-chip {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px; text-align: center;
+}
+.nutr-chip .nv { font-family: 'DM Mono', monospace; font-weight: 600; font-size: .95rem; }
+.nutr-chip .nl { font-size: .72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+
+.add-food-form h4 { font-size: .875rem; font-weight: 600; margin-bottom: 10px; color: var(--text-muted); }
+
+.form-row {
+  display: flex; gap: 10px; align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Food log list */
+.log-table {
+  width: 100%; margin-top: 20px;
+  border-collapse: collapse;
+}
+.log-table th {
+  font-size: .75rem; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--text-muted); font-weight: 500;
+  padding: 8px 10px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.log-table td {
+  padding: 10px; font-size: .875rem;
+  border-bottom: 1px solid var(--border);
+}
+.log-table tr:last-child td { border-bottom: none; }
+.log-table tr:hover td { background: var(--bg); }
+.log-table .mono { font-family: 'DM Mono', monospace; }
+
+/* ============================================================
+   Search dropdown
+   ============================================================ */
+.search-wrap { position: relative; flex: 1; min-width: 180px; }
+.dropdown {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  z-index: 50; max-height: 240px; overflow-y: auto;
+}
+.dropdown-item {
+  padding: 10px 14px; cursor: pointer;
+  font-size: .875rem;
+  border-bottom: 1px solid var(--border);
+}
+.dropdown-item:last-child { border-bottom: none; }
+.dropdown-item:hover { background: var(--bg); }
+.dropdown-item .di-brand { font-size: .78rem; color: var(--text-muted); }
+.dropdown-item .di-cal {
+  float: right; font-family: 'DM Mono', monospace;
+  font-size: .8rem; color: var(--strava);
+}
+
+/* ============================================================
+   Food database
+   ============================================================ */
+.search-bar { margin-bottom: 16px; }
+
+.data-table {
+  width: 100%; border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.data-table thead { background: var(--bg); }
+.data-table th {
+  font-size: .75rem; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--text-muted); font-weight: 500;
+  padding: 12px 14px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.data-table td {
+  padding: 11px 14px; font-size: .875rem;
+  border-bottom: 1px solid var(--border);
+}
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover td { background: #fafafa; }
+.data-table .mono { font-family: 'DM Mono', monospace; font-size: .82rem; }
+.data-table .actions { display: flex; gap: 6px; }
+
+/* ============================================================
+   Stats grid
+   ============================================================ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 4px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+}
+.stat-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 2rem; font-weight: 600;
+  color: var(--strava);
+  line-height: 1;
+}
+.stat-label {
+  margin-top: 8px;
+  font-size: .8rem; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .06em;
+}
+
+/* ============================================================
+   Forms & Inputs
+   ============================================================ */
+.input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: inherit; font-size: .875rem;
+  color: var(--text);
+  background: var(--surface);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.input:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.1);
+}
+.input-sm { width: 90px; }
+
+/* ============================================================
+   Modal
+   ============================================================ */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,.45);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  animation: fadeBg .2s ease;
+}
+@keyframes fadeBg { from { opacity: 0; } }
+
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius);
+  width: 100%; max-width: 520px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  animation: slideUp .2s ease;
+}
+@keyframes slideUp { from { transform: translateY(16px); opacity: 0; } }
+
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px 0;
+}
+.modal-header h3 { font-size: 1.05rem; font-weight: 600; }
+.modal-close {
+  background: none; border: none; cursor: pointer;
+  font-size: 1.4rem; color: var(--text-muted); line-height: 1;
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm);
+}
+.modal-close:hover { background: var(--bg); color: var(--text); }
+
+.form-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  padding: 20px 24px;
+}
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label { font-size: .8rem; font-weight: 500; color: var(--text-muted); }
+.span-2 { grid-column: span 2; }
+
+.modal-footer {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+
+/* ============================================================
+   Toast
+   ============================================================ */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 300;
+  background: #1a1a2e; color: #fff;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  font-size: .875rem;
+  max-width: 320px;
+  animation: slideIn .25s ease;
+}
+@keyframes slideIn { from { transform: translateY(12px); opacity: 0; } }
+
+.toast.success { border-left: 3px solid #22c55e; }
+.toast.error   { border-left: 3px solid #ef4444; }
+.toast.info    { border-left: 3px solid #3b82f6; }
+
+/* ============================================================
+   Empty states
+   ============================================================ */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+.empty-icon { font-size: 3rem; margin-bottom: 12px; }
+.empty-state p { font-size: .9rem; }
+
+/* ============================================================
+   Load more
+   ============================================================ */
+.load-more-wrap {
+  text-align: center; margin-top: 24px;
+}
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+.hidden { display: none !important; }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .span-2 { grid-column: span 1; }
+  .activities-grid { grid-template-columns: 1fr; }
+  .data-table { font-size: .8rem; }
+  .data-table td, .data-table th { padding: 8px 10px; }
+}

@@ -41,7 +41,7 @@
 ### With Docker (recommended)
 
 ```bash
-git clone https://github.com/yourusername/strava-intake-tracking
+git clone https://github.com/cerocca/strava-intake-tracking
 cd strava-intake-tracking
 cp .env.example .env
 # Edit .env with your Strava API credentials

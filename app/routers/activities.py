@@ -22,13 +22,55 @@ async def get_stats(db: Session = Depends(get_db)):
         .filter(exists().where(NutritionLog.activity_id == Activity.id))
         .scalar() or 0
     )
+
+    # Consumed nutrition (only from activities with food logs)
+    kcal_consumed = (
+        db.query(func.sum(Food.calories * NutritionLog.quantity_grams / 100.0))
+        .select_from(NutritionLog)
+        .join(Food, NutritionLog.food_id == Food.id)
+        .scalar() or 0.0
+    )
+    carbs_consumed = (
+        db.query(func.sum(Food.carbohydrates * NutritionLog.quantity_grams / 100.0))
+        .select_from(NutritionLog)
+        .join(Food, NutritionLog.food_id == Food.id)
+        .scalar() or 0.0
+    )
+    sugars_consumed = (
+        db.query(func.sum(Food.sugars * NutritionLog.quantity_grams / 100.0))
+        .select_from(NutritionLog)
+        .join(Food, NutritionLog.food_id == Food.id)
+        .scalar() or 0.0
+    )
+
+    avg_kcal = round(kcal_consumed / tracked_activities, 1) if tracked_activities > 0 else 0.0
+    avg_carbs = round(carbs_consumed / tracked_activities, 1) if tracked_activities > 0 else 0.0
+    avg_sugars = round(sugars_consumed / tracked_activities, 1) if tracked_activities > 0 else 0.0
+
     return {
         "total_activities": total_activities,
         "tracked_activities": tracked_activities,
         "total_distance_km": round(total_distance / 1000, 1),
         "total_calories_burned": round(total_calories, 0),
         "total_foods": total_foods,
+        "total_kcal_consumed": round(kcal_consumed, 0),
+        "avg_kcal_consumed": avg_kcal,
+        "total_carbs_consumed": round(carbs_consumed, 1),
+        "avg_carbs_consumed": avg_carbs,
+        "total_sugars_consumed": round(sugars_consumed, 1),
+        "avg_sugars_consumed": avg_sugars,
     }
+
+
+@router.get("/sport_types")
+async def get_sport_types(db: Session = Depends(get_db)):
+    rows = (
+        db.query(Activity.sport_type)
+        .filter(Activity.sport_type.isnot(None), Activity.sport_type != "")
+        .distinct()
+        .all()
+    )
+    return sorted([r[0] for r in rows])
 
 
 @router.get("")
@@ -36,15 +78,22 @@ async def list_activities(
     db: Session = Depends(get_db),
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
+    sport_type: str = Query(None),
+    tracked: str = Query(None),  # "yes" | "no" | None
 ):
-    total = db.query(func.count(Activity.id)).scalar() or 0
-    activities = (
-        db.query(Activity)
-        .order_by(Activity.start_date.desc())
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
+    query = db.query(Activity)
+
+    if sport_type:
+        query = query.filter(Activity.sport_type == sport_type)
+
+    if tracked == "yes":
+        query = query.filter(exists().where(NutritionLog.activity_id == Activity.id))
+    elif tracked == "no":
+        query = query.filter(~exists().where(NutritionLog.activity_id == Activity.id))
+
+    total = query.with_entities(func.count(Activity.id)).scalar() or 0
+    activities = query.order_by(Activity.start_date.desc()).offset(skip).limit(limit).all()
+
     activity_ids = [a.id for a in activities]
     ids_with_nutrition: set = set()
     if activity_ids:
@@ -86,6 +135,9 @@ def _activity_dict(a: Activity, has_nutrition: bool = False) -> dict:
         "total_elevation_gain": a.total_elevation_gain,
         "calories": a.calories,
         "description": a.description,
+        "average_watts": a.average_watts,
+        "weighted_average_watts": a.weighted_average_watts,
+        "max_watts": a.max_watts,
         "strava_url": f"https://www.strava.com/activities/{a.strava_id}",
         "has_nutrition": has_nutrition,
     }

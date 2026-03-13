@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.0] - 2026-03-13
+
+### Added
+- List view for activities (toggle between card and list layout)
+- "Tracked" flag on activities with food log
+- Filter activities by sport type
+- Filter activities by tracked / untracked
+- Statistics tab: total and average kcal, carbs, sugars consumed (only tracked activities)
+- OpenFoodFacts integration: search by name or barcode in Food Database tab
+- OpenFoodFacts import: pre-fills the food form with available nutritional data
+- Portion weight field (`serving_grams`) in food database — pre-fills quantity when logging food to an activity
+- Improved food search when adding foods to activities
+
+---
+
 ## [0.1.0] - 2026-03-11
 
 ### Added

@@ -14,7 +14,7 @@ router = APIRouter(prefix="/foods", tags=["foods"])
 
 CSV_FIELDS = [
     "name", "brand", "calories", "carbohydrates", "sugars",
-    "proteins", "fibers", "fats", "saturated_fats", "salt", "notes",
+    "proteins", "fibers", "fats", "saturated_fats", "salt", "serving_grams", "notes",
 ]
 
 
@@ -29,6 +29,7 @@ class FoodIn(BaseModel):
     fats: Optional[float] = None
     saturated_fats: Optional[float] = None
     salt: Optional[float] = None
+    serving_grams: Optional[float] = None
     notes: Optional[str] = None
 
 
@@ -50,6 +51,7 @@ async def export_foods_csv(db: Session = Depends(get_db)):
             "fats": f.fats if f.fats is not None else "",
             "saturated_fats": f.saturated_fats if f.saturated_fats is not None else "",
             "salt": f.salt if f.salt is not None else "",
+            "serving_grams": f.serving_grams if f.serving_grams is not None else "",
             "notes": f.notes or "",
         })
     output.seek(0)
@@ -96,6 +98,7 @@ async def import_foods_csv(
             fats=_safe_float(row.get("fats")),
             saturated_fats=_safe_float(row.get("saturated_fats")),
             salt=_safe_float(row.get("salt")),
+            serving_grams=_safe_float(row.get("serving_grams")),
             notes=row.get("notes") or None,
         )
         db.add(food)
@@ -172,5 +175,6 @@ def _food_dict(f: Food) -> dict:
         "fats": f.fats,
         "saturated_fats": f.saturated_fats,
         "salt": f.salt,
+        "serving_grams": f.serving_grams,
         "notes": f.notes,
     }

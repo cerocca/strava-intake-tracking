@@ -18,7 +18,8 @@ class Food(Base):
     fats = Column(Float, nullable=True)
     saturated_fats = Column(Float, nullable=True)
     salt = Column(Float, nullable=True)
+    serving_grams = Column(Float, nullable=True)  # grams per serving (suggestion only)
     notes = Column(String, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-    nutrition_logs = relationship("NutritionLog", back_populates="food")
+    nutrition_logs = relationship("NutritionLog", back_populates="food", cascade="all, delete-orphan")

@@ -18,6 +18,9 @@ class Activity(Base):
     total_elevation_gain = Column(Float, default=0.0)
     calories = Column(Float, nullable=True)
     description = Column(String, nullable=True)
+    average_watts = Column(Float, nullable=True)
+    weighted_average_watts = Column(Float, nullable=True)  # Normalized Power (NP)
+    max_watts = Column(Float, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     nutrition_logs = relationship(

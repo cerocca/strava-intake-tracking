@@ -27,7 +27,7 @@ async def connect_strava():
         "redirect_uri": settings.strava_redirect_uri,
         "response_type": "code",
         "approval_prompt": "auto",
-        "scope": "activity:read_all",
+        "scope": "activity:read_all,profile:read_all",
     }
     return RedirectResponse(url=f"{STRAVA_AUTH_URL}?{urlencode(params)}")
 
@@ -52,6 +52,7 @@ async def auth_status():
         "connected": True,
         "athlete_name": f"{first} {last}".strip() or "Athlete",
         "athlete_id": athlete.get("id"),
+        "ftp": athlete.get("ftp"),
     }
 
 
@@ -63,6 +64,14 @@ async def disconnect():
 
 @router.post("/sync")
 async def sync_activities(db: Session = Depends(get_db)):
+    # Refresh athlete profile to get FTP and other details
+    athlete = await strava_service.fetch_athlete()
+    if athlete:
+        token = strava_service.load_token()
+        if token:
+            token["athlete"] = athlete
+            strava_service.save_token(token)
+
     activities = await strava_service.fetch_activities(per_page=100, page=1)
     if not activities:
         token = strava_service.load_token()
@@ -86,11 +95,18 @@ async def sync_activities(db: Session = Depends(get_db)):
             except ValueError:
                 pass
 
+        average_watts = act_data.get("average_watts")
+        weighted_average_watts = act_data.get("weighted_average_watts")
+        max_watts = act_data.get("max_watts")
+
         existing = db.query(Activity).filter(Activity.strava_id == act_data["id"]).first()
         if existing:
             existing.name = act_data.get("name", existing.name)
             existing.calories = calories
             existing.distance = act_data.get("distance", existing.distance)
+            existing.average_watts = average_watts
+            existing.weighted_average_watts = weighted_average_watts
+            existing.max_watts = max_watts
             updated += 1
         else:
             activity = Activity(
@@ -104,6 +120,9 @@ async def sync_activities(db: Session = Depends(get_db)):
                 total_elevation_gain=act_data.get("total_elevation_gain", 0.0),
                 calories=calories,
                 description=act_data.get("description"),
+                average_watts=average_watts,
+                weighted_average_watts=weighted_average_watts,
+                max_watts=max_watts,
             )
             db.add(activity)
             synced += 1

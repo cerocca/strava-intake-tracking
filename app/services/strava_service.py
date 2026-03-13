@@ -84,6 +84,21 @@ async def exchange_code(code: str) -> dict | None:
     return data
 
 
+async def fetch_athlete() -> dict | None:
+    access_token = await get_valid_access_token()
+    if not access_token:
+        return None
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(
+            "https://www.strava.com/api/v3/athlete",
+            headers={"Authorization": f"Bearer {access_token}"},
+            timeout=10.0,
+        )
+    if resp.status_code != 200:
+        return None
+    return resp.json()
+
+
 async def fetch_activities(per_page: int = 100, page: int = 1) -> list[dict]:
     access_token = await get_valid_access_token()
     if not access_token:

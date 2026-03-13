@@ -38,7 +38,7 @@ function switchTab(tab) {
   });
   if (tab === 'stats') loadStats();
   if (tab === 'foods') loadFoods();
-  if (tab === 'activities') loadActivities();
+  if (tab === 'activities') { loadActivities(); loadSportTypes(); }
 }
 
 // ============================================================
@@ -124,4 +124,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (s.id !== 'tab-activities') s.classList.add('hidden');
   });
   loadActivities();
+  loadSportTypes();
 });

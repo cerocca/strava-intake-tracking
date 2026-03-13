@@ -4,11 +4,11 @@
 WebApp self-hosted per tracciare la nutrizione sportiva integrata con Strava.
 Deployabile come container Docker.
 
-Repo GitHub: https://github.com/yourusername/strava-intake-tracking
+Repo GitHub: https://github.com/cerocca/strava-intake-tracking
 Cartella locale: /Users/ciru/strava-intake-tracking
 
 ## Stack tecnico
-- **Backend**: Python 3.11 + FastAPI
+- **Backend**: Python 3.12 + FastAPI
 - **Frontend**: HTML/CSS/JS vanilla (no framework)
 - **Database**: SQLite (via SQLAlchemy)
 - **Auth**: OAuth2 con Strava
@@ -20,18 +20,19 @@ strava-intake-tracking/
 ├── app/
 │   ├── main.py              # Entry point FastAPI
 │   ├── config.py            # Configurazione e variabili env
-│   ├── database.py          # Setup SQLite/SQLAlchemy
+│   ├── database.py          # Setup SQLite/SQLAlchemy + _migrate_db()
 │   ├── models/
-│   │   ├── activity.py
-│   │   ├── food.py
-│   │   └── nutrition_log.py
+│   │   ├── activity.py      # Activity (strava_id, kcal da kJ, power metrics)
+│   │   ├── food.py          # Food (valori per 100g + serving_grams)
+│   │   └── nutrition_log.py # NutritionLog (FK activity+food, quantity_grams)
 │   ├── routers/
 │   │   ├── strava.py        # OAuth2 + sync attività
+│   │   ├── activities.py    # Lista, dettaglio, filtri, stats
 │   │   ├── foods.py         # CRUD database alimentare
 │   │   └── nutrition.py     # Log nutrizione per attività
 │   ├── services/
-│   │   ├── strava_service.py
-│   │   └── nutrition_service.py
+│   │   ├── strava_service.py    # Token store JSON, auto refresh, fetch Strava
+│   │   └── nutrition_service.py # Macro totals per attività
 │   └── static/
 │       ├── index.html
 │       ├── css/style.css
@@ -44,12 +45,45 @@ strava-intake-tracking/
 ├── docker/Dockerfile
 ├── docker-compose.yml
 ├── .env.example
+├── .env                     # NON in git
 ├── .gitignore
 ├── requirements.txt
+├── start.sh                 # Attiva venv + uvicorn
+├── venv/                    # Python 3.12 — NON in git
+├── data/                    # SQLite DB — NON in git
 ├── CLAUDE.md
-├── ERRORS.md
-└── README.md
+├── CHANGELOG.md
+├── TODO.md
+├── README.md
+├── LICENSE
+└── ERRORS.md
 ```
+
+## Funzionalità implementate (v0.2)
+
+### Attività
+- Sync Strava con kcal calcolate da kilojoules (kJ * 0.239006)
+- Power metrics: average watts, normalized power, max watts
+- Vista card e vista lista (toggle)
+- Flag visivo attività "Tracked" (con food log)
+- Filtro per sport type e per tracked/untracked
+- Activity detail con link Strava, durata, distanza, kcal bruciate
+- IF e TSS calcolati da FTP (persistito in localStorage)
+
+### Food Database
+- CRUD completo con campi per 100g: calories, carbs, sugars, proteins, fats, saturated_fats, salt, fibers
+- Campo serving_grams: porzione default in grammi
+- CSV import/export
+- Integrazione OpenFoodFacts: ricerca per nome o barcode, import con pre-compilazione form
+
+### Nutrition Logging
+- Associazione cibi + quantità a ogni attività
+- Quantità pre-compilata da serving_grams se disponibile
+- Totale kcal e carbs consumati per attività
+
+### Statistics
+- Totali: attività, distanza, kcal bruciate, attività tracciate
+- Nutrizione (solo attività tracciate): totale e media kcal, carbs, zuccheri consumati
 
 ## Regole di sviluppo (OBBLIGATORIE)
 
@@ -64,6 +98,10 @@ strava-intake-tracking/
 - Ogni funzione deve avere uno scopo singolo e chiaro
 - Gestisci sempre gli errori esplicitamente (no silent failures)
 
+### Migrazioni DB
+- Usare sempre _migrate_db() in database.py con ALTER TABLE sicuro (non distruttivo)
+- Non cancellare mai il DB per aggiungere colonne — aggiungere solo con ADD COLUMN IF NOT EXISTS
+
 ### Testing e verifica
 - **Esegui i test prima di contrassegnare qualsiasi cosa come completata**
 - **Controlla i log prima di affermare che una correzione funziona**
@@ -71,39 +109,19 @@ strava-intake-tracking/
 
 ### Gestione errori e rollback
 - **Mantieni sempre una traccia dello step precedente** per poter tornare indietro
-- Documenta gli errori ricorrenti in `ERRORS.md`
+- Documenta gli errori ricorrenti in ERRORS.md
 - Prima di refactoring significativi, crea un branch o snapshot
 
 ### Commit e versioning
-- Messaggi di commit chiari: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`
+- Messaggi di commit chiari: feat:, fix:, docs:, refactor:, test:
 - Ogni commit deve rappresentare uno stato funzionante
 
-### ⚠️ Checklist pre-commit (ricordare all'utente PRIMA di ogni commit)
-1. **CHANGELOG.md** — aggiornare la sezione `[Unreleased]` con le modifiche fatte
-2. **README.md** — verificare se le modifiche richiedono aggiornamenti (features, stack, roadmap)
-3. **CLAUDE.md** — se aggiornato, ricordare all'utente di ricaricarlo nel Project su Claude.ai
-4. Solo dopo la conferma dell'utente procedere con `git add` e `git commit`
-
-## Roadmap
-
-### v1.0 — Core
-- [x] Setup FastAPI + SQLite + Docker
-- [x] Struttura progetto e configurazione
-- [ ] OAuth2 Strava (client ID / client secret)
-- [ ] Sync attività Strava (kcal con fallback da kilojoules)
-- [ ] Visualizzazione attività con dettaglio (durata, distanza, link Strava)
-- [ ] Database alimentare (calorie, carbs, zuccheri, proteine, grassi, sale)
-- [ ] Import/export alimenti via CSV
-
-### v1.1 — Nutrizione
-- [ ] Associazione cibi a ogni attività con quantità
-- [ ] Calcolo kcal e carboidrati totali assunti per attività
-- [ ] UI a schede/tab (Attività & Nutrizione, Database Alimentare, Statistiche)
-
-### v1.2 — UI/UX polish
-- [ ] Styling moderno con tabs arrotondati e card
-- [ ] Dettaglio attività cliccabile
-- [ ] Statistiche aggregate
+### Checklist pre-commit (ricordare all'utente PRIMA di ogni commit)
+1. CHANGELOG.md — aggiornare con le modifiche fatte
+2. TODO.md — spostare le voci completate in sezione completato, aggiornare Ongoing
+3. README.md — verificare se le modifiche richiedono aggiornamenti
+4. CLAUDE.md — se aggiornato, ricordare all'utente di ricaricarlo nel Project su Claude.ai
+5. Solo dopo la conferma dell'utente procedere con git add e git commit
 
 ## Variabili d'ambiente (.env)
 ```
@@ -117,8 +135,11 @@ SECRET_KEY=changeme_generate_a_real_one
 ## Comandi utili
 ```bash
 # Sviluppo locale
-pip install -r requirements.txt
+source venv/bin/activate
 uvicorn app.main:app --reload --port 8000
+
+# Oppure con lo script
+./start.sh
 
 # Docker
 docker-compose up --build
@@ -134,10 +155,17 @@ rm data/intaketracking.db && uvicorn app.main:app --reload
 
 ## Note API Strava
 - Endpoint attività: GET /athlete/activities
-- Kcal: usare campo `calories` se presente, altrimenti `kilojoules * 0.239006`
+- Kcal: sempre da kilojoules * 0.239006 (lavoro totale)
+- Power: average_watts, weighted_average_watts (NP), max_watts
 - OAuth2 flow: authorization_code → access_token + refresh_token
-- Token scadono ogni 6 ore → gestire refresh automatico con refresh_token
-- Scope richiesto: `activity:read_all`
+- Token scadono ogni 6 ore → refresh automatico con refresh_token
+- Scope richiesto: activity:read_all
+
+## Note API OpenFoodFacts
+- Ricerca per nome: https://world.openfoodfacts.org/cgi/search.pl?search_terms=QUERY&json=1&page_size=10
+- Ricerca per barcode: https://world.openfoodfacts.org/api/v0/product/BARCODE.json
+- No autenticazione richiesta
+- Campi usati: energy-kcal_100g, carbohydrates_100g, sugars_100g, proteins_100g, fat_100g, saturated-fat_100g, salt_100g, fiber_100g, serving_quantity
 
 ## ERRORS.md
 File separato per documentare errori ricorrenti e relative soluzioni.

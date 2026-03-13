@@ -1,36 +1,39 @@
 # TODO
 
-## 🗺 Roadmap
+## 🔄 Ongoing
 
-### v0.2 — Sync & Filtri
-- [ ] Sync completo di tutte le attività Strava (non solo le ultime 30)
-- [ ] Filtro per tipo di attività
-- [ ] Spunta per mostrare solo attività con/senza food log
-- [ ] Vista a lista con stella/simbolo al posto delle card
+### Statistics & Activities tab
+- [ ] Graphs in Statistics tab (kcal, carbs, sugars trends)
+- [ ] Graphs in Activities & Nutrition tab
 
-### v0.3 — Statistiche avanzate
-- [ ] Totale kcal assunte (solo attività con food log)
-- [ ] Totale zuccheri e carboidrati
-- [ ] Media kcal, zuccheri, carbs sulle attività tracciate
+---
 
-### v0.4 — UI / UX
-- [ ] Tema night / day
-- [ ] Menu per cambio lingua
+## 🗺 Roadmap / Future ideas 
+- [ ] Sync all Strava activities (currently limited to last 30)
+- [ ] User menu: language switcher, Strava login/logout
+- [ ] Night / day theme
 
-## ✅ Completato
+---
+
+## ✅ Completed
+
+### v0.2
+- [x] List and table view for activities
+- [x] Flag "tracked" activities
+- [x] Filter for "tracked" activities and for sport type
+- [x] Improved Statistics tab: total and average kcal, sugars and carbs (only "tracked" activities)
+- [x] Full OpenFoodFacts integration: search by name / barcode, set portion weight
+- [x] Improved food search when adding to activities
 
 ### v0.1
 - [x] FastAPI + SQLite + Docker setup
 - [x] Strava OAuth2 + token refresh
-- [x] Activity sync con kcal da kilojoules
+- [x] Activity sync with kcal from kilojoules
 - [x] Activity detail view
-- [x] Food database CRUD con fibers
+- [x] Food database 
 - [x] CSV import / export
-- [x] Food logging per attività con quantità
-- [x] kcal + carbs totals per attività
+- [x] Food logging for activity with quantities 
+- [x] totals kcal + carbs for activity
 - [x] Tab UI: Activities & Nutrition, Food Database, Statistics
-- [x] Badge 🥗 su attività con food log
-- [x] "Tracked Activities" nelle statistiche
-
-## 💡 Idee future
-
+- [x] Badge 🥗 on activities con food log
+- [x] "Tracked Activities" in stats 

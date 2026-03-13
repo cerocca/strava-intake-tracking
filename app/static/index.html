@@ -64,11 +64,27 @@
             <h2>Recent Activities</h2>
             <span id="activity-count" class="badge"></span>
           </div>
+          <!-- Toolbar: filters + view toggle -->
+          <div class="activities-toolbar">
+            <select id="filter-sport-type" class="filter-select" onchange="applyFilters()">
+              <option value="">All types</option>
+            </select>
+            <select id="filter-tracked" class="filter-select" onchange="applyFilters()">
+              <option value="">All activities</option>
+              <option value="yes">Tracked only</option>
+              <option value="no">Untracked only</option>
+            </select>
+            <div class="view-toggle">
+              <button id="btn-view-cards" class="view-toggle-btn active" onclick="setViewMode('cards')" title="Card view">▦</button>
+              <button id="btn-view-list" class="view-toggle-btn" onclick="setViewMode('list')" title="List view">☰</button>
+            </div>
+          </div>
           <div id="no-activities" class="empty-state hidden">
             <div class="empty-icon">🏃</div>
             <p>No activities yet. Connect Strava and sync to get started.</p>
           </div>
           <div id="activities-grid" class="activities-grid"></div>
+          <div id="activities-list" class="activities-list hidden"></div>
           <div id="load-more-wrap" class="load-more-wrap hidden">
             <button class="btn btn-ghost" onclick="loadMoreActivities()">Load more</button>
           </div>
@@ -85,10 +101,11 @@
               <h4>Add Food</h4>
               <div class="form-row">
                 <div class="search-wrap">
-                  <input type="text" id="food-search-input" class="input" placeholder="Search food..." oninput="searchFoodForLog()" autocomplete="off" />
+                  <input type="text" id="food-search-input" class="input" placeholder="Search food..." oninput="searchFoodForLog()" onkeydown="if(event.key==='Enter'){clearTimeout(actState.foodSearchTimer);_doFoodSearch();}" autocomplete="off" />
                   <div id="food-search-results" class="dropdown hidden"></div>
                 </div>
                 <input type="number" id="food-quantity" class="input input-sm" placeholder="grams" min="1" step="1" />
+                <span id="serving-hint" class="serving-hint hidden"></span>
                 <button class="btn btn-primary" onclick="addFoodToActivity()">Add</button>
               </div>
             </div>
@@ -137,12 +154,24 @@
       <!-- TAB: Statistics -->
       <section id="tab-stats" class="tab-content hidden">
         <div class="section-header"><h2>Statistics</h2></div>
-        <div id="stats-grid" class="stats-grid">
+
+        <div class="stats-section-label">Activities</div>
+        <div class="stats-grid">
           <div class="stat-card"><div class="stat-value" id="stat-total-activities">—</div><div class="stat-label">Total Activities</div></div>
           <div class="stat-card"><div class="stat-value" id="stat-tracked-activities">—</div><div class="stat-label">Tracked Activities</div></div>
           <div class="stat-card"><div class="stat-value" id="stat-total-distance">—</div><div class="stat-label">Total Distance (km)</div></div>
-          <div class="stat-card"><div class="stat-value" id="stat-total-calories">—</div><div class="stat-label">Calories Burned</div></div>
+          <div class="stat-card"><div class="stat-value" id="stat-total-calories">—</div><div class="stat-label">Calories Burned (kJ)</div></div>
           <div class="stat-card"><div class="stat-value" id="stat-total-foods">—</div><div class="stat-label">Foods in Database</div></div>
+        </div>
+
+        <div class="stats-section-label">Nutrition Consumed <span style="font-weight:400;text-transform:none;letter-spacing:0">(tracked activities only)</span></div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-value" id="stat-total-kcal-consumed">—</div><div class="stat-label">Total kcal</div></div>
+          <div class="stat-card"><div class="stat-value" id="stat-avg-kcal-consumed">—</div><div class="stat-label">Avg kcal / activity</div></div>
+          <div class="stat-card"><div class="stat-value" id="stat-total-carbs">—</div><div class="stat-label">Total Carbs (g)</div></div>
+          <div class="stat-card"><div class="stat-value" id="stat-avg-carbs">—</div><div class="stat-label">Avg Carbs / activity (g)</div></div>
+          <div class="stat-card"><div class="stat-value" id="stat-total-sugars">—</div><div class="stat-label">Total Sugars (g)</div></div>
+          <div class="stat-card"><div class="stat-value" id="stat-avg-sugars">—</div><div class="stat-label">Avg Sugars / activity (g)</div></div>
         </div>
       </section>
 
@@ -156,6 +185,18 @@
         <h3 id="food-modal-title">Add Food</h3>
         <button class="modal-close" onclick="closeFoodModal()">×</button>
       </div>
+      <!-- OpenFoodFacts Search (shown only on Add, hidden on Edit) -->
+      <div id="off-search-section" class="off-search-section">
+        <div class="off-search-inputs">
+          <input type="text" id="off-name-input" class="input" placeholder="Search by name…"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();searchOFF();}" />
+          <input type="text" id="off-barcode-input" class="input off-barcode-input" placeholder="Barcode"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();searchOFF();}" />
+          <button type="button" class="btn btn-ghost btn-sm" onclick="searchOFF()">Cerca</button>
+        </div>
+        <div id="off-results" class="off-results hidden"></div>
+      </div>
+
       <form id="food-form" onsubmit="submitFoodForm(event)">
         <div class="form-grid">
           <div class="form-group span-2">
@@ -197,6 +238,10 @@
           <div class="form-group">
             <label>Salt (g)</label>
             <input type="number" name="salt" class="input" step="0.01" min="0" />
+          </div>
+          <div class="form-group">
+            <label>Porzione (g)</label>
+            <input type="number" name="serving_grams" class="input" step="1" min="1" />
           </div>
           <div class="form-group span-2">
             <label>Notes</label>

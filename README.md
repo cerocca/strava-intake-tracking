@@ -18,14 +18,18 @@
 
 - **Strava OAuth2** — Secure authentication with your Strava account
 - **Activity sync** — Import activities with calories calculated from kilojoules (total work)
-- **Activity detail** — Duration, distance, elevation gain, heart rate, direct link to Strava
-- **Nutrition badge** — Visual indicator 🥗 on activities that have food logs
+- **Activity detail** — Duration, distance, elevation gain, heart rate, power metrics, direct link to Strava
+- **Card and list view** — Toggle between card layout and compact list for activities
+- **Tracked flag** — Visual indicator 🥗 on activities that have food logs
+- **Activity filters** — Filter by sport type and by tracked / untracked status
 - **Food database** — Full nutritional fields per 100g: calories, carbohydrates, sugars, proteins, fats, saturated fats, salt, fibers
+- **Portion size** — Optional default portion weight per food item, auto-filled when logging
+- **OpenFoodFacts integration** — Search by name or barcode and import nutritional data in one click
 - **CSV import / export** — Bulk manage your food database
 - **Nutrition logging** — Associate foods and quantities to each activity
 - **Nutrition summary** — Total kcal and carbohydrate intake per activity
-- **Statistics** — Total activities, distance, calories burned, tracked activities
-- **Modern UI** — Tab-based interface with cards and clean layout
+- **Statistics** — Total activities, distance, calories burned, tracked activities; total and average kcal, carbs and sugars consumed (tracked activities only)
+- **Modern UI** — Tab-based interface with clean layout
 - **Docker ready** — One-command self-hosted deploy
 
 ---
@@ -53,7 +57,7 @@ Open [http://localhost:8000](http://localhost:8000)
 ### Local development
 
 ```bash
-git clone https://github.com/yourusername/strava-intake-tracking
+git clone https://github.com/cerocca/strava-intake-tracking
 cd strava-intake-tracking
 python3.12 -m venv venv
 source venv/bin/activate
@@ -100,7 +104,7 @@ strava-intake-tracking/
 ├── app/
 │   ├── main.py              # FastAPI entry point
 │   ├── config.py            # Settings & env vars
-│   ├── database.py          # SQLite / SQLAlchemy setup
+│   ├── database.py          # SQLite / SQLAlchemy setup + migrations
 │   ├── models/              # DB models
 │   ├── routers/             # API routes
 │   ├── services/            # Business logic
@@ -123,6 +127,7 @@ strava-intake-tracking/
 | Frontend | HTML / CSS / Vanilla JS |
 | Auth | Strava OAuth2 |
 | Container | Docker + docker-compose |
+| Food data | OpenFoodFacts API |
 
 ---
 

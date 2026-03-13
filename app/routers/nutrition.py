@@ -67,6 +67,7 @@ def _log_dict(log: NutritionLog) -> dict:
         "quantity_grams": log.quantity_grams,
         "calories": round(food.calories * factor, 1) if food and food.calories else None,
         "carbohydrates": round(food.carbohydrates * factor, 1) if food and food.carbohydrates else None,
+        "sugars": round(food.sugars * factor, 1) if food and food.sugars else None,
         "proteins": round(food.proteins * factor, 1) if food and food.proteins else None,
         "fats": round(food.fats * factor, 1) if food and food.fats else None,
         "consumed_at": log.consumed_at.isoformat() if log.consumed_at else None,

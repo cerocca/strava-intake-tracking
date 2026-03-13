@@ -56,11 +56,112 @@ function renderFoodsTable(foods) {
   `).join('');
 }
 
+// ---- OpenFoodFacts search ----
+
+async function searchOFF() {
+  const name    = document.getElementById('off-name-input').value.trim();
+  const barcode = document.getElementById('off-barcode-input').value.trim();
+  const resultsEl = document.getElementById('off-results');
+
+  if (!name && !barcode) {
+    showToast('Inserisci un nome o un barcode', 'error');
+    return;
+  }
+
+  resultsEl.innerHTML = '<div class="off-loading">Ricerca in corso…</div>';
+  resultsEl.classList.remove('hidden');
+
+  try {
+    let products = [];
+    if (barcode) {
+      const resp = await fetch(`https://world.openfoodfacts.org/api/v0/product/${encodeURIComponent(barcode)}.json`);
+      const data = await resp.json();
+      if (data.status === 1 && data.product) products = [data.product];
+    } else {
+      const resp = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(name)}&json=1&page_size=10`);
+      const data = await resp.json();
+      products = (data.products || []).filter(p => p.product_name);
+    }
+
+    if (products.length === 0) {
+      resultsEl.innerHTML = '<div class="off-no-results">Nessun risultato trovato.</div>';
+      return;
+    }
+
+    resultsEl.innerHTML = products.map((p, i) => {
+      const pname = p.product_name || p.product_name_it || '—';
+      const brand = p.brands || '';
+      const kcal  = p.nutriments?.['energy-kcal_100g'] ?? p.nutriments?.['energy-kcal'] ?? null;
+      return `
+        <div class="off-result-item" onclick="_fillFromOFF(${i})">
+          <div class="off-result-name">${escHtml(pname)}</div>
+          ${brand ? `<div class="off-result-brand">${escHtml(brand)}</div>` : ''}
+          ${kcal != null ? `<div class="off-result-kcal">${Math.round(kcal)} kcal/100g</div>` : ''}
+        </div>`;
+    }).join('');
+
+    // Store results for click handler
+    window._offProducts = products;
+
+  } catch (e) {
+    resultsEl.innerHTML = '<div class="off-no-results">Errore di rete. Riprova.</div>';
+  }
+}
+
+function _fillFromOFF(index) {
+  const p = window._offProducts[index];
+  if (!p) return;
+
+  const n = p.nutriments || {};
+  const _v = key => {
+    const val = n[key];
+    return (val != null && val !== '') ? parseFloat(val) : null;
+  };
+
+  const form = document.getElementById('food-form');
+  const set = (name, val) => {
+    const el = form.querySelector(`[name="${name}"]`);
+    if (el && val != null) el.value = val;
+  };
+
+  set('name',           p.product_name || p.product_name_it || '');
+  set('brand',          p.brands || '');
+  set('calories',       _v('energy-kcal_100g') ?? _v('energy-kcal'));
+  set('carbohydrates',  _v('carbohydrates_100g'));
+  set('sugars',         _v('sugars_100g'));
+  set('proteins',       _v('proteins_100g'));
+  set('fats',           _v('fat_100g'));
+  set('saturated_fats', _v('saturated-fat_100g'));
+  set('salt',           _v('salt_100g'));
+  set('fibers',         _v('fiber_100g'));
+
+  // Serving size from OFF: try serving_quantity (numeric g) first, then parse serving_size string
+  const servingQty = parseFloat(p.serving_quantity);
+  if (!isNaN(servingQty) && servingQty > 0) {
+    set('serving_grams', servingQty);
+  } else if (p.serving_size) {
+    const match = String(p.serving_size).match(/(\d+(?:[.,]\d+)?)\s*g/i);
+    if (match) set('serving_grams', parseFloat(match[1].replace(',', '.')));
+  }
+
+  document.getElementById('off-results').classList.add('hidden');
+  document.getElementById('off-name-input').value = '';
+  document.getElementById('off-barcode-input').value = '';
+}
+
 // ---- Modal ----
+
+function _resetOFFSearch() {
+  document.getElementById('off-name-input').value = '';
+  document.getElementById('off-barcode-input').value = '';
+  document.getElementById('off-results').classList.add('hidden');
+  window._offProducts = [];
+}
 
 function viewFoodModal(food) {
   _viewMode = true;
   _editingFoodId = null;
+  document.getElementById('off-search-section').classList.add('hidden');
   const title = document.getElementById('food-modal-title');
   const form = document.getElementById('food-form');
 
@@ -68,7 +169,7 @@ function viewFoodModal(food) {
   form.reset();
   form.querySelector('[name=food_id]').value = food.id;
 
-  const fields = ['name', 'brand', 'calories', 'carbohydrates', 'sugars', 'proteins', 'fibers', 'fats', 'saturated_fats', 'salt', 'notes'];
+  const fields = ['name', 'brand', 'calories', 'carbohydrates', 'sugars', 'proteins', 'fibers', 'fats', 'saturated_fats', 'salt', 'serving_grams', 'notes'];
   fields.forEach(f => {
     const el = form.querySelector(`[name=${f}]`);
     if (el) {
@@ -84,6 +185,14 @@ function viewFoodModal(food) {
 function openFoodModal(food = null) {
   _viewMode = false;
   _editingFoodId = food ? food.id : null;
+  // Show OFF search only when adding a new food
+  const offSection = document.getElementById('off-search-section');
+  if (food) {
+    offSection.classList.add('hidden');
+  } else {
+    offSection.classList.remove('hidden');
+    _resetOFFSearch();
+  }
   const title = document.getElementById('food-modal-title');
   const form = document.getElementById('food-form');
 
@@ -91,7 +200,7 @@ function openFoodModal(food = null) {
   form.reset();
   form.querySelector('[name=food_id]').value = food ? food.id : '';
 
-  const fields = ['name', 'brand', 'calories', 'carbohydrates', 'sugars', 'proteins', 'fibers', 'fats', 'saturated_fats', 'salt', 'notes'];
+  const fields = ['name', 'brand', 'calories', 'carbohydrates', 'sugars', 'proteins', 'fibers', 'fats', 'saturated_fats', 'salt', 'serving_grams', 'notes'];
   fields.forEach(f => {
     const el = form.querySelector(`[name=${f}]`);
     if (el) {
@@ -106,6 +215,7 @@ function openFoodModal(food = null) {
 
 function closeFoodModal(event = null) {
   if (event && event.target !== document.getElementById('food-modal')) return;
+  _resetOFFSearch();
   // Re-enable all inputs in case we were in view mode
   const form = document.getElementById('food-form');
   form.querySelectorAll('input').forEach(el => el.disabled = false);
@@ -129,6 +239,7 @@ async function submitFoodForm(event) {
     fats: _fv(form.fats.value),
     saturated_fats: _fv(form.saturated_fats.value),
     salt: _fv(form.salt.value),
+    serving_grams: _fv(form.serving_grams.value),
     notes: form.notes.value.trim() || null,
   };
 

@@ -11,6 +11,7 @@
 ## 🗺 Roadmap / Future ideas
 - [ ] Season tracking: define seasons in user setup, filter stats by season
 - [ ] Link to OpenFoodFacts product page on foods imported from OpenFoodFacts
+- [ ] Foods added in local DB may go on OpenFoodFacts
 - [ ] Sidebar navigation instead of tab-based UI
 - [ ] Credits page / link to GitHub repo in the app
 - [ ] Sync all Strava activities (currently limited to last 30)

@@ -1,4 +1,4 @@
-# 🥗 strava-intake-tracking
+# 🥗 Strava intake tracking app
 
 ![Python](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi&logoColor=white)

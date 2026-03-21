@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "Bash(pip install:*)",
-      "Bash(pip3 install:*)"
+      "Bash(pip3 install:*)",
+      "Bash(python -c \"\nfrom app.models.activity import Activity\nfrom app.routers.activities import router\nfrom app.routers.strava import router as strava_router\nfrom app.database import init_db, _migrate_db\nprint\\('All imports OK'\\)\nprint\\('Activity fields:', [c.name for c in Activity.__table__.columns]\\)\n\")",
+      "Bash(python -m py_compile app/models/activity.py app/routers/activities.py app/routers/strava.py app/database.py && echo \"Syntax OK\")",
+      "Bash(python3 -m py_compile app/models/activity.py app/routers/activities.py app/routers/strava.py app/database.py && echo \"Syntax OK\")",
+      "Bash(python3 -m py_compile app/static/js/activities.js 2>/dev/null; echo \"JS check done \\(py_compile not for JS\\)\"; node --check app/static/js/activities.js && node --check app/static/js/stats.js && node --check app/static/js/app.js && echo \"JS syntax OK\")",
+      "Bash(python3 -c \"\nimport json\ntoken = json.load\\(open\\('data/strava_token.json'\\)\\)\na = token.get\\('athlete', {}\\)\nprint\\('resource_state:', a.get\\('resource_state'\\)\\)\nprint\\('ftp:', a.get\\('ftp'\\)\\)\nprint\\('scope in token:', token.get\\('scope', 'not stored'\\)\\)\n\")",
+      "Bash(python3 -c \"\nimport json, urllib.request\ntoken = json.load\\(open\\('data/strava_token.json'\\)\\)\nreq = urllib.request.Request\\(\n    'https://www.strava.com/api/v3/athlete',\n    headers={'Authorization': 'Bearer ' + token['access_token']}\n\\)\nwith urllib.request.urlopen\\(req\\) as r:\n    data = json.loads\\(r.read\\(\\)\\)\n    print\\('resource_state:', data.get\\('resource_state'\\)\\)\n    print\\('ftp:', data.get\\('ftp'\\)\\)\n    print\\('premium/summit:', data.get\\('premium'\\), data.get\\('summit'\\)\\)\n\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }

@@ -59,32 +59,6 @@ strava-intake-tracking/
 └── ERRORS.md
 ```
 
-## Funzionalità implementate (v0.2)
-
-### Attività
-- Sync Strava con kcal calcolate da kilojoules (kJ * 0.239006)
-- Power metrics: average watts, normalized power, max watts
-- Vista card e vista lista (toggle)
-- Flag visivo attività "Tracked" (con food log)
-- Filtro per sport type e per tracked/untracked
-- Activity detail con link Strava, durata, distanza, kcal bruciate
-- IF e TSS calcolati da FTP (persistito in localStorage)
-
-### Food Database
-- CRUD completo con campi per 100g: calories, carbs, sugars, proteins, fats, saturated_fats, salt, fibers
-- Campo serving_grams: porzione default in grammi
-- CSV import/export
-- Integrazione OpenFoodFacts: ricerca per nome o barcode, import con pre-compilazione form
-
-### Nutrition Logging
-- Associazione cibi + quantità a ogni attività
-- Quantità pre-compilata da serving_grams se disponibile
-- Totale kcal e carbs consumati per attività
-
-### Statistics
-- Totali: attività, distanza, kcal bruciate, attività tracciate
-- Nutrizione (solo attività tracciate): totale e media kcal, carbs, zuccheri consumati
-
 ## Regole di sviluppo (OBBLIGATORIE)
 
 ### Prima di scrivere codice
@@ -118,7 +92,7 @@ strava-intake-tracking/
 
 ### Checklist pre-commit (ricordare all'utente PRIMA di ogni commit)
 1. CHANGELOG.md — aggiornare con le modifiche fatte
-2. TODO.md — spostare le voci completate in sezione completato, aggiornare Ongoing
+2. TODO.md — spostare le voci completate in ✅, aggiornare 🔄 Ongoing
 3. README.md — verificare se le modifiche richiedono aggiornamenti
 4. CLAUDE.md — se aggiornato, ricordare all'utente di ricaricarlo nel Project su Claude.ai
 5. Solo dopo la conferma dell'utente procedere con git add e git commit

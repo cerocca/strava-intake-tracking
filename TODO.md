@@ -2,26 +2,40 @@
 
 ## 🔄 Ongoing
 
-### Statistics & Activities tab
-- [ ] Graphs in Statistics tab (kcal, carbs, sugars trends)
-- [ ] Graphs in Activities & Nutrition tab
-
 ---
 
 ## 🗺 Roadmap / Future ideas
-- [ ] Season tracking: define seasons in user setup, filter stats by season
-- [ ] Link to OpenFoodFacts product page on foods imported from OpenFoodFacts
-- [ ] Foods added in local DB may go on OpenFoodFacts
-- [ ] Sidebar navigation instead of tab-based UI
-- [ ] Credits page / link to GitHub repo in the app
-- [ ] Sync all Strava activities (currently limited to last 30)
-- [ ] User menu: language switcher, Strava login/logout
+
+- [ ] **Graphs tab** *(not yet implemented — current tab is a placeholder)*: charts based on **tracked activities only** (with food log); implementation via **Chart.js** (vanilla JS, no additional dependencies); planned charts:
+  - Kcal consumed vs kJ produced (scatter plot)
+  - Carbs consumed vs activity duration
+  - Kcal ratio consumed/burned per activity
+  - Monthly trends: kcal, carbs, tracked vs total activities (bar charts)
+  - Macros distribution (donut chart: carbs / proteins / fats / sugars)
+  - Kcal by sport type (grouped bar chart)
+- [ ] **Fix footer and user menu** — footer sizing and layout refinements; user menu: fix "Seasons ⚙" icon position (gear icon after text, not before), Language/Seasons alignment, separator weight between Disconnect and Language
+- [ ] **Dynamic version alert** — notify user when local version is behind latest GitHub release
+- [ ] **Language support** — additional languages beyond English placeholder
+- [ ] **OpenFoodFacts link** — link to product page on imported foods
+- [ ] **Lateral menu UI** — replace tab navigation with a lateral sidebar menu
+- [ ] Sync all Strava activities (currently limited to last 100)
 - [ ] Night / day theme
-- [ ] Charts in Statistics and Activities & Nutrition tabs
+- [ ] Foods added in local DB may go on OpenFoodFacts
 
 ---
 
 ## ✅ Completed
+
+### v0.3
+- [x] Season tracking: define seasons (name, type, date range); filter activities and statistics by season; season badge on activity detail page
+- [x] User menu: avatar dropdown with Strava profile info, Connect/Disconnect, Language selector, Seasons management
+- [x] Statistics split into Total Stats (all-time) and Season Stats (per-season filter)
+- [x] Graphs tab placeholder added (Chart.js loaded, tab structure in place)
+- [x] Dynamic footer: local version + latest GitHub release + "Powered by Strava" + GitHub link
+- [x] UI language standardised to English
+- [x] Credits / GitHub repo link in the app (footer + user menu)
+- [x] `APP_VERSION` constant in config.py; `GET /version` endpoint
+- [x] `GET /auth/status` returns `athlete_photo` and `athlete_id`
 
 ### v0.2
 - [x] List and card view for activities (toggle)

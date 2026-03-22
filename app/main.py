@@ -5,7 +5,8 @@ from contextlib import asynccontextmanager
 import os
 
 from app.database import init_db
-from app.routers import strava, foods, nutrition, activities
+from app.routers import strava, foods, nutrition, activities, seasons
+from app.config import APP_VERSION
 
 
 @asynccontextmanager
@@ -26,6 +27,7 @@ app.include_router(strava.router)
 app.include_router(activities.router)
 app.include_router(foods.router)
 app.include_router(nutrition.router)
+app.include_router(seasons.router)
 
 # Serve static frontend
 static_dir = os.path.join(os.path.dirname(__file__), "static")
@@ -40,3 +42,8 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "ok", "app": "strava-intake-tracking"}
+
+
+@app.get("/version")
+async def version():
+    return {"version": APP_VERSION}

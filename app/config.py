@@ -1,5 +1,7 @@
 from pydantic_settings import BaseSettings
 
+APP_VERSION = "0.3.0"
+
 
 class Settings(BaseSettings):
     strava_client_id: str = ""

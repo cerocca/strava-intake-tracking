@@ -11,6 +11,7 @@ const actState = {
   viewMode: 'cards',    // 'cards' | 'list'
   filterSportType: '',
   filterTracked: '',
+  filterSeasonId: '',
 };
 
 const SPORT_ICONS = {
@@ -68,6 +69,7 @@ async function loadSportTypes() {
 function applyFilters() {
   actState.filterSportType = document.getElementById('filter-sport-type').value;
   actState.filterTracked = document.getElementById('filter-tracked').value;
+  actState.filterSeasonId = document.getElementById('filter-season').value;
   loadActivities(true);
 }
 
@@ -92,6 +94,7 @@ async function loadActivities(reset = true) {
     });
     if (actState.filterSportType) params.set('sport_type', actState.filterSportType);
     if (actState.filterTracked) params.set('tracked', actState.filterTracked);
+    if (actState.filterSeasonId) params.set('season_id', actState.filterSeasonId);
 
     const data = await api(`/activities?${params}`);
     actState.total = data.total;
@@ -259,6 +262,7 @@ function renderActivityDetail(a) {
       </div>
       <div class="activity-detail-meta">
         ${a.sport_type || ''}${a.sport_type && a.start_date ? ' · ' : ''}${formatDate(a.start_date)}
+        ${a.season ? `<span class="activity-season-badge">🗓 ${escHtml(a.season.name)}</span>` : ''}
       </div>
       <div class="activity-detail-stats">
         ${a.distance ? `<div class="activity-detail-stat"><div class="value">${formatDistance(a.distance)}</div><div class="label">Distance</div></div>` : ''}
@@ -424,7 +428,7 @@ function selectFood(foodId) {
   const servingHint = document.getElementById('serving-hint');
   if (food.serving_grams) {
     qtyInput.value = food.serving_grams;
-    servingHint.textContent = `porzione: ${food.serving_grams}g`;
+    servingHint.textContent = `serving: ${food.serving_grams}g`;
     servingHint.classList.remove('hidden');
   } else {
     qtyInput.value = '';

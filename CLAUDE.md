@@ -24,12 +24,14 @@ strava-intake-tracking/
 │   ├── models/
 │   │   ├── activity.py      # Activity (strava_id, kcal da kJ, power metrics)
 │   │   ├── food.py          # Food (valori per 100g + serving_grams)
-│   │   └── nutrition_log.py # NutritionLog (FK activity+food, quantity_grams)
+│   │   ├── nutrition_log.py # NutritionLog (FK activity+food, quantity_grams)
+│   │   └── season.py        # Season (name, season_type, start_date, end_date)
 │   ├── routers/
-│   │   ├── strava.py        # OAuth2 + sync attività
-│   │   ├── activities.py    # Lista, dettaglio, filtri, stats
+│   │   ├── strava.py        # OAuth2 + sync attività; returns athlete_photo, athlete_id
+│   │   ├── activities.py    # Lista, dettaglio, filtri, stats, graphs aggregation
 │   │   ├── foods.py         # CRUD database alimentare
-│   │   └── nutrition.py     # Log nutrizione per attività
+│   │   ├── nutrition.py     # Log nutrizione per attività
+│   │   └── seasons.py       # CRUD /seasons con validazione overlap date
 │   ├── services/
 │   │   ├── strava_service.py    # Token store JSON, auto refresh, fetch Strava
 │   │   └── nutrition_service.py # Macro totals per attività
@@ -40,7 +42,9 @@ strava-intake-tracking/
 │           ├── app.js
 │           ├── activities.js
 │           ├── foods.js
-│           └── stats.js
+│           ├── stats.js         # loadTotalStats() + loadSeasonStats() separati
+│           ├── seasons.js       # User menu toggle, seasons modal CRUD, dropdown populate
+│           └── graphs.js        # Placeholder tab Graphs (Chart.js, not yet implemented)
 ├── tests/
 ├── docker/Dockerfile
 ├── docker-compose.yml
@@ -71,6 +75,7 @@ strava-intake-tracking/
 - **Evita hack rapidi** quando esiste una soluzione più pulita
 - Ogni funzione deve avere uno scopo singolo e chiaro
 - Gestisci sempre gli errori esplicitamente (no silent failures)
+- **UI language**: All interface text must be in English.
 
 ### Migrazioni DB
 - Usare sempre _migrate_db() in database.py con ALTER TABLE sicuro (non distruttivo)

@@ -28,7 +28,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def init_db():
     # Import models so SQLAlchemy registers them with Base before create_all
-    from app.models import activity, food, nutrition_log  # noqa: F401
+    from app.models import activity, food, nutrition_log, season  # noqa: F401
     Base.metadata.create_all(bind=engine)
     _migrate_db()
 
@@ -48,6 +48,18 @@ def _migrate_db():
                 conn.commit()
             except Exception:
                 pass  # Column already exists
+
+        # Create seasons table if not exists
+        conn.execute(text(
+            "CREATE TABLE IF NOT EXISTS seasons ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            "name TEXT NOT NULL, "
+            "season_type TEXT, "
+            "start_date TEXT NOT NULL, "
+            "end_date TEXT NOT NULL"
+            ")"
+        ))
+        conn.commit()
 
 
 def get_db():

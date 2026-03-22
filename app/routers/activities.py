@@ -6,40 +6,94 @@ from app.database import get_db
 from app.models.activity import Activity
 from app.models.food import Food
 from app.models.nutrition_log import NutritionLog
+from app.models.season import Season
 from app.services.nutrition_service import get_activity_nutrition_summary
 
 router = APIRouter(prefix="/activities", tags=["activities"])
 
 
 @router.get("/stats")
-async def get_stats(db: Session = Depends(get_db)):
-    total_activities = db.query(func.count(Activity.id)).scalar() or 0
-    total_distance = db.query(func.sum(Activity.distance)).scalar() or 0.0
-    total_calories = db.query(func.sum(Activity.calories)).scalar() or 0.0
+async def get_stats(
+    db: Session = Depends(get_db),
+    season_id: int = Query(None),
+):
+    # Resolve season date range if requested
+    season_start: str | None = None
+    season_end: str | None = None
+    if season_id is not None:
+        season = db.query(Season).filter(Season.id == season_id).first()
+        if not season:
+            raise HTTPException(status_code=404, detail="Season not found")
+        season_start = season.start_date
+        season_end = season.end_date
+
+    def _season_filter(q):
+        if season_start and season_end:
+            q = q.filter(
+                func.date(Activity.start_date) >= season_start,
+                func.date(Activity.start_date) <= season_end,
+            )
+        return q
+
+    total_activities = _season_filter(db.query(func.count(Activity.id))).scalar() or 0
+    total_distance = _season_filter(db.query(func.sum(Activity.distance))).scalar() or 0.0
+    total_calories = _season_filter(db.query(func.sum(Activity.calories))).scalar() or 0.0
     total_foods = db.query(func.count(Food.id)).scalar() or 0
     tracked_activities = (
-        db.query(func.count(Activity.id))
-        .filter(exists().where(NutritionLog.activity_id == Activity.id))
-        .scalar() or 0
+        _season_filter(
+            db.query(func.count(Activity.id))
+            .filter(exists().where(NutritionLog.activity_id == Activity.id))
+        ).scalar() or 0
     )
 
-    # Consumed nutrition (only from activities with food logs)
+    # Consumed nutrition — filtered by season via NutritionLog → Activity join
+    nutrition_base = (
+        db.query(NutritionLog)
+        .join(Activity, NutritionLog.activity_id == Activity.id)
+    )
+    if season_start and season_end:
+        nutrition_base = nutrition_base.filter(
+            func.date(Activity.start_date) >= season_start,
+            func.date(Activity.start_date) <= season_end,
+        )
+
     kcal_consumed = (
         db.query(func.sum(Food.calories * NutritionLog.quantity_grams / 100.0))
         .select_from(NutritionLog)
         .join(Food, NutritionLog.food_id == Food.id)
+        .join(Activity, NutritionLog.activity_id == Activity.id)
+        .filter(*(
+            [
+                func.date(Activity.start_date) >= season_start,
+                func.date(Activity.start_date) <= season_end,
+            ] if season_start else []
+        ))
         .scalar() or 0.0
     )
     carbs_consumed = (
         db.query(func.sum(Food.carbohydrates * NutritionLog.quantity_grams / 100.0))
         .select_from(NutritionLog)
         .join(Food, NutritionLog.food_id == Food.id)
+        .join(Activity, NutritionLog.activity_id == Activity.id)
+        .filter(*(
+            [
+                func.date(Activity.start_date) >= season_start,
+                func.date(Activity.start_date) <= season_end,
+            ] if season_start else []
+        ))
         .scalar() or 0.0
     )
     sugars_consumed = (
         db.query(func.sum(Food.sugars * NutritionLog.quantity_grams / 100.0))
         .select_from(NutritionLog)
         .join(Food, NutritionLog.food_id == Food.id)
+        .join(Activity, NutritionLog.activity_id == Activity.id)
+        .filter(*(
+            [
+                func.date(Activity.start_date) >= season_start,
+                func.date(Activity.start_date) <= season_end,
+            ] if season_start else []
+        ))
         .scalar() or 0.0
     )
 
@@ -80,6 +134,7 @@ async def list_activities(
     limit: int = Query(20, ge=1, le=100),
     sport_type: str = Query(None),
     tracked: str = Query(None),  # "yes" | "no" | None
+    season_id: int = Query(None),
 ):
     query = db.query(Activity)
 
@@ -90,6 +145,15 @@ async def list_activities(
         query = query.filter(exists().where(NutritionLog.activity_id == Activity.id))
     elif tracked == "no":
         query = query.filter(~exists().where(NutritionLog.activity_id == Activity.id))
+
+    if season_id is not None:
+        season = db.query(Season).filter(Season.id == season_id).first()
+        if not season:
+            raise HTTPException(status_code=404, detail="Season not found")
+        query = query.filter(
+            func.date(Activity.start_date) >= season.start_date,
+            func.date(Activity.start_date) <= season.end_date,
+        )
 
     total = query.with_entities(func.count(Activity.id)).scalar() or 0
     activities = query.order_by(Activity.start_date.desc()).offset(skip).limit(limit).all()
@@ -109,6 +173,37 @@ async def list_activities(
     }
 
 
+@router.get("/graphs")
+async def get_graphs(
+    db: Session = Depends(get_db),
+    season_id: int = Query(None),
+):
+    from collections import defaultdict
+
+    query = db.query(Activity).filter(Activity.start_date.isnot(None))
+
+    if season_id is not None:
+        season = db.query(Season).filter(Season.id == season_id).first()
+        if not season:
+            raise HTTPException(status_code=404, detail="Season not found")
+        query = query.filter(
+            func.date(Activity.start_date) >= season.start_date,
+            func.date(Activity.start_date) <= season.end_date,
+        )
+
+    activities = query.order_by(Activity.start_date).all()
+
+    monthly: dict = defaultdict(lambda: {"activity_count": 0, "total_distance_km": 0.0})
+    for act in activities:
+        month_key = act.start_date.strftime("%Y-%m")
+        monthly[month_key]["activity_count"] += 1
+        monthly[month_key]["total_distance_km"] = round(
+            monthly[month_key]["total_distance_km"] + (act.distance or 0) / 1000, 2
+        )
+
+    return [{"month": k, **v} for k, v in sorted(monthly.items())]
+
+
 @router.get("/{activity_id}")
 async def get_activity(activity_id: int, db: Session = Depends(get_db)):
     activity = db.query(Activity).filter(Activity.id == activity_id).first()
@@ -119,6 +214,18 @@ async def get_activity(activity_id: int, db: Session = Depends(get_db)):
     )
     data = _activity_dict(activity, has_nutrition)
     data["nutrition_summary"] = get_activity_nutrition_summary(activity_id, db)
+
+    # Find which season this activity belongs to
+    season = None
+    if activity.start_date:
+        date_str = activity.start_date.strftime("%Y-%m-%d")
+        matched = db.query(Season).filter(
+            Season.start_date <= date_str,
+            Season.end_date >= date_str,
+        ).first()
+        if matched:
+            season = {"id": matched.id, "name": matched.name, "season_type": matched.season_type}
+    data["season"] = season
     return data
 
 

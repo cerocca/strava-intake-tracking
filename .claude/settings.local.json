@@ -11,7 +11,9 @@
       "Bash(python3 -c \"\nimport json, urllib.request\ntoken = json.load\\(open\\('data/strava_token.json'\\)\\)\nreq = urllib.request.Request\\(\n    'https://www.strava.com/api/v3/athlete',\n    headers={'Authorization': 'Bearer ' + token['access_token']}\n\\)\nwith urllib.request.urlopen\\(req\\) as r:\n    data = json.loads\\(r.read\\(\\)\\)\n    print\\('resource_state:', data.get\\('resource_state'\\)\\)\n    print\\('ftp:', data.get\\('ftp'\\)\\)\n    print\\('premium/summit:', data.get\\('premium'\\), data.get\\('summit'\\)\\)\n\")",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(source venv/bin/activate)",
+      "Bash(python -c \"from app.main import app; print\\(''OK''\\)\")"
     ]
   }
 }

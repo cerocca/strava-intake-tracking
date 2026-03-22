@@ -51,10 +51,9 @@ body {
 
 .logo {
   display: flex; align-items: center; gap: 10px;
-  color: #fff; font-size: 1rem; text-decoration: none;
+  color: #fff; font-size: 18px; text-decoration: none;
 }
-.logo span { color: #cdd6e0; }
-.logo strong { color: #fff; font-weight: 600; }
+.logo span { color: #fff; font-weight: 600; }
 
 .header-right { display: flex; align-items: center; gap: 10px; }
 
@@ -704,6 +703,207 @@ body {
 .load-more-wrap {
   text-align: center; margin-top: 24px;
 }
+
+/* ============================================================
+   User menu
+   ============================================================ */
+.user-menu-wrap { position: relative; }
+
+.user-menu-btn {
+  background: none; border: none; cursor: pointer;
+  color: #9ca3af;
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  transition: background .15s, color .15s;
+}
+.user-menu-btn:hover { background: rgba(255,255,255,.08); color: #fff; }
+
+.user-avatar-small {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255,255,255,.1);
+}
+.user-avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.user-avatar-img-lg { width: 40px; height: 40px; }
+
+.user-menu-arrow { font-size: .7rem; color: #9ca3af; line-height: 1; }
+
+.user-menu-dropdown {
+  position: absolute; top: calc(100% + 6px); right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  min-width: 200px;
+  z-index: 150;
+  overflow: hidden;
+}
+
+.user-menu-profile {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px;
+}
+.user-menu-avatar-lg {
+  width: 40px; height: 40px;
+  border-radius: 50%; overflow: hidden;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+.user-menu-name {
+  font-size: .875rem; font-weight: 500; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.user-menu-sep {
+  height: 1px; background: var(--border); margin: 0;
+}
+.user-menu-sep-bold {
+  height: 2px; background: #d1d5db; margin: 2px 0;
+}
+
+.user-menu-lang {
+  display: flex; flex-direction: column; gap: 6px; cursor: default;
+}
+.user-menu-lang-label { font-size: .875rem; color: var(--text); }
+.user-menu-lang-select { width: 100%; font-size: .8rem; padding: 4px 8px; }
+
+.user-menu-strava-link {
+  display: block;
+  padding: 4px 16px 10px;
+  font-size: .78rem; color: var(--strava);
+  text-decoration: none;
+}
+.user-menu-strava-link:hover { text-decoration: underline; }
+
+.user-menu-item {
+  display: block; width: 100%;
+  padding: 10px 16px;
+  background: none; border: none; cursor: pointer;
+  font-family: inherit; font-size: .875rem; line-height: 1.5;
+  color: var(--text); text-align: left;
+  transition: background .1s;
+}
+.user-menu-item:hover { background: var(--bg); }
+.user-menu-lang.user-menu-item { cursor: default; }
+.user-menu-lang.user-menu-item:hover { background: none; }
+
+/* ============================================================
+   Seasons modal
+   ============================================================ */
+.modal-seasons { max-width: 560px; }
+
+.seasons-list-wrap {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  max-height: 260px; overflow-y: auto;
+}
+
+.season-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.season-item:last-child { border-bottom: none; }
+
+.season-item-info { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.season-item-info strong { font-size: .9rem; }
+
+.season-type-tag {
+  font-size: .75rem; color: var(--text-muted);
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 20px; padding: 1px 8px;
+}
+.season-dates {
+  font-size: .78rem; color: var(--text-muted);
+  font-family: 'DM Mono', monospace;
+}
+.season-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.seasons-form-wrap { padding: 16px 24px 0; }
+.seasons-form-title { font-size: .9rem; font-weight: 600; margin-bottom: 12px; color: var(--text-muted); }
+
+.seasons-form-grid { padding: 0; }
+
+.season-error {
+  background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c;
+  border-radius: var(--radius-sm); padding: 8px 12px;
+  font-size: .825rem; margin-bottom: 10px;
+}
+
+/* ============================================================
+   Activity season badge (in detail view meta line)
+   ============================================================ */
+.activity-season-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: #eff6ff; color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  border-radius: 20px; padding: 2px 9px;
+  font-size: .78rem; font-weight: 500;
+  margin-left: 8px; vertical-align: middle;
+}
+
+/* ============================================================
+   Season stats empty state
+   ============================================================ */
+.season-stats-empty {
+  color: var(--text-muted); font-size: .875rem;
+  padding: 20px 0 4px;
+}
+
+/* ============================================================
+   Graphs
+   ============================================================ */
+.graphs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 20px;
+  margin-top: 4px;
+}
+.graph-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+}
+.graph-card-title {
+  font-size: .8rem; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .06em;
+  margin-bottom: 14px;
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+.app-footer {
+  position: fixed; bottom: 12px; left: 16px;
+  display: flex; flex-direction: column; gap: 3px;
+  font-size: 13px; opacity: 0.45; color: inherit;
+  z-index: 10;
+  transition: opacity .2s ease;
+}
+.app-footer:hover { opacity: 0.85; }
+
+.footer-row {
+  display: flex; align-items: center; gap: 6px;
+}
+.footer-row a, .footer-github-link {
+  display: flex; align-items: center;
+  color: inherit; text-decoration: none;
+}
+.footer-row a:hover { opacity: 0.8; }
+.footer-github-link svg { fill: currentColor; }
+
+#footer-latest a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+.footer-strava-link {
+  color: #FC4C02; text-decoration: none;
+}
+.footer-strava-link:hover { text-decoration: underline; }
 
 /* ============================================================
    Utilities

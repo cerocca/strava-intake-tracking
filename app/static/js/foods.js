@@ -64,11 +64,11 @@ async function searchOFF() {
   const resultsEl = document.getElementById('off-results');
 
   if (!name && !barcode) {
-    showToast('Inserisci un nome o un barcode', 'error');
+    showToast('Enter a name or barcode', 'error');
     return;
   }
 
-  resultsEl.innerHTML = '<div class="off-loading">Ricerca in corso…</div>';
+  resultsEl.innerHTML = '<div class="off-loading">Searching…</div>';
   resultsEl.classList.remove('hidden');
 
   try {
@@ -84,7 +84,7 @@ async function searchOFF() {
     }
 
     if (products.length === 0) {
-      resultsEl.innerHTML = '<div class="off-no-results">Nessun risultato trovato.</div>';
+      resultsEl.innerHTML = '<div class="off-no-results">No results found.</div>';
       return;
     }
 
@@ -104,7 +104,7 @@ async function searchOFF() {
     window._offProducts = products;
 
   } catch (e) {
-    resultsEl.innerHTML = '<div class="off-no-results">Errore di rete. Riprova.</div>';
+    resultsEl.innerHTML = '<div class="off-no-results">Network error. Please try again.</div>';
   }
 }
 

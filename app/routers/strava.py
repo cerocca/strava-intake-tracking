@@ -53,6 +53,7 @@ async def auth_status():
         "athlete_name": f"{first} {last}".strip() or "Athlete",
         "athlete_id": athlete.get("id"),
         "ftp": athlete.get("ftp"),
+        "athlete_photo": athlete.get("profile_medium") or athlete.get("profile"),
     }
 
 

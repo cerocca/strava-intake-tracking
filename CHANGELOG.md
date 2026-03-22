@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.0] - 2026-03-22
+
+### Added
+- **Season tracking**: new Season model (name, season_type, start_date, end_date); full CRUD via `/seasons` endpoint with no-overlap validation; season filter in Activities and Statistics; season badge on activity detail page
+- **User menu**: avatar dropdown in header with Strava profile (name, photo, link to Strava profile), Connect/Disconnect, Language selector (English placeholder), Seasons management
+- **Statistics redesign**: split into "Total Stats" (all-time, unfiltered) and "Season Stats" (filterable by season)
+- **Graphs tab**: placeholder tab added (not yet implemented); will contain Chart.js charts for tracked activities only
+- **Footer**: dynamic version display (local + latest from GitHub releases API); "Powered by Strava" branding; GitHub icon linking to repo
+- **UI language**: all interface text standardised to English; rule added to CLAUDE.md
+- **App version constant**: `APP_VERSION` in `config.py`; exposed via `GET /version` endpoint
+- **Athlete profile in API**: `GET /auth/status` now returns `athlete_photo` and `athlete_id`
+
+### Changed
+- Header simplified: removed username from header bar (now in user menu only); renamed "Sync" → "Sync Strava"; removed standalone Disconnect/Connect buttons from header
+- App name updated to "Strava Intake Tracker" in header
+- User menu: Connect/Disconnect moved inside dropdown; Language and Seasons accessible from same menu
+
+---
+
 ## [0.2.0] - 2026-03-13
 
 ### Added

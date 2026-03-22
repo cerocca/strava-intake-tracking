@@ -4,6 +4,8 @@
 const state = {
   connected: false,
   athleteName: '',
+  athletePhoto: '',
+  athleteId: null,
   currentTab: 'activities',
 };
 
@@ -39,6 +41,7 @@ function switchTab(tab) {
   if (tab === 'stats') loadStats();
   if (tab === 'foods') loadFoods();
   if (tab === 'activities') { loadActivities(); loadSportTypes(); }
+  if (tab === 'graphs') loadGraphs();
 }
 
 // ============================================================
@@ -69,7 +72,10 @@ async function disconnect() {
   try {
     await api('/auth/disconnect', { method: 'POST' });
     state.connected = false;
-    updateAuthUI(false, '');
+    state.athleteName = '';
+    state.athletePhoto = '';
+    state.athleteId = null;
+    updateAuthUI(false, '', '', null);
     showToast('Disconnected from Strava', 'info');
   } catch (e) {
     showToast(e.message, 'error');
@@ -81,22 +87,45 @@ async function checkAuthStatus() {
     const data = await api('/auth/status');
     state.connected = data.connected;
     state.athleteName = data.athlete_name || '';
-    updateAuthUI(data.connected, data.athlete_name || '');
+    state.athletePhoto = data.athlete_photo || '';
+    state.athleteId = data.athlete_id || null;
+    updateAuthUI(data.connected, data.athlete_name || '', data.athlete_photo || '', data.athlete_id || null);
   } catch {
-    updateAuthUI(false, '');
+    updateAuthUI(false, '', '', null);
   }
 }
 
-function updateAuthUI(connected, name) {
-  document.getElementById('btn-connect').classList.toggle('hidden', connected);
+function updateAuthUI(connected, name, photoUrl, athleteId) {
+  // Header: Sync button only
   document.getElementById('btn-sync').classList.toggle('hidden', !connected);
-  document.getElementById('btn-disconnect').classList.toggle('hidden', !connected);
-  const info = document.getElementById('athlete-info');
-  if (connected && name) {
-    info.classList.remove('hidden');
-    document.getElementById('athlete-name').textContent = name;
+
+  // Dropdown: connect / disconnect buttons
+  document.getElementById('user-menu-connect').classList.toggle('hidden', connected);
+  document.getElementById('user-menu-disconnect').classList.toggle('hidden', !connected);
+
+  // Dropdown: profile name
+  document.getElementById('user-menu-name').textContent = connected && name ? name : 'Not connected';
+
+  // Dropdown: View Strava profile link
+  const stravaLink = document.getElementById('user-menu-strava-link');
+  if (connected && athleteId) {
+    stravaLink.href = `https://www.strava.com/athletes/${athleteId}`;
+    stravaLink.classList.remove('hidden');
   } else {
-    info.classList.add('hidden');
+    stravaLink.classList.add('hidden');
+  }
+
+  // Avatar — small button icon and large in dropdown
+  const avatarSmall = document.getElementById('user-avatar-small');
+  const avatarLg = document.getElementById('user-menu-avatar-lg');
+  if (connected && photoUrl) {
+    avatarSmall.innerHTML = `<img src="${photoUrl}" class="user-avatar-img" alt="avatar" />`;
+    avatarLg.innerHTML = `<img src="${photoUrl}" class="user-avatar-img user-avatar-img-lg" alt="avatar" />`;
+  } else {
+    const genericSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`;
+    const genericSvgLg = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`;
+    avatarSmall.innerHTML = genericSvg;
+    avatarLg.innerHTML = genericSvgLg;
   }
 }
 
@@ -115,6 +144,32 @@ function showToast(message, type = 'success') {
 }
 
 // ============================================================
+// Footer: dynamic version
+// ============================================================
+async function initFooter() {
+  try {
+    const data = await api('/version');
+    document.getElementById('footer-version').textContent = `v${data.version}`;
+  } catch {}
+
+  try {
+    const resp = await fetch('https://api.github.com/repos/cerocca/strava-intake-tracking/releases/latest');
+    if (resp.ok) {
+      const release = await resp.json();
+      const tag = release.tag_name;
+      const url = release.html_url;
+      if (tag) {
+        const latestEl = document.getElementById('footer-latest');
+        const linkEl = document.getElementById('footer-latest-link');
+        linkEl.textContent = `latest: ${tag}`;
+        linkEl.href = url;
+        latestEl.classList.remove('hidden');
+      }
+    }
+  } catch {}
+}
+
+// ============================================================
 // Init
 // ============================================================
 document.addEventListener('DOMContentLoaded', async () => {
@@ -125,4 +180,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   loadActivities();
   loadSportTypes();
+  refreshSeasonsList();  // populate season dropdowns in Activities, Statistics, Graphs
+  initFooter();
 });

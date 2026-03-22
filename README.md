@@ -1,5 +1,6 @@
 # 🥗 Strava intake tracking app
 
+![Version](https://img.shields.io/badge/version-0.3.0-orange)
 ![Python](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-ready-2496ED?logo=docker&logoColor=white)
@@ -18,17 +19,21 @@
 
 - **Strava OAuth2** — Secure authentication with your Strava account
 - **Activity sync** — Import activities with calories calculated from kilojoules (total work)
-- **Activity detail** — Duration, distance, elevation gain, heart rate, power metrics, direct link to Strava
+- **Activity detail** — Duration, distance, elevation gain, heart rate, power metrics, direct link to Strava; season badge when activity falls within a defined season
 - **Card and list view** — Toggle between card layout and compact list for activities
 - **Tracked flag** — Visual indicator 🥗 on activities that have food logs
-- **Activity filters** — Filter by sport type and by tracked / untracked status
+- **Activity filters** — Filter by sport type, tracked / untracked status, and season
+- **Season tracking** — Define seasons (name, type, date range); activities are automatically tagged; filter Activities and Statistics by season; no-overlap validation on season dates
 - **Food database** — Full nutritional fields per 100g: calories, carbohydrates, sugars, proteins, fats, saturated fats, salt, fibers
 - **Portion size** — Optional default portion weight per food item, auto-filled when logging
 - **OpenFoodFacts integration** — Search by name or barcode and import nutritional data in one click
 - **CSV import / export** — Bulk manage your food database
 - **Nutrition logging** — Associate foods and quantities to each activity
 - **Nutrition summary** — Total kcal and carbohydrate intake per activity
-- **Statistics** — Total activities, distance, calories burned, tracked activities; total and average kcal, carbs and sugars consumed (tracked activities only)
+- **Statistics** — *Total Stats*: all-time activities, distance, calories, nutrition; *Season Stats*: same metrics filtered by selected season
+- **Graphs tab** — Placeholder for future Chart.js charts (tracked activities only; not yet implemented)
+- **User menu** — Header avatar dropdown: Strava profile (name, photo, link), Connect/Disconnect, Language selector, Seasons management
+- **Dynamic footer** — Local version + latest GitHub release link + "Powered by Strava" + GitHub repo link
 - **Modern UI** — Tab-based interface with clean layout
 - **Docker ready** — One-command self-hosted deploy
 

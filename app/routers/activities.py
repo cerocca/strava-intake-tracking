@@ -1,13 +1,26 @@
+import json
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, exists
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.activity import Activity
+from app.models.app_setting import AppSetting
 from app.models.food import Food
 from app.models.nutrition_log import NutritionLog
 from app.models.season import Season
 from app.services.nutrition_service import get_activity_nutrition_summary
+
+
+def _get_excluded_types(db: Session) -> list[str]:
+    row = db.query(AppSetting).filter(AppSetting.key == "excluded_activity_types").first()
+    if row and row.value:
+        try:
+            return json.loads(row.value)
+        except (json.JSONDecodeError, TypeError):
+            pass
+    return []
 
 router = APIRouter(prefix="/activities", tags=["activities"])
 
@@ -27,12 +40,16 @@ async def get_stats(
         season_start = season.start_date
         season_end = season.end_date
 
+    excluded_types = _get_excluded_types(db)
+
     def _season_filter(q):
         if season_start and season_end:
             q = q.filter(
                 func.date(Activity.start_date) >= season_start,
                 func.date(Activity.start_date) <= season_end,
             )
+        if excluded_types:
+            q = q.filter(Activity.sport_type.notin_(excluded_types))
         return q
 
     total_activities = _season_filter(db.query(func.count(Activity.id))).scalar() or 0
@@ -127,6 +144,18 @@ async def get_sport_types(db: Session = Depends(get_db)):
     return sorted([r[0] for r in rows])
 
 
+@router.get("/types")
+async def get_activity_types(db: Session = Depends(get_db)):
+    """Distinct activity types for settings filters."""
+    rows = (
+        db.query(Activity.sport_type)
+        .filter(Activity.sport_type.isnot(None), Activity.sport_type != "")
+        .distinct()
+        .all()
+    )
+    return sorted([r[0] for r in rows])
+
+
 @router.get("")
 async def list_activities(
     db: Session = Depends(get_db),
@@ -167,9 +196,24 @@ async def list_activities(
             .distinct()
             .all()
         }
+
+    all_seasons = db.query(Season).all()
+
+    def _find_season_name(act: Activity) -> str | None:
+        if not act.start_date:
+            return None
+        date_str = act.start_date.strftime("%Y-%m-%d")
+        for s in all_seasons:
+            if s.start_date <= date_str <= s.end_date:
+                return s.name
+        return None
+
     return {
         "total": total,
-        "items": [_activity_dict(a, a.id in ids_with_nutrition) for a in activities],
+        "items": [
+            {**_activity_dict(a, a.id in ids_with_nutrition), "season_name": _find_season_name(a)}
+            for a in activities
+        ],
     }
 
 
@@ -190,6 +234,10 @@ async def get_graphs(
             func.date(Activity.start_date) >= season.start_date,
             func.date(Activity.start_date) <= season.end_date,
         )
+
+    excluded = _get_excluded_types(db)
+    if excluded:
+        query = query.filter(Activity.sport_type.notin_(excluded))
 
     activities = query.order_by(Activity.start_date).all()
 

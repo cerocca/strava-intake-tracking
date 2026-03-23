@@ -10,6 +10,7 @@ router = APIRouter(prefix="/seasons", tags=["seasons"])
 
 class SeasonCreate(BaseModel):
     name: str
+    year: int | None = None
     season_type: str | None = None
     start_date: str  # YYYY-MM-DD
     end_date: str    # YYYY-MM-DD
@@ -17,6 +18,7 @@ class SeasonCreate(BaseModel):
 
 class SeasonUpdate(BaseModel):
     name: str
+    year: int | None = None
     season_type: str | None = None
     start_date: str
     end_date: str
@@ -37,6 +39,7 @@ def _season_dict(s: Season) -> dict:
     return {
         "id": s.id,
         "name": s.name,
+        "year": s.year,
         "season_type": s.season_type,
         "start_date": s.start_date,
         "end_date": s.end_date,
@@ -45,7 +48,11 @@ def _season_dict(s: Season) -> dict:
 
 @router.get("")
 async def list_seasons(db: Session = Depends(get_db)):
-    seasons = db.query(Season).order_by(Season.start_date.desc()).all()
+    seasons = (
+        db.query(Season)
+        .order_by(Season.year.desc().nulls_last(), Season.name.asc())
+        .all()
+    )
     return [_season_dict(s) for s in seasons]
 
 
@@ -61,6 +68,7 @@ async def create_season(data: SeasonCreate, db: Session = Depends(get_db)):
         )
     season = Season(
         name=data.name,
+        year=data.year,
         season_type=data.season_type,
         start_date=data.start_date,
         end_date=data.end_date,
@@ -85,6 +93,7 @@ async def update_season(season_id: int, data: SeasonUpdate, db: Session = Depend
             detail=f"Le date si sovrappongono con la stagione '{overlap.name}' ({overlap.start_date} → {overlap.end_date})"
         )
     season.name = data.name
+    season.year = data.year
     season.season_type = data.season_type
     season.start_date = data.start_date
     season.end_date = data.end_date

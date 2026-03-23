@@ -172,6 +172,7 @@ function _renderCard(a) {
       <div class="activity-badges">
         ${a.calories ? `<div class="activity-kcal-badge">⚡ ${Math.round(a.calories)} kJ</div>` : ''}
         ${a.has_nutrition ? `<div class="activity-nutrition-badge">🥗 Tracked</div>` : ''}
+        ${a.season_name ? `<span class="activity-season-badge">🗓 ${escHtml(a.season_name)}</span>` : ''}
       </div>
     </div>
   `;
@@ -193,6 +194,7 @@ function _renderListItem(a) {
       <div class="ali-badges">
         ${a.calories ? `<div class="activity-kcal-badge">⚡ ${Math.round(a.calories)} kJ</div>` : ''}
         ${a.has_nutrition ? `<div class="activity-nutrition-badge">🥗 Tracked</div>` : ''}
+        ${a.season_name ? `<span class="activity-season-badge">🗓 ${escHtml(a.season_name)}</span>` : ''}
       </div>
     </div>
   `;

@@ -102,7 +102,7 @@ async function loadSeasonGraphs() {
   const contentEl = document.getElementById('season-graphs-content');
 
   if (typeof _seasonsData !== 'undefined' && _seasonsData.length === 0) {
-    emptyEl.textContent = 'No seasons defined yet. Create one from the user menu.';
+    emptyEl.textContent = 'No seasons defined yet. Create one in the Seasons section.';
     emptyEl.classList.remove('hidden');
     contentEl.classList.add('hidden');
     return;

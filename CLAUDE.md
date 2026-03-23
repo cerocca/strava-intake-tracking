@@ -23,15 +23,17 @@ strava-intake-tracking/
 │   ├── database.py          # Setup SQLite/SQLAlchemy + _migrate_db()
 │   ├── models/
 │   │   ├── activity.py      # Activity (strava_id, kcal da kJ, power metrics)
+│   │   ├── app_setting.py   # AppSetting (key/value settings table)
 │   │   ├── food.py          # Food (valori per 100g + serving_grams)
 │   │   ├── nutrition_log.py # NutritionLog (FK activity+food, quantity_grams)
-│   │   └── season.py        # Season (name, season_type, start_date, end_date)
+│   │   └── season.py        # Season (name, season_type, year, start_date, end_date)
 │   ├── routers/
 │   │   ├── strava.py        # OAuth2 + sync attività; returns athlete_photo, athlete_id
-│   │   ├── activities.py    # Lista, dettaglio, filtri, stats, graphs aggregation
+│   │   ├── activities.py    # Lista, dettaglio, filtri, stats, graphs aggregation; _get_excluded_types()
 │   │   ├── foods.py         # CRUD database alimentare
 │   │   ├── nutrition.py     # Log nutrizione per attività
-│   │   └── seasons.py       # CRUD /seasons con validazione overlap date
+│   │   ├── seasons.py       # CRUD /seasons con validazione overlap; year field; order by year DESC
+│   │   └── settings.py      # GET/POST /settings — key/value app settings (upsert)
 │   ├── services/
 │   │   ├── strava_service.py    # Token store JSON, auto refresh, fetch Strava
 │   │   └── nutrition_service.py # Macro totals per attività
@@ -39,12 +41,13 @@ strava-intake-tracking/
 │       ├── index.html
 │       ├── css/style.css
 │       └── js/
-│           ├── app.js
-│           ├── activities.js
+│           ├── app.js           # Core state, theme, sidebar collapse, tab switching
+│           ├── activities.js    # Activity list/cards; escHtml() global utility; season badge
 │           ├── foods.js
 │           ├── stats.js         # loadTotalStats() + loadSeasonStats() separati
-│           ├── seasons.js       # User menu toggle, seasons modal CRUD, dropdown populate
-│           └── graphs.js        # Placeholder tab Graphs (Chart.js, not yet implemented)
+│           ├── seasons.js       # Full-page seasons tab; collapsible form; year field; dropdown populate
+│           ├── graphs.js        # Chart.js bar charts: activities/month + distance/month
+│           └── settings.js      # Activity type filters; theme radio wired in HTML
 ├── tests/
 ├── docker/Dockerfile
 ├── docker-compose.yml

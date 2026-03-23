@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.0] - 2026-03-22
+
+### Added
+- **Collapsible sidebar**: vertical navigation replaces horizontal tabs; collapse/expand with hamburger button; state persisted in localStorage
+- **Dark / light / system theme**: theme selector in Settings tab; CSS custom properties; persisted in localStorage
+- **Graphs tab**: implemented with Chart.js — activities per month and distance per month bar charts; season filter supported; excluded activity types applied
+- **Season year field**: optional year on Season model; displayed as badge in season list; ordered by year DESC
+- **Settings tab**: Appearance (theme), Language (placeholder), Activity Filters (exclude sport types from stats and graphs)
+- **Activity type filters**: persisted in DB via new `AppSetting` model and `/settings` endpoint; applied to all stats and graphs (total + season)
+- **Season badge on activity list**: `season_name` returned by `GET /activities`; shown as badge on activity cards and list items
+- **GitHub icon in header**: direct link to repo
+- **Sidebar footer**: version display + "Powered by Strava" branding inside sidebar bottom
+
+### Changed
+- Horizontal tabs → collapsible sidebar navigation
+- Stats and Graphs are now separate sidebar items (previously combined)
+- Seasons moved from user menu modal to full sidebar tab (full-page list + collapsible form)
+- User menu simplified: profile, Strava link, Connect/Disconnect only
+- Language selector moved from user menu to Settings tab
+- Footer moved from page bottom into sidebar bottom area
+- `APP_VERSION` bumped to `0.4.0`
+
+---
+
 ## [0.3.0] - 2026-03-22
 
 ### Added

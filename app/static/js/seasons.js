@@ -1,33 +1,35 @@
 // ============================================================
-// Seasons modal
+// Seasons tab
 // ============================================================
 
 let _seasonsData = [];
 
-async function openSeasonsModal() {
-  closeUserMenu();
-  document.getElementById('seasons-modal').classList.remove('hidden');
-  await refreshSeasonsList();
-}
-
-function closeSeasonsModal(event) {
-  if (event && event.target !== document.getElementById('seasons-modal')) return;
-  _closeSeasonsModal();
-}
-
-function _closeSeasonsModal() {
-  document.getElementById('seasons-modal').classList.add('hidden');
-  _resetSeasonForm();
+function openSeasonsModal() {
+  // Seasons are now managed in the Seasons tab (not a modal)
+  switchTab('seasons');
 }
 
 function _resetSeasonForm() {
   const form = document.getElementById('season-form');
   form.reset();
   document.getElementById('season-form-id').value = '';
+  document.getElementById('season-year').value = '';
   document.getElementById('season-form-title').textContent = 'New Season';
   document.getElementById('season-save-btn').textContent = 'Create Season';
   document.getElementById('season-error').classList.add('hidden');
   document.getElementById('season-error').textContent = '';
+}
+
+function openSeasonForm() {
+  _resetSeasonForm();
+  const section = document.getElementById('season-form-section');
+  section.classList.remove('hidden');
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeSeasonForm() {
+  document.getElementById('season-form-section').classList.add('hidden');
+  _resetSeasonForm();
 }
 
 async function refreshSeasonsList() {
@@ -46,12 +48,13 @@ async function refreshSeasonsList() {
 function renderSeasonsList() {
   const container = document.getElementById('seasons-list');
   if (_seasonsData.length === 0) {
-    container.innerHTML = '<p style="color:var(--text-muted);font-size:.85rem">No seasons defined yet.</p>';
+    container.innerHTML = '<p style="color:var(--text-muted);font-size:.85rem;padding:12px 0">No seasons defined yet.</p>';
     return;
   }
   container.innerHTML = _seasonsData.map(s => `
     <div class="season-item">
       <div class="season-item-info">
+        ${s.year ? `<span class="season-year-badge">${s.year}</span>` : ''}
         <strong>${escHtml(s.name)}</strong>
         ${s.season_type ? `<span class="season-type-tag">${escHtml(s.season_type)}</span>` : ''}
         <span class="season-dates">${s.start_date} → ${s.end_date}</span>
@@ -69,13 +72,16 @@ function editSeason(id) {
   if (!s) return;
   document.getElementById('season-form-id').value = s.id;
   document.getElementById('season-name').value = s.name;
+  document.getElementById('season-year').value = s.year ?? '';
   document.getElementById('season-type').value = s.season_type || '';
   document.getElementById('season-start').value = s.start_date;
   document.getElementById('season-end').value = s.end_date;
   document.getElementById('season-form-title').textContent = 'Edit Season';
   document.getElementById('season-save-btn').textContent = 'Save Changes';
   document.getElementById('season-error').classList.add('hidden');
-  document.getElementById('season-form').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  const section = document.getElementById('season-form-section');
+  section.classList.remove('hidden');
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function deleteSeason(id) {
@@ -93,8 +99,10 @@ async function deleteSeason(id) {
 async function submitSeasonForm(event) {
   event.preventDefault();
   const id = document.getElementById('season-form-id').value;
+  const yearVal = document.getElementById('season-year').value;
   const payload = {
     name: document.getElementById('season-name').value.trim(),
+    year: yearVal ? parseInt(yearVal, 10) : null,
     season_type: document.getElementById('season-type').value.trim() || null,
     start_date: document.getElementById('season-start').value,
     end_date: document.getElementById('season-end').value,
@@ -112,7 +120,7 @@ async function submitSeasonForm(event) {
       await api('/seasons', { method: 'POST', body: JSON.stringify(payload) });
       showToast('Season created', 'success');
     }
-    _resetSeasonForm();
+    closeSeasonForm();
     await refreshSeasonsList();
   } catch (e) {
     errorEl.textContent = e.message;

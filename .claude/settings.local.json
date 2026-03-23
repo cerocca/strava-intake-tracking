@@ -13,7 +13,10 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(source venv/bin/activate)",
-      "Bash(python -c \"from app.main import app; print\\(''OK''\\)\")"
+      "Bash(python -c \"from app.main import app; print\\(''OK''\\)\")",
+      "Bash(git tag:*)",
+      "Bash(python -c \"import app.main; print\\(''Import OK''\\)\")",
+      "Bash(timeout 5 uvicorn app.main:app --port 8000)"
     ]
   }
 }

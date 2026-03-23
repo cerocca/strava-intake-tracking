@@ -31,7 +31,7 @@ async function api(url, options = {}) {
 // ============================================================
 function switchTab(tab) {
   state.currentTab = tab;
-  document.querySelectorAll('.tab').forEach(btn => {
+  document.querySelectorAll('.sidebar-item').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.tab === tab);
   });
   document.querySelectorAll('.tab-content').forEach(section => {
@@ -39,9 +39,51 @@ function switchTab(tab) {
     section.classList.toggle('hidden', section.id !== `tab-${tab}`);
   });
   if (tab === 'stats') loadStats();
+  if (tab === 'graphs') loadGraphs();
   if (tab === 'foods') loadFoods();
   if (tab === 'activities') { loadActivities(); loadSportTypes(); }
-  if (tab === 'graphs') loadGraphs();
+  if (tab === 'seasons') refreshSeasonsList();
+  if (tab === 'settings') loadSettings();
+}
+
+// ============================================================
+// Theme
+// ============================================================
+function applyTheme(value) {
+  if (value === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  } else if (value === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+}
+
+function setTheme(value) {
+  localStorage.setItem('theme', value);
+  applyTheme(value);
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('theme') || 'system';
+  applyTheme(saved);
+  const radio = document.querySelector(`input[name="theme"][value="${saved}"]`);
+  if (radio) radio.checked = true;
+}
+
+// ============================================================
+// Sidebar toggle (desktop collapse)
+// ============================================================
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const collapsed = sidebar.classList.toggle('sidebar--collapsed');
+  localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0');
+}
+
+function initSidebar() {
+  if (localStorage.getItem('sidebarCollapsed') === '1') {
+    document.querySelector('.sidebar').classList.add('sidebar--collapsed');
+  }
 }
 
 // ============================================================
@@ -173,6 +215,8 @@ async function initFooter() {
 // Init
 // ============================================================
 document.addEventListener('DOMContentLoaded', async () => {
+  initTheme();
+  initSidebar();
   await checkAuthStatus();
   // Set initial tab classes correctly
   document.querySelectorAll('.tab-content').forEach(s => {

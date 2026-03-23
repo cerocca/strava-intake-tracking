@@ -15,17 +15,22 @@
     <!-- Header -->
     <header class="header">
       <div class="header-inner">
-        <div class="logo">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-            <path d="M14 3L6 10h4v8h8v-8h4L14 3z" fill="#FC4C02"/>
-            <path d="M10 18v4h8v-4" stroke="#FC4C02" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <span>Strava Intake Tracker</span>
+        <div class="header-left">
+          <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle sidebar" aria-label="Toggle sidebar">&#9776;</button>
+          <div class="logo">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M14 3L6 10h4v8h8v-8h4L14 3z" fill="#FC4C02"/>
+              <path d="M10 18v4h8v-4" stroke="#FC4C02" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span>Strava Intake Tracker</span>
+          </div>
         </div>
         <div class="header-right">
-          <button id="btn-sync" class="btn btn-primary hidden" onclick="syncActivities()">
-            ↻ Sync Strava
-          </button>
+          <a href="https://github.com/cerocca/strava-intake-tracking" target="_blank" rel="noopener" class="header-github-link" aria-label="GitHub repository">
+            <svg width="18" height="18" viewBox="0 0 98 96" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/>
+            </svg>
+          </a>
           <!-- User menu -->
           <div class="user-menu-wrap">
             <button class="user-menu-btn" onclick="toggleUserMenu()" title="User menu" aria-label="User menu">
@@ -35,10 +40,9 @@
                   <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
                 </svg>
               </span>
-              <span class="user-menu-arrow">▾</span>
+              <span class="user-menu-arrow">&#9662;</span>
             </button>
             <div id="user-menu-dropdown" class="user-menu-dropdown hidden">
-              <!-- Profile section -->
               <div class="user-menu-profile">
                 <div id="user-menu-avatar-lg" class="user-menu-avatar-lg">
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -48,262 +52,352 @@
                 </div>
                 <span id="user-menu-name" class="user-menu-name">Not connected</span>
               </div>
-              <a id="user-menu-strava-link" href="#" target="_blank" rel="noopener" class="user-menu-strava-link hidden">View Strava profile ↗</a>
+              <a id="user-menu-strava-link" href="#" target="_blank" rel="noopener" class="user-menu-strava-link hidden">View Strava profile &#8599;</a>
               <div class="user-menu-sep"></div>
               <button id="user-menu-connect" class="user-menu-item" onclick="connectStrava(); closeUserMenu()">Connect Strava</button>
               <button id="user-menu-disconnect" class="user-menu-item hidden" onclick="disconnect(); closeUserMenu()">Disconnect</button>
-              <div class="user-menu-sep user-menu-sep-bold"></div>
-              <!-- Language -->
-              <div class="user-menu-item user-menu-lang">
-                <div class="user-menu-lang-label">Language</div>
-                <select class="filter-select user-menu-lang-select" disabled>
-                  <option>English</option>
-                </select>
-              </div>
-              <div class="user-menu-sep"></div>
-              <!-- Seasons -->
-              <button class="user-menu-item" onclick="openSeasonsModal()">Seasons ⚙</button>
             </div>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- Tabs -->
-    <nav class="tabs-nav">
-      <div class="tabs-inner">
-        <button class="tab active" data-tab="activities" onclick="switchTab('activities')">
-          Activities &amp; Nutrition
-        </button>
-        <button class="tab" data-tab="foods" onclick="switchTab('foods')">
-          Food Database
-        </button>
-        <button class="tab" data-tab="stats" onclick="switchTab('stats')">
-          Statistics
-        </button>
-        <button class="tab" data-tab="graphs" onclick="switchTab('graphs')">
-          Graphs
-        </button>
-      </div>
-    </nav>
+    <!-- App body: sidebar + main -->
+    <div class="app-body">
 
-    <!-- Main content -->
-    <main class="main">
-
-      <!-- TAB: Activities -->
-      <section id="tab-activities" class="tab-content active">
-        <div id="activity-list-view">
-          <div class="section-header">
-            <h2>Recent Activities</h2>
-            <span id="activity-count" class="badge"></span>
-          </div>
-          <!-- Toolbar: filters + view toggle -->
-          <div class="activities-toolbar">
-            <select id="filter-sport-type" class="filter-select" onchange="applyFilters()">
-              <option value="">All types</option>
-            </select>
-            <select id="filter-tracked" class="filter-select" onchange="applyFilters()">
-              <option value="">All activities</option>
-              <option value="yes">Tracked only</option>
-              <option value="no">Untracked only</option>
-            </select>
-            <select id="filter-season" class="filter-select" onchange="applyFilters()">
-              <option value="">All seasons</option>
-            </select>
-            <div class="view-toggle">
-              <button id="btn-view-cards" class="view-toggle-btn active" onclick="setViewMode('cards')" title="Card view">▦</button>
-              <button id="btn-view-list" class="view-toggle-btn" onclick="setViewMode('list')" title="List view">☰</button>
-            </div>
-          </div>
-          <div id="no-activities" class="empty-state hidden">
-            <div class="empty-icon">🏃</div>
-            <p>No activities yet. Connect Strava and sync to get started.</p>
-          </div>
-          <div id="activities-grid" class="activities-grid"></div>
-          <div id="activities-list" class="activities-list hidden"></div>
-          <div id="load-more-wrap" class="load-more-wrap hidden">
-            <button class="btn btn-ghost" onclick="loadMoreActivities()">Load more</button>
-          </div>
+      <!-- Sidebar -->
+      <nav class="sidebar">
+        <div class="sidebar-nav">
+          <button class="sidebar-item active" data-tab="activities" onclick="switchTab('activities')">
+            <span class="sidebar-icon">&#128690;</span>
+            <span class="sidebar-label">Activities</span>
+          </button>
+          <button class="sidebar-item" data-tab="foods" onclick="switchTab('foods')">
+            <span class="sidebar-icon">&#129361;</span>
+            <span class="sidebar-label">Food Database</span>
+          </button>
+          <button class="sidebar-item" data-tab="stats" onclick="switchTab('stats')">
+            <span class="sidebar-icon">&#128202;</span>
+            <span class="sidebar-label">Statistics</span>
+          </button>
+          <button class="sidebar-item" data-tab="graphs" onclick="switchTab('graphs')">
+            <span class="sidebar-icon">&#128200;</span>
+            <span class="sidebar-label">Graphs</span>
+          </button>
+          <button class="sidebar-item" data-tab="seasons" onclick="switchTab('seasons')">
+            <span class="sidebar-icon">&#128467;</span>
+            <span class="sidebar-label">Seasons</span>
+          </button>
+          <button class="sidebar-item" data-tab="settings" onclick="switchTab('settings')">
+            <span class="sidebar-icon">&#9881;</span>
+            <span class="sidebar-label">Settings</span>
+          </button>
         </div>
 
-        <!-- Activity Detail Panel -->
-        <div id="activity-detail-view" class="detail-view hidden">
-          <button class="back-btn" onclick="showActivityList()">← Back to Activities</button>
-          <div id="activity-detail-content"></div>
-          <div class="nutrition-panel">
-            <h3>Nutrition Log</h3>
-            <div class="nutrition-summary" id="nutrition-summary"></div>
-            <div class="add-food-form">
-              <h4>Add Food</h4>
-              <div class="form-row">
-                <div class="search-wrap">
-                  <input type="text" id="food-search-input" class="input" placeholder="Search food..." oninput="searchFoodForLog()" onkeydown="if(event.key==='Enter'){clearTimeout(actState.foodSearchTimer);_doFoodSearch();}" autocomplete="off" />
-                  <div id="food-search-results" class="dropdown hidden"></div>
-                </div>
-                <input type="number" id="food-quantity" class="input input-sm" placeholder="grams" min="1" step="1" />
-                <span id="serving-hint" class="serving-hint hidden"></span>
-                <button class="btn btn-primary" onclick="addFoodToActivity()">Add</button>
+        <div class="sidebar-bottom">
+          <!-- Sync Strava -->
+          <button id="btn-sync" class="sidebar-sync hidden" onclick="syncActivities()">
+            <span class="sidebar-icon">&#8635;</span>
+            <span class="sidebar-label">Sync Strava</span>
+          </button>
+          <!-- Footer info -->
+          <div class="sidebar-footer">
+            <div class="sidebar-footer-row sidebar-label">
+              <span id="footer-version">v0.3.0</span>
+            </div>
+            <div class="sidebar-footer-row sidebar-label">
+              <span>Powered by <a href="https://www.strava.com" target="_blank" rel="noopener" class="footer-strava-link"><strong>Strava</strong></a></span>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Main content -->
+      <main class="main">
+
+        <!-- TAB: Activities -->
+        <section id="tab-activities" class="tab-content active">
+          <div id="activity-list-view">
+            <div class="section-header">
+              <h2>Recent Activities</h2>
+              <span id="activity-count" class="badge"></span>
+            </div>
+            <div class="activities-toolbar">
+              <select id="filter-sport-type" class="filter-select" onchange="applyFilters()">
+                <option value="">All types</option>
+              </select>
+              <select id="filter-tracked" class="filter-select" onchange="applyFilters()">
+                <option value="">All activities</option>
+                <option value="yes">Tracked only</option>
+                <option value="no">Untracked only</option>
+              </select>
+              <select id="filter-season" class="filter-select" onchange="applyFilters()">
+                <option value="">All seasons</option>
+              </select>
+              <div class="view-toggle">
+                <button id="btn-view-cards" class="view-toggle-btn active" onclick="setViewMode('cards')" title="Card view">&#9638;</button>
+                <button id="btn-view-list" class="view-toggle-btn" onclick="setViewMode('list')" title="List view">&#9776;</button>
               </div>
             </div>
-            <div id="nutrition-log-list"></div>
+            <div id="no-activities" class="empty-state hidden">
+              <div class="empty-icon">&#127939;</div>
+              <p>No activities yet. Connect Strava and sync to get started.</p>
+            </div>
+            <div id="activities-grid" class="activities-grid"></div>
+            <div id="activities-list" class="activities-list hidden"></div>
+            <div id="load-more-wrap" class="load-more-wrap hidden">
+              <button class="btn btn-ghost" onclick="loadMoreActivities()">Load more</button>
+            </div>
           </div>
-        </div>
-      </section>
 
-      <!-- TAB: Food Database -->
-      <section id="tab-foods" class="tab-content hidden">
-        <div class="section-header">
-          <h2>Food Database</h2>
-          <div class="header-actions">
-            <button class="btn btn-ghost btn-sm" onclick="exportFoodsCSV()">↓ Export CSV</button>
-            <label class="btn btn-ghost btn-sm">
-              ↑ Import CSV
-              <input type="file" accept=".csv" style="display:none" onchange="importFoodsCSV(event)" />
-            </label>
-            <button class="btn btn-primary btn-sm" onclick="openFoodModal()">+ Add Food</button>
+          <!-- Activity Detail Panel -->
+          <div id="activity-detail-view" class="detail-view hidden">
+            <button class="back-btn" onclick="showActivityList()">&#8592; Back to Activities</button>
+            <div id="activity-detail-content"></div>
+            <div class="nutrition-panel">
+              <h3>Nutrition Log</h3>
+              <div class="nutrition-summary" id="nutrition-summary"></div>
+              <div class="add-food-form">
+                <h4>Add Food</h4>
+                <div class="form-row">
+                  <div class="search-wrap">
+                    <input type="text" id="food-search-input" class="input" placeholder="Search food..." oninput="searchFoodForLog()" onkeydown="if(event.key==='Enter'){clearTimeout(actState.foodSearchTimer);_doFoodSearch();}" autocomplete="off" />
+                    <div id="food-search-results" class="dropdown hidden"></div>
+                  </div>
+                  <input type="number" id="food-quantity" class="input input-sm" placeholder="grams" min="1" step="1" />
+                  <span id="serving-hint" class="serving-hint hidden"></span>
+                  <button class="btn btn-primary" onclick="addFoodToActivity()">Add</button>
+                </div>
+              </div>
+              <div id="nutrition-log-list"></div>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div class="search-bar">
-          <input type="text" id="food-db-search" class="input" placeholder="Search foods..." oninput="loadFoods()" />
-        </div>
-
-        <div id="foods-table-wrap">
-          <div id="no-foods" class="empty-state hidden">
-            <div class="empty-icon">🥗</div>
-            <p>No foods yet. Add your first food or import a CSV.</p>
+        <!-- TAB: Food Database -->
+        <section id="tab-foods" class="tab-content hidden">
+          <div class="section-header">
+            <h2>Food Database</h2>
+            <div class="header-actions">
+              <button class="btn btn-ghost btn-sm" onclick="exportFoodsCSV()">&#8595; Export CSV</button>
+              <label class="btn btn-ghost btn-sm">
+                &#8593; Import CSV
+                <input type="file" accept=".csv" style="display:none" onchange="importFoodsCSV(event)" />
+              </label>
+              <button class="btn btn-primary btn-sm" onclick="openFoodModal()">+ Add Food</button>
+            </div>
           </div>
-          <div style="overflow-x:auto">
-          <table id="foods-table" class="data-table hidden">
-            <thead>
-              <tr>
-                <th>Name</th><th>kcal</th><th>Carbs</th>
-                <th>Sugars</th><th>Proteins</th><th>Fibers</th><th>Fats</th><th>Salt</th><th></th>
-              </tr>
-            </thead>
-            <tbody id="foods-tbody"></tbody>
-          </table>
+          <div class="search-bar">
+            <input type="text" id="food-db-search" class="input" placeholder="Search foods..." oninput="loadFoods()" />
           </div>
-        </div>
-      </section>
-
-      <!-- TAB: Statistics -->
-      <section id="tab-stats" class="tab-content hidden">
-
-        <!-- Total Stats -->
-        <div class="section-header"><h2>Total Stats</h2></div>
-
-        <div class="stats-section-label">Activities</div>
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-value" id="stat-total-activities">—</div><div class="stat-label">Total Activities</div></div>
-          <div class="stat-card"><div class="stat-value" id="stat-tracked-activities">—</div><div class="stat-label">Tracked Activities</div></div>
-          <div class="stat-card"><div class="stat-value" id="stat-total-distance">—</div><div class="stat-label">Total Distance (km)</div></div>
-          <div class="stat-card"><div class="stat-value" id="stat-total-calories">—</div><div class="stat-label">Calories Burned (kJ)</div></div>
-          <div class="stat-card"><div class="stat-value" id="stat-total-foods">—</div><div class="stat-label">Foods in Database</div></div>
-        </div>
-
-        <div class="stats-section-label">Nutrition Consumed <span style="font-weight:400;text-transform:none;letter-spacing:0">(tracked activities only)</span></div>
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-value" id="stat-total-kcal-consumed">—</div><div class="stat-label">Total kcal</div></div>
-          <div class="stat-card"><div class="stat-value" id="stat-avg-kcal-consumed">—</div><div class="stat-label">Avg kcal / activity</div></div>
-          <div class="stat-card"><div class="stat-value" id="stat-total-carbs">—</div><div class="stat-label">Total Carbs (g)</div></div>
-          <div class="stat-card"><div class="stat-value" id="stat-avg-carbs">—</div><div class="stat-label">Avg Carbs / activity (g)</div></div>
-          <div class="stat-card"><div class="stat-value" id="stat-total-sugars">—</div><div class="stat-label">Total Sugars (g)</div></div>
-          <div class="stat-card"><div class="stat-value" id="stat-avg-sugars">—</div><div class="stat-label">Avg Sugars / activity (g)</div></div>
-        </div>
-
-        <!-- Season Stats -->
-        <div class="section-header" style="margin-top:36px">
-          <h2>Season Stats</h2>
-          <div class="header-actions">
-            <select id="stats-filter-season" class="filter-select" onchange="loadSeasonStats()">
-              <option value="">Select a season…</option>
-            </select>
+          <div id="foods-table-wrap">
+            <div id="no-foods" class="empty-state hidden">
+              <div class="empty-icon">&#129361;</div>
+              <p>No foods yet. Add your first food or import a CSV.</p>
+            </div>
+            <div style="overflow-x:auto">
+              <table id="foods-table" class="data-table hidden">
+                <thead>
+                  <tr>
+                    <th>Name</th><th>kcal</th><th>Carbs</th>
+                    <th>Sugars</th><th>Proteins</th><th>Fibers</th><th>Fats</th><th>Salt</th><th></th>
+                  </tr>
+                </thead>
+                <tbody id="foods-tbody"></tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div id="season-stats-empty" class="season-stats-empty hidden"></div>
+        <!-- TAB: Statistics -->
+        <section id="tab-stats" class="tab-content hidden">
+          <div class="section-header"><h2>Total Stats</h2></div>
 
-        <div id="season-stats-content" class="hidden">
           <div class="stats-section-label">Activities</div>
           <div class="stats-grid">
-            <div class="stat-card"><div class="stat-value" id="season-stat-total-activities">—</div><div class="stat-label">Total Activities</div></div>
-            <div class="stat-card"><div class="stat-value" id="season-stat-tracked-activities">—</div><div class="stat-label">Tracked Activities</div></div>
-            <div class="stat-card"><div class="stat-value" id="season-stat-total-distance">—</div><div class="stat-label">Total Distance (km)</div></div>
-            <div class="stat-card"><div class="stat-value" id="season-stat-total-calories">—</div><div class="stat-label">Calories Burned (kJ)</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-total-activities">&#8212;</div><div class="stat-label">Total Activities</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-tracked-activities">&#8212;</div><div class="stat-label">Tracked Activities</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-total-distance">&#8212;</div><div class="stat-label">Total Distance (km)</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-total-calories">&#8212;</div><div class="stat-label">Calories Burned (kJ)</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-total-foods">&#8212;</div><div class="stat-label">Foods in Database</div></div>
           </div>
 
           <div class="stats-section-label">Nutrition Consumed <span style="font-weight:400;text-transform:none;letter-spacing:0">(tracked activities only)</span></div>
           <div class="stats-grid">
-            <div class="stat-card"><div class="stat-value" id="season-stat-total-kcal-consumed">—</div><div class="stat-label">Total kcal</div></div>
-            <div class="stat-card"><div class="stat-value" id="season-stat-avg-kcal-consumed">—</div><div class="stat-label">Avg kcal / activity</div></div>
-            <div class="stat-card"><div class="stat-value" id="season-stat-total-carbs">—</div><div class="stat-label">Total Carbs (g)</div></div>
-            <div class="stat-card"><div class="stat-value" id="season-stat-avg-carbs">—</div><div class="stat-label">Avg Carbs / activity (g)</div></div>
-            <div class="stat-card"><div class="stat-value" id="season-stat-total-sugars">—</div><div class="stat-label">Total Sugars (g)</div></div>
-            <div class="stat-card"><div class="stat-value" id="season-stat-avg-sugars">—</div><div class="stat-label">Avg Sugars / activity (g)</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-total-kcal-consumed">&#8212;</div><div class="stat-label">Total kcal</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-avg-kcal-consumed">&#8212;</div><div class="stat-label">Avg kcal / activity</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-total-carbs">&#8212;</div><div class="stat-label">Total Carbs (g)</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-avg-carbs">&#8212;</div><div class="stat-label">Avg Carbs / activity (g)</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-total-sugars">&#8212;</div><div class="stat-label">Total Sugars (g)</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-avg-sugars">&#8212;</div><div class="stat-label">Avg Sugars / activity (g)</div></div>
           </div>
-        </div>
 
-      </section>
-
-      <!-- TAB: Graphs -->
-      <section id="tab-graphs" class="tab-content hidden">
-
-        <!-- Total Graphs -->
-        <div class="section-header"><h2>Total Graphs</h2></div>
-        <div class="stats-section-label">Last 12 months</div>
-        <div class="graphs-grid">
-          <div class="graph-card">
-            <div class="graph-card-title">Activities per month</div>
-            <canvas id="chart-total-activities"></canvas>
+          <div class="section-header" style="margin-top:36px">
+            <h2>Season Stats</h2>
+            <div class="header-actions">
+              <select id="stats-filter-season" class="filter-select" onchange="loadSeasonStats()">
+                <option value="">Select a season&#8230;</option>
+              </select>
+            </div>
           </div>
-          <div class="graph-card">
-            <div class="graph-card-title">Distance per month (km)</div>
-            <canvas id="chart-total-distance"></canvas>
+          <div id="season-stats-empty" class="season-stats-empty hidden"></div>
+          <div id="season-stats-content" class="hidden">
+            <div class="stats-section-label">Activities</div>
+            <div class="stats-grid">
+              <div class="stat-card"><div class="stat-value" id="season-stat-total-activities">&#8212;</div><div class="stat-label">Total Activities</div></div>
+              <div class="stat-card"><div class="stat-value" id="season-stat-tracked-activities">&#8212;</div><div class="stat-label">Tracked Activities</div></div>
+              <div class="stat-card"><div class="stat-value" id="season-stat-total-distance">&#8212;</div><div class="stat-label">Total Distance (km)</div></div>
+              <div class="stat-card"><div class="stat-value" id="season-stat-total-calories">&#8212;</div><div class="stat-label">Calories Burned (kJ)</div></div>
+            </div>
+            <div class="stats-section-label">Nutrition Consumed <span style="font-weight:400;text-transform:none;letter-spacing:0">(tracked activities only)</span></div>
+            <div class="stats-grid">
+              <div class="stat-card"><div class="stat-value" id="season-stat-total-kcal-consumed">&#8212;</div><div class="stat-label">Total kcal</div></div>
+              <div class="stat-card"><div class="stat-value" id="season-stat-avg-kcal-consumed">&#8212;</div><div class="stat-label">Avg kcal / activity</div></div>
+              <div class="stat-card"><div class="stat-value" id="season-stat-total-carbs">&#8212;</div><div class="stat-label">Total Carbs (g)</div></div>
+              <div class="stat-card"><div class="stat-value" id="season-stat-avg-carbs">&#8212;</div><div class="stat-label">Avg Carbs / activity (g)</div></div>
+              <div class="stat-card"><div class="stat-value" id="season-stat-total-sugars">&#8212;</div><div class="stat-label">Total Sugars (g)</div></div>
+              <div class="stat-card"><div class="stat-value" id="season-stat-avg-sugars">&#8212;</div><div class="stat-label">Avg Sugars / activity (g)</div></div>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <!-- Season Graphs -->
-        <div class="section-header" style="margin-top:36px">
-          <h2>Season Graphs</h2>
-          <div class="header-actions">
-            <select id="graphs-filter-season" class="filter-select" onchange="loadSeasonGraphs()">
-              <option value="">Select a season…</option>
-            </select>
-          </div>
-        </div>
-
-        <div id="season-graphs-empty" class="season-stats-empty hidden"></div>
-
-        <div id="season-graphs-content" class="hidden">
+        <!-- TAB: Graphs -->
+        <section id="tab-graphs" class="tab-content hidden">
+          <div class="section-header"><h2>Total Graphs</h2></div>
+          <div class="stats-section-label">Last 12 months</div>
           <div class="graphs-grid">
             <div class="graph-card">
               <div class="graph-card-title">Activities per month</div>
-              <canvas id="chart-season-activities"></canvas>
+              <canvas id="chart-total-activities"></canvas>
             </div>
             <div class="graph-card">
               <div class="graph-card-title">Distance per month (km)</div>
-              <canvas id="chart-season-distance"></canvas>
+              <canvas id="chart-total-distance"></canvas>
             </div>
           </div>
-        </div>
 
-      </section>
+          <div class="section-header" style="margin-top:36px">
+            <h2>Season Graphs</h2>
+            <div class="header-actions">
+              <select id="graphs-filter-season" class="filter-select" onchange="loadSeasonGraphs()">
+                <option value="">Select a season&#8230;</option>
+              </select>
+            </div>
+          </div>
+          <div id="season-graphs-empty" class="season-stats-empty hidden"></div>
+          <div id="season-graphs-content" class="hidden">
+            <div class="graphs-grid">
+              <div class="graph-card">
+                <div class="graph-card-title">Activities per month</div>
+                <canvas id="chart-season-activities"></canvas>
+              </div>
+              <div class="graph-card">
+                <div class="graph-card-title">Distance per month (km)</div>
+                <canvas id="chart-season-distance"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
 
-    </main>
-  </div>
+        <!-- TAB: Seasons -->
+        <section id="tab-seasons" class="tab-content hidden">
+          <div class="section-header">
+            <h2>Seasons</h2>
+            <button class="btn btn-primary btn-sm" onclick="openSeasonForm()">+ New Season</button>
+          </div>
+
+          <div class="seasons-list-page">
+            <div id="seasons-list"></div>
+          </div>
+
+          <div id="season-form-section" class="season-form-section hidden">
+            <h4 id="season-form-title" class="seasons-form-title">New Season</h4>
+            <div id="season-error" class="season-error hidden"></div>
+            <form id="season-form" onsubmit="submitSeasonForm(event)">
+              <input type="hidden" id="season-form-id" />
+              <div class="form-grid seasons-form-grid">
+                <div class="form-group">
+                  <label>Name *</label>
+                  <input type="text" id="season-name" class="input" required placeholder="e.g. Season 2025" />
+                </div>
+                <div class="form-group">
+                  <label>Year</label>
+                  <input type="number" id="season-year" class="input" placeholder="e.g. 2025" min="2000" max="2100" />
+                </div>
+                <div class="form-group span-2">
+                  <label>Type</label>
+                  <input type="text" id="season-type" class="input" placeholder="e.g. Road, MTB, Winter&#8230;" />
+                </div>
+                <div class="form-group">
+                  <label>Start date *</label>
+                  <input type="date" id="season-start" class="input" required />
+                </div>
+                <div class="form-group">
+                  <label>End date *</label>
+                  <input type="date" id="season-end" class="input" required />
+                </div>
+              </div>
+              <div class="seasons-form-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeSeasonForm()">Cancel</button>
+                <button type="submit" id="season-save-btn" class="btn btn-primary">Create Season</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- TAB: Settings -->
+        <section id="tab-settings" class="tab-content hidden">
+          <div class="section-header"><h2>Settings</h2></div>
+
+          <div class="settings-section">
+            <h3 class="settings-section-title">Appearance</h3>
+            <div class="theme-segmented">
+              <label class="theme-option">
+                <input type="radio" name="theme" value="light" onchange="setTheme('light')" />
+                <span>Light</span>
+              </label>
+              <label class="theme-option">
+                <input type="radio" name="theme" value="dark" onchange="setTheme('dark')" />
+                <span>Dark</span>
+              </label>
+              <label class="theme-option">
+                <input type="radio" name="theme" value="system" onchange="setTheme('system')" />
+                <span>System</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <h3 class="settings-section-title">Language</h3>
+            <select class="filter-select" disabled style="max-width:160px">
+              <option>English</option>
+            </select>
+            <p class="settings-placeholder" style="margin-top:8px">More languages coming soon.</p>
+          </div>
+
+          <div class="settings-section">
+            <h3 class="settings-section-title">Activity Filters</h3>
+            <p class="settings-section-desc">Uncheck types to exclude them from Statistics and Graphs calculations.</p>
+            <div id="activity-type-filters" class="type-filters-wrap">
+              <p class="settings-placeholder">Loading&#8230;</p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div><!-- /.app-body -->
+  </div><!-- /.app -->
 
   <!-- Food Modal -->
   <div id="food-modal" class="modal-overlay hidden" onclick="closeFoodModal(event)">
     <div class="modal">
       <div class="modal-header">
         <h3 id="food-modal-title">Add Food</h3>
-        <button class="modal-close" onclick="closeFoodModal()">×</button>
+        <button class="modal-close" onclick="closeFoodModal()">&#215;</button>
       </div>
-      <!-- OpenFoodFacts Search (shown only on Add, hidden on Edit) -->
       <div id="off-search-section" class="off-search-section">
         <div class="off-search-inputs">
-          <input type="text" id="off-name-input" class="input" placeholder="Search by name…"
+          <input type="text" id="off-name-input" class="input" placeholder="Search by name&#8230;"
             onkeydown="if(event.key==='Enter'){event.preventDefault();searchOFF();}" />
           <input type="text" id="off-barcode-input" class="input off-barcode-input" placeholder="Barcode"
             onkeydown="if(event.key==='Enter'){event.preventDefault();searchOFF();}" />
@@ -311,7 +405,6 @@
         </div>
         <div id="off-results" class="off-results hidden"></div>
       </div>
-
       <form id="food-form" onsubmit="submitFoodForm(event)">
         <div class="form-grid">
           <div class="form-group span-2">
@@ -372,68 +465,8 @@
     </div>
   </div>
 
-  <!-- Seasons Modal -->
-  <div id="seasons-modal" class="modal-overlay hidden" onclick="closeSeasonsModal(event)">
-    <div class="modal modal-seasons">
-      <div class="modal-header">
-        <h3>Seasons</h3>
-        <button class="modal-close" onclick="_closeSeasonsModal()">×</button>
-      </div>
-
-      <div class="seasons-list-wrap">
-        <div id="seasons-list"></div>
-      </div>
-
-      <div class="seasons-form-wrap">
-        <h4 id="season-form-title" class="seasons-form-title">New Season</h4>
-        <div id="season-error" class="season-error hidden"></div>
-        <form id="season-form" onsubmit="submitSeasonForm(event)">
-          <input type="hidden" id="season-form-id" />
-          <div class="form-grid seasons-form-grid">
-            <div class="form-group span-2">
-              <label>Name *</label>
-              <input type="text" id="season-name" class="input" required placeholder="e.g. Season 2025" />
-            </div>
-            <div class="form-group span-2">
-              <label>Type</label>
-              <input type="text" id="season-type" class="input" placeholder="e.g. Road, MTB, Winter…" />
-            </div>
-            <div class="form-group">
-              <label>Start date *</label>
-              <input type="date" id="season-start" class="input" required />
-            </div>
-            <div class="form-group">
-              <label>End date *</label>
-              <input type="date" id="season-end" class="input" required />
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-ghost" onclick="_resetSeasonForm()">Reset</button>
-            <button type="submit" id="season-save-btn" class="btn btn-primary">Create Season</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
   <!-- Toast -->
   <div id="toast" class="toast hidden"></div>
-
-  <!-- Footer -->
-  <footer class="app-footer">
-    <div class="footer-row">
-      <span id="footer-version">v0.3.0</span>
-      <a href="https://github.com/cerocca/strava-intake-tracking" target="_blank" rel="noopener" aria-label="GitHub repository" class="footer-github-link">
-        <svg width="16" height="16" viewBox="0 0 98 96" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"/>
-        </svg>
-      </a>
-      <span id="footer-latest" class="hidden">· <a id="footer-latest-link" href="#" target="_blank" rel="noopener">latest: —</a></span>
-    </div>
-    <div class="footer-row">
-      <span>Powered by <a href="https://www.strava.com" target="_blank" rel="noopener" class="footer-strava-link"><strong>Strava</strong></a></span>
-    </div>
-  </footer>
 
   <script src="/static/js/app.js"></script>
   <script src="/static/js/activities.js"></script>
@@ -441,5 +474,6 @@
   <script src="/static/js/stats.js"></script>
   <script src="/static/js/seasons.js"></script>
   <script src="/static/js/graphs.js"></script>
+  <script src="/static/js/settings.js"></script>
 </body>
 </html>

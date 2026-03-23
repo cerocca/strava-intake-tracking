@@ -6,25 +6,32 @@
 
 ## 🗺 Roadmap / Future ideas
 
-- [ ] **Graphs tab** *(not yet implemented — current tab is a placeholder)*: charts based on **tracked activities only** (with food log); implementation via **Chart.js** (vanilla JS, no additional dependencies); planned charts:
+- [ ] **Graphs tab — extended charts**: additional charts based on tracked activities (with food log):
   - Kcal consumed vs kJ produced (scatter plot)
   - Carbs consumed vs activity duration
   - Kcal ratio consumed/burned per activity
-  - Monthly trends: kcal, carbs, tracked vs total activities (bar charts)
   - Macros distribution (donut chart: carbs / proteins / fats / sugars)
   - Kcal by sport type (grouped bar chart)
-- [ ] **Fix footer and user menu** — footer sizing and layout refinements; user menu: fix "Seasons ⚙" icon position (gear icon after text, not before), Language/Seasons alignment, separator weight between Disconnect and Language
 - [ ] **Dynamic version alert** — notify user when local version is behind latest GitHub release
 - [ ] **Language support** — additional languages beyond English placeholder
 - [ ] **OpenFoodFacts link** — link to product page on imported foods
-- [ ] **Lateral menu UI** — replace tab navigation with a lateral sidebar menu
 - [ ] Sync all Strava activities (currently limited to last 100)
-- [ ] Night / day theme
 - [ ] Foods added in local DB may go on OpenFoodFacts
 
 ---
 
 ## ✅ Completed
+
+### v0.4
+- [x] Collapsible sidebar navigation (replaces horizontal tabs); state persisted in localStorage
+- [x] Dark / light / system theme with CSS custom properties; persisted in localStorage
+- [x] Graphs tab implemented: activities per month + distance per month bar charts (Chart.js)
+- [x] Season year field (optional); displayed as badge; ordered by year DESC
+- [x] Settings tab: Appearance (theme), Language (placeholder), Activity Filters
+- [x] Activity type filters persisted in DB (AppSetting model + /settings endpoint); applied to all stats and graphs
+- [x] Season badge on activity list cards and list items
+- [x] GitHub icon in header
+- [x] Sidebar footer: version + "Powered by Strava" (footer moved from page bottom)
 
 ### v0.3
 - [x] Season tracking: define seasons (name, type, date range); filter activities and statistics by season; season badge on activity detail page

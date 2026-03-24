@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.1] - 2026-03-24
+
+### Fixed
+- Seasons list: increased column spacing (gap, min-width on year badge, name, type tag, dates) for better readability
+- Seasons list: added margin-right on type tag to separate it from date range
+
+---
+
 ## [0.4.0] - 2026-03-22
 
 ### Added

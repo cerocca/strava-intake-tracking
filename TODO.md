@@ -12,6 +12,9 @@
   - Kcal ratio consumed/burned per activity
   - Macros distribution (donut chart: carbs / proteins / fats / sugars)
   - Kcal by sport type (grouped bar chart)
+- [ ] **Minor UI polish** — ongoing refinements to spacing, typography, and layout details
+  - [ ] remove double power tag on activities
+  - [ ] add filter on seasons list
 - [ ] **Dynamic version alert** — notify user when local version is behind latest GitHub release
 - [ ] **Language support** — additional languages beyond English placeholder
 - [ ] **OpenFoodFacts link** — link to product page on imported foods

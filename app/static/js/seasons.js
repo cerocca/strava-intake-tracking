@@ -3,6 +3,47 @@
 // ============================================================
 
 let _seasonsData = [];
+let _seasonsSortCol = null;  // null = default (year DESC from backend)
+let _seasonsSortDir = 'asc';
+
+function setSeasonsSort(col) {
+  if (_seasonsSortCol === col) {
+    if (_seasonsSortDir === 'asc') {
+      _seasonsSortDir = 'desc';
+    } else {
+      _seasonsSortCol = null;
+      _seasonsSortDir = 'asc';
+    }
+  } else {
+    _seasonsSortCol = col;
+    _seasonsSortDir = 'asc';
+  }
+  renderSeasonsList();
+}
+
+function _getSortedSeasons() {
+  if (!_seasonsSortCol) return _seasonsData;
+  const sorted = [..._seasonsData];
+  sorted.sort((a, b) => {
+    let va, vb;
+    switch (_seasonsSortCol) {
+      case 'year':  va = a.year ?? 0;                          vb = b.year ?? 0;                          break;
+      case 'name':  va = (a.name || '').toLowerCase();         vb = (b.name || '').toLowerCase();         break;
+      case 'type':  va = (a.season_type || '').toLowerCase();  vb = (b.season_type || '').toLowerCase();  break;
+      case 'dates': va = a.start_date || '';                   vb = b.start_date || '';                   break;
+      default:      return 0;
+    }
+    if (va < vb) return _seasonsSortDir === 'asc' ? -1 : 1;
+    if (va > vb) return _seasonsSortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+  return sorted;
+}
+
+function _sortIndicator(col) {
+  if (_seasonsSortCol !== col) return '<span class="sort-indicator">↕</span>';
+  return `<span class="sort-indicator active">${_seasonsSortDir === 'asc' ? '↑' : '↓'}</span>`;
+}
 
 function openSeasonsModal() {
   // Seasons are now managed in the Seasons tab (not a modal)
@@ -51,7 +92,22 @@ function renderSeasonsList() {
     container.innerHTML = '<p style="color:var(--text-muted);font-size:.85rem;padding:12px 0">No seasons defined yet.</p>';
     return;
   }
-  container.innerHTML = _seasonsData.map(s => `
+  const sorted = _getSortedSeasons();
+  const header = `
+    <div class="seasons-sort-header">
+      <div class="season-item-info">
+        <button class="sort-col sort-col-year${_seasonsSortCol === 'year'  ? ' active' : ''}" onclick="setSeasonsSort('year')">Year ${_sortIndicator('year')}</button>
+        <button class="sort-col sort-col-name${_seasonsSortCol === 'name'  ? ' active' : ''}" onclick="setSeasonsSort('name')">Name ${_sortIndicator('name')}</button>
+        <button class="sort-col sort-col-type${_seasonsSortCol === 'type'  ? ' active' : ''}" onclick="setSeasonsSort('type')">Type ${_sortIndicator('type')}</button>
+        <button class="sort-col sort-col-dates${_seasonsSortCol === 'dates' ? ' active' : ''}" onclick="setSeasonsSort('dates')">Dates ${_sortIndicator('dates')}</button>
+      </div>
+      <div class="season-item-actions" aria-hidden="true">
+        <span class="btn btn-ghost btn-xs sort-spacer">Edit</span>
+        <span class="btn btn-danger btn-xs sort-spacer">Del</span>
+      </div>
+    </div>
+  `;
+  container.innerHTML = header + sorted.map(s => `
     <div class="season-item">
       <div class="season-item-info">
         ${s.year ? `<span class="season-year-badge">${s.year}</span>` : ''}

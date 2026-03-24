@@ -972,22 +972,24 @@ body {
 
 .season-item {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 10px 0;
+  padding: 14px 0;
   border-bottom: 1px solid var(--border);
 }
 .season-item:last-child { border-bottom: none; }
 
-.season-item-info { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; flex: 1; min-width: 0; }
-.season-item-info strong { font-size: .9rem; }
+.season-item-info { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; flex: 1; min-width: 0; }
+.season-item-info strong { font-size: .9rem; min-width: 120px; }
 
 .season-type-tag {
   font-size: .75rem; color: var(--text-muted);
   background: var(--bg); border: 1px solid var(--border);
   border-radius: 20px; padding: 1px 8px;
+  min-width: 60px; margin-right: 12px;
 }
 .season-dates {
   font-size: .78rem; color: var(--text-muted);
   font-family: 'DM Mono', monospace;
+  min-width: 180px;
 }
 .season-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
@@ -1000,7 +1002,31 @@ body {
   border-radius: 4px;
   padding: 1px 7px;
   flex-shrink: 0;
+  min-width: 44px;
 }
+
+.seasons-sort-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 6px 0 8px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 2px;
+}
+.sort-spacer { visibility: hidden; pointer-events: none; }
+.sort-col {
+  background: none; border: none; cursor: pointer;
+  font-size: .75rem; color: var(--text-muted); padding: 2px 4px;
+  border-radius: 4px; display: inline-flex; align-items: center; gap: 3px;
+  transition: background .15s, color .15s;
+  white-space: nowrap; text-align: left;
+}
+.sort-col:hover { background: var(--border); color: var(--text); }
+.sort-col.active { color: var(--text); font-weight: 600; }
+.sort-indicator { font-size: .68rem; opacity: .45; }
+.sort-indicator.active { opacity: 1; }
+.sort-col-year  { min-width: 44px; }
+.sort-col-name  { min-width: 120px; }
+.sort-col-type  { min-width: 60px; margin-right: 12px; }
+.sort-col-dates { min-width: 180px; }
 
 .seasons-form-wrap {
   background: var(--surface);

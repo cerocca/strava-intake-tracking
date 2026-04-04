@@ -3,34 +3,44 @@
 // ============================================================
 
 let _seasonsData = [];
-let _seasonsSortCol = null;  // null = default (year DESC from backend)
-let _seasonsSortDir = 'asc';
+let _seasonsSortCol = 'year';   // default: Year DESC
+let _seasonsSortDir = 'desc';
+let _seasonsSearch = '';
 
 function setSeasonsSort(col) {
   if (_seasonsSortCol === col) {
-    if (_seasonsSortDir === 'asc') {
-      _seasonsSortDir = 'desc';
-    } else {
-      _seasonsSortCol = null;
-      _seasonsSortDir = 'asc';
-    }
+    _seasonsSortDir = _seasonsSortDir === 'asc' ? 'desc' : 'asc';
   } else {
     _seasonsSortCol = col;
-    _seasonsSortDir = 'asc';
+    _seasonsSortDir = col === 'year' ? 'desc' : 'asc';
   }
   renderSeasonsList();
 }
 
-function _getSortedSeasons() {
-  if (!_seasonsSortCol) return _seasonsData;
-  const sorted = [..._seasonsData];
+function setSeasonsSearch(value) {
+  _seasonsSearch = value;
+  renderSeasonsList();
+}
+
+function _getFilteredSeasons() {
+  const q = _seasonsSearch.trim().toLowerCase();
+  if (!q) return _seasonsData;
+  return _seasonsData.filter(s =>
+    (s.name || '').toLowerCase().includes(q) ||
+    (s.season_type || '').toLowerCase().includes(q)
+  );
+}
+
+function _sortSeasons(arr) {
+  if (!_seasonsSortCol) return arr;
+  const sorted = [...arr];
   sorted.sort((a, b) => {
     let va, vb;
     switch (_seasonsSortCol) {
-      case 'year':  va = a.year ?? 0;                          vb = b.year ?? 0;                          break;
-      case 'name':  va = (a.name || '').toLowerCase();         vb = (b.name || '').toLowerCase();         break;
-      case 'type':  va = (a.season_type || '').toLowerCase();  vb = (b.season_type || '').toLowerCase();  break;
-      case 'dates': va = a.start_date || '';                   vb = b.start_date || '';                   break;
+      case 'year':       va = a.year ?? 0;                  vb = b.year ?? 0;                  break;
+      case 'name':       va = (a.name || '').toLowerCase(); vb = (b.name || '').toLowerCase(); break;
+      case 'start_date': va = a.start_date || '';           vb = b.start_date || '';           break;
+      case 'end_date':   va = a.end_date   || '';           vb = b.end_date   || '';           break;
       default:      return 0;
     }
     if (va < vb) return _seasonsSortDir === 'asc' ? -1 : 1;
@@ -43,6 +53,19 @@ function _getSortedSeasons() {
 function _sortIndicator(col) {
   if (_seasonsSortCol !== col) return '<span class="sort-indicator">↕</span>';
   return `<span class="sort-indicator active">${_seasonsSortDir === 'asc' ? '↑' : '↓'}</span>`;
+}
+
+function _ensureSeasonsToolbar() {
+  if (document.getElementById('seasons-toolbar')) return;
+  const container = document.getElementById('seasons-list');
+  const toolbar = document.createElement('div');
+  toolbar.id = 'seasons-toolbar';
+  toolbar.className = 'seasons-toolbar';
+  toolbar.innerHTML = `
+    <input type="search" id="seasons-search-input" class="input seasons-search-input"
+           placeholder="Search seasons…" oninput="setSeasonsSearch(this.value)" />
+  `;
+  container.parentElement.insertBefore(toolbar, container);
 }
 
 function openSeasonsModal() {
@@ -88,18 +111,24 @@ async function refreshSeasonsList() {
 
 function renderSeasonsList() {
   const container = document.getElementById('seasons-list');
+
+  _ensureSeasonsToolbar();
+
   if (_seasonsData.length === 0) {
     container.innerHTML = '<p style="color:var(--text-muted);font-size:.85rem;padding:12px 0">No seasons defined yet.</p>';
     return;
   }
-  const sorted = _getSortedSeasons();
+
+  const filtered = _getFilteredSeasons();
+  const sorted = _sortSeasons(filtered);
+
   const header = `
     <div class="seasons-sort-header">
       <div class="season-item-info">
-        <button class="sort-col sort-col-year${_seasonsSortCol === 'year'  ? ' active' : ''}" onclick="setSeasonsSort('year')">Year ${_sortIndicator('year')}</button>
-        <button class="sort-col sort-col-name${_seasonsSortCol === 'name'  ? ' active' : ''}" onclick="setSeasonsSort('name')">Name ${_sortIndicator('name')}</button>
-        <button class="sort-col sort-col-type${_seasonsSortCol === 'type'  ? ' active' : ''}" onclick="setSeasonsSort('type')">Type ${_sortIndicator('type')}</button>
-        <button class="sort-col sort-col-dates${_seasonsSortCol === 'dates' ? ' active' : ''}" onclick="setSeasonsSort('dates')">Dates ${_sortIndicator('dates')}</button>
+        <button class="sort-col sort-col-year${_seasonsSortCol === 'year'       ? ' active' : ''}" onclick="setSeasonsSort('year')">Year ${_sortIndicator('year')}</button>
+        <button class="sort-col sort-col-name${_seasonsSortCol === 'name'       ? ' active' : ''}" onclick="setSeasonsSort('name')">Name ${_sortIndicator('name')}</button>
+        <button class="sort-col sort-col-start${_seasonsSortCol === 'start_date' ? ' active' : ''}" onclick="setSeasonsSort('start_date')">Start date ${_sortIndicator('start_date')}</button>
+        <button class="sort-col sort-col-end${_seasonsSortCol === 'end_date'   ? ' active' : ''}" onclick="setSeasonsSort('end_date')">End date ${_sortIndicator('end_date')}</button>
       </div>
       <div class="season-item-actions" aria-hidden="true">
         <span class="btn btn-ghost btn-xs sort-spacer">Edit</span>
@@ -107,20 +136,25 @@ function renderSeasonsList() {
       </div>
     </div>
   `;
-  container.innerHTML = header + sorted.map(s => `
-    <div class="season-item">
-      <div class="season-item-info">
-        ${s.year ? `<span class="season-year-badge">${s.year}</span>` : ''}
-        <strong>${escHtml(s.name)}</strong>
-        ${s.season_type ? `<span class="season-type-tag">${escHtml(s.season_type)}</span>` : ''}
-        <span class="season-dates">${s.start_date} → ${s.end_date}</span>
-      </div>
-      <div class="season-item-actions">
-        <button class="btn btn-ghost btn-xs" onclick="editSeason(${s.id})">Edit</button>
-        <button class="btn btn-danger btn-xs" onclick="deleteSeason(${s.id})">Delete</button>
-      </div>
-    </div>
-  `).join('');
+
+  const items = sorted.length === 0
+    ? '<p style="color:var(--text-muted);font-size:.85rem;padding:12px 0">No seasons match your search.</p>'
+    : sorted.map(s => `
+        <div class="season-item">
+          <div class="season-item-info">
+            ${s.year ? `<span class="season-year-badge">${s.year}</span>` : ''}
+            <strong>${escHtml(s.name)}</strong>
+            ${s.season_type ? `<span class="season-type-tag">${escHtml(s.season_type)}</span>` : ''}
+            <span class="season-dates">${s.start_date} → ${s.end_date}</span>
+          </div>
+          <div class="season-item-actions">
+            <button class="btn btn-ghost btn-xs" onclick="editSeason(${s.id})">Edit</button>
+            <button class="btn btn-danger btn-xs" onclick="deleteSeason(${s.id})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+
+  container.innerHTML = header + items;
 }
 
 function editSeason(id) {

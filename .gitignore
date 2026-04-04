@@ -37,3 +37,7 @@ test_*.db
 
 # Docker
 .dockerignore
+
+# Logs
+logs/*
+!logs/.gitkeep

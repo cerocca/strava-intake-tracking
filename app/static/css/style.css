@@ -1005,6 +1005,16 @@ body {
   min-width: 44px;
 }
 
+.seasons-toolbar {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 12px;
+}
+.seasons-search-input {
+  flex: 1; max-width: 260px;
+  padding: 6px 10px;
+  font-size: .85rem;
+}
+
 .seasons-sort-header {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 6px 0 8px;
@@ -1025,8 +1035,8 @@ body {
 .sort-indicator.active { opacity: 1; }
 .sort-col-year  { min-width: 44px; }
 .sort-col-name  { min-width: 120px; }
-.sort-col-type  { min-width: 60px; margin-right: 12px; }
-.sort-col-dates { min-width: 180px; }
+.sort-col-start { min-width: 90px; }
+.sort-col-end   { min-width: 80px; }
 
 .seasons-form-wrap {
   background: var(--surface);

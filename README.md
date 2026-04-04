@@ -1,6 +1,6 @@
 # 🥗 Strava intake tracking app
 
-![Version](https://img.shields.io/badge/version-0.4.0-orange)
+![Version](https://img.shields.io/badge/version-0.4.2-orange)
 ![Python](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-ready-2496ED?logo=docker&logoColor=white)
@@ -74,6 +74,8 @@ cp .env.example .env
 # Edit .env with your Strava API credentials
 ./start.sh
 ```
+
+**macOS shortcut:** double-click `Start Strava Intake.command` in Finder to start the server in the background (no terminal window required). Use `Stop Strava Intake.command` to stop it.
 
 ---
 

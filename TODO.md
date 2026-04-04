@@ -13,8 +13,6 @@
   - Macros distribution (donut chart: carbs / proteins / fats / sugars)
   - Kcal by sport type (grouped bar chart)
 - [ ] **Minor UI polish** — ongoing refinements to spacing, typography, and layout details
-  - [ ] remove double power tag on activities
-  - [ ] add filter on seasons list
 - [ ] **Dynamic version alert** — notify user when local version is behind latest GitHub release
 - [ ] **Language support** — additional languages beyond English placeholder
 - [ ] **OpenFoodFacts link** — link to product page on imported foods
@@ -24,6 +22,12 @@
 ---
 
 ## ✅ Completed
+
+### v0.4.2
+- [x] Activities list: removed duplicate energy badge (⚡ kJ appears only once per card)
+- [x] Seasons screen: sort bar (Year, Name, Start date, End date) with ASC/DESC toggle and arrow indicator
+- [x] Seasons screen: real-time search field filtering by name and season type
+- [x] macOS launcher: `Start Strava Intake.command` and `Stop Strava Intake.command`
 
 ### v0.4
 - [x] Collapsible sidebar navigation (replaces horizontal tabs); state persisted in localStorage

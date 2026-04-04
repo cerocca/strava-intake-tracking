@@ -189,7 +189,6 @@ function _renderListItem(a) {
       <div class="ali-stats">
         ${a.distance ? `<div class="ali-stat"><span class="ali-stat-value">${formatDistance(a.distance)}</span><span class="ali-stat-label">Dist</span></div>` : ''}
         ${a.moving_time ? `<div class="ali-stat"><span class="ali-stat-value">${formatDuration(a.moving_time)}</span><span class="ali-stat-label">Time</span></div>` : ''}
-        ${a.calories ? `<div class="ali-stat"><span class="ali-stat-value">${Math.round(a.calories)}</span><span class="ali-stat-label">kJ</span></div>` : ''}
       </div>
       <div class="ali-badges">
         ${a.calories ? `<div class="activity-kcal-badge">⚡ ${Math.round(a.calories)} kJ</div>` : ''}

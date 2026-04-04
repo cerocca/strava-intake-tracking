@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.2] - 2026-04-04
+
+### Fixed
+- Activities list: removed duplicate energy badge (⚡ kJ now appears only once per card)
+
+### Added
+- Seasons screen: sort bar with Year, Name, Start date, End date (client-side, with ASC/DESC toggle and arrow indicator)
+- Seasons screen: real-time search field filtering by name and season type
+- macOS launcher: `Start Strava Intake.command` and `Stop Strava Intake.command` for starting/stopping the server from Finder without keeping the terminal open
+
+---
+
 ## [0.4.1] - 2026-03-24
 
 ### Fixed

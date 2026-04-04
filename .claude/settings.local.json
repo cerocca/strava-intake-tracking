@@ -16,7 +16,11 @@
       "Bash(python -c \"from app.main import app; print\\(''OK''\\)\")",
       "Bash(git tag:*)",
       "Bash(python -c \"import app.main; print\\(''Import OK''\\)\")",
-      "Bash(timeout 5 uvicorn app.main:app --port 8000)"
+      "Bash(timeout 5 uvicorn app.main:app --port 8000)",
+      "Bash(python -c \"import app.main; print\\(''OK''\\)\")",
+      "Bash(chmod +x \"/Users/ciru/strava-intake-tracking/Start Strava Intake.command\")",
+      "Bash(chmod +x /Users/ciru/strava-intake-tracking/start.sh)",
+      "Bash(chmod +x \"/Users/ciru/strava-intake-tracking/Stop Strava Intake.command\")"
     ]
   }
 }

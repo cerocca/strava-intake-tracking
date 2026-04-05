@@ -1111,6 +1111,121 @@ body {
 }
 
 /* ============================================================
+   Nutrition viz section (activity detail)
+   ============================================================ */
+#nutrition-viz-section { margin-bottom: 24px; }
+
+.nutrition-viz-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.nvs-title {
+  font-size: .75rem; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .06em;
+  margin-bottom: 14px;
+}
+
+.nvs-stats-row {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.nvs-stat {
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px; min-width: 90px;
+}
+.nvs-stat-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.05rem; font-weight: 600; color: var(--text);
+}
+.nvs-stat-label {
+  font-size: .72rem; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .04em; margin-top: 2px;
+}
+
+.nvs-charts-row {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  margin-bottom: 20px;
+  align-items: flex-start;
+}
+.nvs-chart-wrap { flex: 1; min-width: 180px; }
+.nvs-donut-wrap  { max-width: 240px; }
+.nvs-compare-wrap { flex: 2; min-width: 200px; }
+
+.nvs-food-list { display: flex; flex-direction: column; gap: 4px; }
+
+.nvs-food-row {
+  position: relative; overflow: hidden;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background .12s;
+}
+.nvs-food-row:hover { background: var(--border); }
+
+.nvs-food-bar {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: rgba(252, 76, 2, 0.12);
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+  transition: width .3s ease;
+}
+
+.nvs-food-content {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 12px;
+}
+
+.nvs-food-name { font-weight: 600; font-size: .875rem; }
+
+.nvs-food-meta {
+  display: flex; gap: 10px;
+  font-size: .8rem; color: var(--text-muted);
+  flex-shrink: 0; margin-left: 12px;
+}
+
+/* ============================================================
+   Food detail modal content
+   ============================================================ */
+.modal-narrow { max-width: 380px; }
+
+.food-detail-brand {
+  font-size: .8rem; color: var(--text-muted);
+  padding: 4px 24px 0;
+}
+
+.food-detail-macros {
+  padding: 16px 24px 8px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+
+.food-detail-row {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: .875rem;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+}
+.food-detail-row:last-child { border-bottom: none; }
+
+.food-detail-per100 { font-size: .75rem; color: var(--text-muted); }
+
+.food-detail-serving {
+  padding: 0 24px 12px;
+  font-size: .82rem; color: var(--text-muted); font-style: italic;
+}
+
+.food-detail-off-link {
+  display: block;
+  padding: 0 24px 20px;
+  font-size: .85rem; color: var(--strava);
+  text-decoration: none;
+}
+.food-detail-off-link:hover { text-decoration: underline; }
+
+/* ============================================================
    Graphs
    ============================================================ */
 .graphs-grid {
@@ -1129,6 +1244,15 @@ body {
   font-size: .8rem; font-weight: 600; color: var(--text-muted);
   text-transform: uppercase; letter-spacing: .06em;
   margin-bottom: 14px;
+}
+.graphs-subsection-title {
+  font-size: .75rem; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .06em;
+  margin: 28px 0 0;
+}
+.graphs-subsection-subtitle {
+  font-size: .75rem; color: var(--text-muted);
+  margin: 2px 0 12px;
 }
 
 /* ============================================================

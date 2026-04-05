@@ -7,12 +7,25 @@ const actState = {
   skip: 0,
   limit: 20,
   currentId: null,
+  currentActivity: null,
   foodSearchTimer: null,
   viewMode: 'cards',    // 'cards' | 'list'
   filterSportType: '',
   filterTracked: '',
   filterSeasonId: '',
 };
+
+// ---- Activity detail charts ----
+const _actDetailCharts = {};
+
+function _destroyAllActDetailCharts() {
+  Object.keys(_actDetailCharts).forEach(id => {
+    _actDetailCharts[id].destroy();
+    delete _actDetailCharts[id];
+  });
+}
+
+let _currentLogs = [];
 
 const SPORT_ICONS = {
   Run: '🏃', Ride: '🚴', Swim: '🏊', Walk: '🚶', Hike: '⛰️',
@@ -209,6 +222,7 @@ async function openActivityDetail(activityId) {
   actState.currentId = activityId;
   try {
     const activity = await api(`/activities/${activityId}`);
+    actState.currentActivity = activity;
     document.getElementById('activity-list-view').classList.add('hidden');
     document.getElementById('activity-detail-view').classList.remove('hidden');
     renderActivityDetail(activity);
@@ -222,6 +236,8 @@ function showActivityList() {
   document.getElementById('activity-detail-view').classList.add('hidden');
   document.getElementById('activity-list-view').classList.remove('hidden');
   actState.currentId = null;
+  actState.currentActivity = null;
+  _destroyAllActDetailCharts();
   document.getElementById('food-search-input').value = '';
   document.getElementById('food-search-results').classList.add('hidden');
   loadActivities(true);
@@ -292,6 +308,9 @@ async function loadNutritionLog(activityId) {
 }
 
 function renderNutritionLog(logs) {
+  _currentLogs = logs;
+  renderNutritionViz(logs);
+
   const summaryEl = document.getElementById('nutrition-summary');
   const listEl = document.getElementById('nutrition-log-list');
 
@@ -474,4 +493,221 @@ function escHtml(str) {
   return String(str ?? '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+// ---- Nutrition visualization ----
+
+function renderNutritionViz(logs) {
+  const section = document.getElementById('nutrition-viz-section');
+  const activity = actState.currentActivity;
+  if (!section) return;
+
+  if (!logs || logs.length === 0 || !activity) {
+    section.classList.add('hidden');
+    section.innerHTML = '';
+    _destroyAllActDetailCharts();
+    return;
+  }
+
+  section.classList.remove('hidden');
+  _destroyAllActDetailCharts();
+
+  const totalKcal    = logs.reduce((s, l) => s + (l.calories      || 0), 0);
+  const totalCarbs   = logs.reduce((s, l) => s + (l.carbohydrates || 0), 0);
+  const totalProtein = logs.reduce((s, l) => s + (l.proteins      || 0), 0);
+  const totalFat     = logs.reduce((s, l) => s + (l.fats          || 0), 0);
+  const totalSugar   = logs.reduce((s, l) => s + (l.sugars        || 0), 0);
+
+  const movingH  = activity.moving_time  ? activity.moving_time  / 3600 : 0;
+  const elapsedH = activity.elapsed_time ? activity.elapsed_time / 3600 : 0;
+  const carbsMoving  = movingH  > 0 ? (totalCarbs / movingH).toFixed(1)  + 'g' : '—';
+  const carbsElapsed = elapsedH > 0 ? (totalCarbs / elapsedH).toFixed(1) + 'g' : '—';
+
+  const donutId   = `chart-activity-macros-${activity.id}`;
+  const compareId = `chart-activity-kcal-compare-${activity.id}`;
+  const maxKcal   = Math.max(...logs.map(l => l.calories || 0), 1);
+
+  section.innerHTML = `
+    <div class="nutrition-viz-card">
+      <div class="nvs-title">Nutrition Summary</div>
+
+      <div class="nvs-stats-row">
+        <div class="nvs-stat">
+          <div class="nvs-stat-value">${totalKcal.toFixed(0)}</div>
+          <div class="nvs-stat-label">kcal consumed</div>
+        </div>
+        <div class="nvs-stat">
+          <div class="nvs-stat-value">${carbsMoving}</div>
+          <div class="nvs-stat-label">Carbs/h (moving)</div>
+        </div>
+        <div class="nvs-stat">
+          <div class="nvs-stat-value">${carbsElapsed}</div>
+          <div class="nvs-stat-label">Carbs/h (elapsed)</div>
+        </div>
+      </div>
+
+      <div class="nvs-charts-row">
+        <div class="nvs-chart-wrap nvs-donut-wrap">
+          <canvas id="${donutId}"></canvas>
+        </div>
+        <div class="nvs-chart-wrap nvs-compare-wrap">
+          <canvas id="${compareId}"></canvas>
+        </div>
+      </div>
+
+      <div class="nvs-food-list">
+        ${logs.map(l => {
+          const pct = ((l.calories || 0) / maxKcal * 100).toFixed(1);
+          return `<div class="nvs-food-row" onclick="openFoodDetail(${l.id})">
+            <div class="nvs-food-bar" style="width:${pct}%"></div>
+            <div class="nvs-food-content">
+              <span class="nvs-food-name">${escHtml(l.food_name || '?')}</span>
+              <span class="nvs-food-meta">
+                <span class="mono">${l.quantity_grams}g</span>
+                ${l.calories != null ? `<span class="mono">${l.calories.toFixed(0)} kcal</span>` : ''}
+              </span>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+
+  _buildActivityDonut(donutId, totalCarbs, totalProtein, totalFat, totalSugar);
+  const kcalBurned = activity.calories ? activity.calories * 0.239006 : 0;
+  _buildActivityKcalCompare(compareId, totalKcal, kcalBurned);
+}
+
+function _buildActivityDonut(canvasId, carbs, protein, fat, sugar) {
+  const ctx = document.getElementById(canvasId)?.getContext('2d');
+  if (!ctx) return;
+  const total = carbs + protein + fat + sugar;
+  _actDetailCharts[canvasId] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Carbs', 'Proteins', 'Fats', 'Sugars'],
+      datasets: [{
+        data: [carbs, protein, fat, sugar],
+        backgroundColor: ['#FC4C02', '#3b82f6', '#10b981', '#f59e0b'],
+        borderWidth: 0,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          display: true, position: 'bottom',
+          labels: { font: { family: "'DM Sans', system-ui, sans-serif" }, color: '#9ca3af', boxWidth: 12, padding: 10 },
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const val = ctx.parsed;
+              const pct = total > 0 ? ((val / total) * 100).toFixed(1) : '0.0';
+              return `${ctx.label}: ${val.toFixed(1)}g (${pct}%)`;
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+function _buildActivityKcalCompare(canvasId, consumed, burned) {
+  const ctx = document.getElementById(canvasId)?.getContext('2d');
+  if (!ctx) return;
+  _actDetailCharts[canvasId] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['kcal consumed', 'kcal burned'],
+      datasets: [{
+        data: [consumed, burned],
+        backgroundColor: ['#FC4C02', '#6366f1'],
+        borderRadius: 4,
+        borderSkipped: false,
+      }],
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.parsed.x.toFixed(0)} kcal`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          ticks: { color: '#9ca3af', font: { family: "'DM Mono', monospace", size: 11 }, precision: 0 },
+          grid: { color: 'rgba(0,0,0,0.06)' },
+        },
+        y: {
+          ticks: { color: '#9ca3af', font: { family: "'DM Sans', system-ui, sans-serif", size: 11 } },
+          grid: { display: false },
+        },
+      },
+    },
+  });
+}
+
+// ---- Food detail modal ----
+
+function openFoodDetail(logId) {
+  const log = _currentLogs.find(l => l.id === logId);
+  if (!log) return;
+
+  document.getElementById('food-detail-name').textContent = log.food_name || '?';
+  const brandEl = document.getElementById('food-detail-brand');
+  if (log.food_brand) {
+    brandEl.textContent = log.food_brand;
+    brandEl.classList.remove('hidden');
+  } else {
+    brandEl.classList.add('hidden');
+  }
+
+  const macros = [
+    { label: 'Calories',       value: log.kcal_100g,    unit: ' kcal' },
+    { label: 'Carbohydrates',  value: log.carbs_100g,   unit: 'g' },
+    { label: 'Sugars',         value: log.sugars_100g,  unit: 'g' },
+    { label: 'Protein',        value: log.proteins_100g,unit: 'g' },
+    { label: 'Fat',            value: log.fat_100g,     unit: 'g' },
+    { label: 'Saturated fat',  value: log.sat_fat_100g, unit: 'g' },
+    { label: 'Fiber',          value: log.fiber_100g,   unit: 'g' },
+    { label: 'Salt',           value: log.salt_100g,    unit: 'g' },
+  ].filter(m => m.value != null);
+
+  document.getElementById('food-detail-macros').innerHTML = macros.map(m =>
+    `<div class="food-detail-row">
+      <span>${escHtml(m.label)}</span>
+      <span class="mono">${m.value}${m.unit} <span class="food-detail-per100">/ 100g</span></span>
+    </div>`
+  ).join('');
+
+  const servingEl = document.getElementById('food-detail-serving');
+  if (log.serving_grams) {
+    servingEl.textContent = `Serving size: ${log.serving_grams}g`;
+    servingEl.classList.remove('hidden');
+  } else {
+    servingEl.classList.add('hidden');
+  }
+
+  const offLink = document.getElementById('food-detail-off-link');
+  if (log.off_id) {
+    offLink.href = `https://world.openfoodfacts.org/product/${encodeURIComponent(log.off_id)}`;
+    offLink.classList.remove('hidden');
+  } else {
+    offLink.classList.add('hidden');
+  }
+
+  document.getElementById('food-detail-modal').classList.remove('hidden');
+}
+
+function closeFoodDetailModal(event = null) {
+  if (event && event.target !== document.getElementById('food-detail-modal')) return;
+  document.getElementById('food-detail-modal').classList.add('hidden');
 }

@@ -71,4 +71,15 @@ def _log_dict(log: NutritionLog) -> dict:
         "proteins": round(food.proteins * factor, 1) if food and food.proteins else None,
         "fats": round(food.fats * factor, 1) if food and food.fats else None,
         "consumed_at": log.consumed_at.isoformat() if log.consumed_at else None,
+        # Food detail fields (per 100g)
+        "off_id": food.off_id if food else None,
+        "serving_grams": food.serving_grams if food else None,
+        "kcal_100g": food.calories if food else None,
+        "carbs_100g": food.carbohydrates if food else None,
+        "sugars_100g": food.sugars if food else None,
+        "proteins_100g": food.proteins if food else None,
+        "fat_100g": food.fats if food else None,
+        "sat_fat_100g": food.saturated_fats if food else None,
+        "fiber_100g": food.fibers if food else None,
+        "salt_100g": food.salt if food else None,
     }

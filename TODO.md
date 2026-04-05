@@ -6,21 +6,21 @@
 
 ## 🗺 Roadmap / Future ideas
 
-- [ ] **Graphs tab — extended charts**: additional charts based on tracked activities (with food log):
-  - Kcal consumed vs kJ produced (scatter plot)
-  - Carbs consumed vs activity duration
-  - Kcal ratio consumed/burned per activity
-  - Macros distribution (donut chart: carbs / proteins / fats / sugars)
-  - Kcal by sport type (grouped bar chart)
+- [ ] **Valutare tab Graphs e Statistics**: considerare l'unificazione o la separazione più netta tra sezione Total e sezione Season nei tab Graphs e Statistics
 - [ ] **Minor UI polish** — ongoing refinements to spacing, typography, and layout details
 - [ ] **Dynamic version alert** — notify user when local version is behind latest GitHub release
 - [ ] **Language support** — additional languages beyond English placeholder
 - [ ] Sync all Strava activities (currently limited to last 100)
-- [ ] Foods added in local DB may go on OpenFoodFacts (deferred)
 
 ---
 
 ## ✅ Completed
+
+### v0.5.0
+- [x] **Graphs tab — extended charts**: 5 nutrition charts (scatter, bar, doughnut) in both Total and Season sections; scoped canvas IDs; `GET /activities/graphs/nutrition` endpoint with season_id filter
+- [x] **Activity detail — Nutrition Summary**: stat cards (kcal consumed, carbs/h moving, carbs/h elapsed), macros donut, kcal vs burned bar, visual food list with proportional bars
+- [x] **Food detail modal**: clickable food rows open read-only modal with per-100g macros, serving size, OFF link
+- [x] **Dynamic season labels in Graphs**: Activities & Distance and Nutrition Charts titles update to season name + date range
 
 ### v0.4.3
 - [x] Food Database: OFF product page link (badge) on foods imported from OpenFoodFacts

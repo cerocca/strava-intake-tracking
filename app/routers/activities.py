@@ -252,6 +252,82 @@ async def get_graphs(
     return [{"month": k, **v} for k, v in sorted(monthly.items())]
 
 
+@router.get("/graphs/nutrition")
+async def get_nutrition_graphs(
+    db: Session = Depends(get_db),
+    season_id: int = Query(None),
+):
+    excluded = _get_excluded_types(db)
+
+    season_start: str | None = None
+    season_end: str | None = None
+    if season_id is not None:
+        season = db.query(Season).filter(Season.id == season_id).first()
+        if not season:
+            raise HTTPException(status_code=404, detail="Season not found")
+        season_start = season.start_date
+        season_end = season.end_date
+
+    nutrition_agg = (
+        db.query(
+            NutritionLog.activity_id,
+            func.sum(Food.calories * NutritionLog.quantity_grams / 100.0).label("kcal_consumed"),
+            func.sum(Food.carbohydrates * NutritionLog.quantity_grams / 100.0).label("carbs_grams"),
+            func.sum(Food.proteins * NutritionLog.quantity_grams / 100.0).label("protein_grams"),
+            func.sum(Food.fats * NutritionLog.quantity_grams / 100.0).label("fat_grams"),
+            func.sum(Food.sugars * NutritionLog.quantity_grams / 100.0).label("sugar_grams"),
+        )
+        .join(Food, NutritionLog.food_id == Food.id)
+        .group_by(NutritionLog.activity_id)
+        .subquery()
+    )
+
+    query = (
+        db.query(
+            Activity.id,
+            Activity.name,
+            Activity.sport_type,
+            Activity.start_date,
+            Activity.moving_time,
+            Activity.calories,
+            nutrition_agg.c.kcal_consumed,
+            nutrition_agg.c.carbs_grams,
+            nutrition_agg.c.protein_grams,
+            nutrition_agg.c.fat_grams,
+            nutrition_agg.c.sugar_grams,
+        )
+        .join(nutrition_agg, Activity.id == nutrition_agg.c.activity_id)
+    )
+
+    if season_start and season_end:
+        query = query.filter(
+            func.date(Activity.start_date) >= season_start,
+            func.date(Activity.start_date) <= season_end,
+        )
+
+    if excluded:
+        query = query.filter(Activity.sport_type.notin_(excluded))
+
+    rows = query.order_by(Activity.start_date).all()
+
+    return [
+        {
+            "id": row.id,
+            "name": row.name,
+            "sport_type": row.sport_type,
+            "start_date": row.start_date.isoformat() if row.start_date else None,
+            "duration_seconds": row.moving_time or 0,
+            "kilojoules": row.calories or 0,
+            "kcal_consumed": round(row.kcal_consumed or 0, 1),
+            "carbs_grams": round(row.carbs_grams or 0, 1),
+            "protein_grams": round(row.protein_grams or 0, 1),
+            "fat_grams": round(row.fat_grams or 0, 1),
+            "sugar_grams": round(row.sugar_grams or 0, 1),
+        }
+        for row in rows
+    ]
+
+
 @router.get("/{activity_id}")
 async def get_activity(activity_id: int, db: Session = Depends(get_db)):
     activity = db.query(Activity).filter(Activity.id == activity_id).first()

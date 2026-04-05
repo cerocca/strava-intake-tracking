@@ -154,6 +154,7 @@
           <div id="activity-detail-view" class="detail-view hidden">
             <button class="back-btn" onclick="showActivityList()">&#8592; Back to Activities</button>
             <div id="activity-detail-content"></div>
+            <div id="nutrition-viz-section" class="hidden"></div>
             <div class="nutrition-panel">
               <h3>Nutrition Log</h3>
               <div class="nutrition-summary" id="nutrition-summary"></div>
@@ -263,8 +264,11 @@
 
         <!-- TAB: Graphs -->
         <section id="tab-graphs" class="tab-content hidden">
+
+          <!-- Total Graphs -->
           <div class="section-header"><h2>Total Graphs</h2></div>
-          <div class="stats-section-label">Last 12 months</div>
+          <div class="stats-section-label">Activities &amp; Distance</div>
+          <p class="graphs-subsection-subtitle">Last 12 months</p>
           <div class="graphs-grid">
             <div class="graph-card">
               <div class="graph-card-title">Activities per month</div>
@@ -276,6 +280,35 @@
             </div>
           </div>
 
+          <h3 class="graphs-subsection-title">Nutrition Charts &#8212; All Time</h3>
+          <p class="graphs-subsection-subtitle">All tracked activities since the beginning</p>
+          <div id="nutrition-charts-empty-total" class="season-stats-empty hidden"></div>
+          <div id="nutrition-charts-content-total" class="hidden">
+            <div class="graphs-grid">
+              <div class="graph-card">
+                <div class="graph-card-title">Kcal consumed vs kJ produced</div>
+                <canvas id="chart-scatter-kcal-total"></canvas>
+              </div>
+              <div class="graph-card">
+                <div class="graph-card-title">Carbs consumed vs duration</div>
+                <canvas id="chart-scatter-carbs-total"></canvas>
+              </div>
+              <div class="graph-card">
+                <div class="graph-card-title">Kcal ratio consumed / burned</div>
+                <canvas id="chart-kcal-ratio-total"></canvas>
+              </div>
+              <div class="graph-card">
+                <div class="graph-card-title">Macros distribution</div>
+                <canvas id="chart-macros-donut-total"></canvas>
+              </div>
+              <div class="graph-card">
+                <div class="graph-card-title">Kcal consumed by sport type</div>
+                <canvas id="chart-kcal-sport-total"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Season Graphs -->
           <div class="section-header" style="margin-top:36px">
             <h2>Season Graphs</h2>
             <div class="header-actions">
@@ -286,6 +319,8 @@
           </div>
           <div id="season-graphs-empty" class="season-stats-empty hidden"></div>
           <div id="season-graphs-content" class="hidden">
+            <div id="season-activity-distance-title" class="stats-section-label">Activities &amp; Distance</div>
+            <p id="season-activity-date-subtitle" class="graphs-subsection-subtitle">Last 12 months</p>
             <div class="graphs-grid">
               <div class="graph-card">
                 <div class="graph-card-title">Activities per month</div>
@@ -296,7 +331,36 @@
                 <canvas id="chart-season-distance"></canvas>
               </div>
             </div>
+
+            <h3 id="season-nutrition-charts-title" class="graphs-subsection-title">Nutrition Charts &#8212; Last 12 Months</h3>
+            <p id="season-nutrition-charts-subtitle" class="graphs-subsection-subtitle">Tracked activities in the last 12 months</p>
+            <div id="nutrition-charts-empty-season" class="season-stats-empty hidden"></div>
+            <div id="nutrition-charts-content-season" class="hidden">
+              <div class="graphs-grid">
+                <div class="graph-card">
+                  <div class="graph-card-title">Kcal consumed vs kJ produced</div>
+                  <canvas id="chart-scatter-kcal-season"></canvas>
+                </div>
+                <div class="graph-card">
+                  <div class="graph-card-title">Carbs consumed vs duration</div>
+                  <canvas id="chart-scatter-carbs-season"></canvas>
+                </div>
+                <div class="graph-card">
+                  <div class="graph-card-title">Kcal ratio consumed / burned</div>
+                  <canvas id="chart-kcal-ratio-season"></canvas>
+                </div>
+                <div class="graph-card">
+                  <div class="graph-card-title">Macros distribution</div>
+                  <canvas id="chart-macros-donut-season"></canvas>
+                </div>
+                <div class="graph-card">
+                  <div class="graph-card-title">Kcal consumed by sport type</div>
+                  <canvas id="chart-kcal-sport-season"></canvas>
+                </div>
+              </div>
+            </div>
           </div>
+
         </section>
 
         <!-- TAB: Seasons -->
@@ -462,6 +526,22 @@
           <button id="food-modal-save-btn" type="submit" class="btn btn-primary">Save</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Food Detail Modal (read-only, from nutrition log) -->
+  <div id="food-detail-modal" class="modal-overlay hidden" onclick="closeFoodDetailModal(event)">
+    <div class="modal modal-narrow">
+      <div class="modal-header">
+        <h3 id="food-detail-name"></h3>
+        <button class="modal-close" onclick="closeFoodDetailModal()">&#215;</button>
+      </div>
+      <div id="food-detail-brand" class="food-detail-brand hidden"></div>
+      <div id="food-detail-macros" class="food-detail-macros"></div>
+      <div id="food-detail-serving" class="food-detail-serving hidden"></div>
+      <a id="food-detail-off-link" href="#" target="_blank" rel="noopener" class="food-detail-off-link hidden">
+        View on Open Food Facts &#8599;
+      </a>
     </div>
   </div>
 

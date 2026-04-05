@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.0] - 2026-04-05
+
+### Added
+- **Nutrition Charts in Graphs tab**: 5 new Chart.js charts for tracked activities — Kcal consumed vs kJ produced (scatter), Carbs vs duration (scatter), Kcal ratio consumed/burned (bar), Macros distribution (doughnut), Kcal by sport type (bar); available in both Total (all-time) and Season (filtered) sections with scoped canvas IDs
+- **GET /activities/graphs/nutrition**: new backend endpoint returning aggregated nutrition data per tracked activity; supports optional `season_id` filter; applies excluded activity types
+- **Activity detail — Nutrition Summary section**: shown only for tracked activities; stat cards (kcal consumed, carbs/h moving time, carbs/h elapsed time), macros donut chart, kcal consumed vs burned horizontal bar, visual food list with proportional kcal bars
+- **Food detail modal**: clicking any food row in the activity detail opens a read-only modal with per-100g macros, serving size, and Open Food Facts link (only for foods imported from OFF)
+- **Dynamic season labels in Graphs tab**: when a season is selected, Activities & Distance and Nutrition Charts titles/subtitles update to show the season name and date range
+- Nutrition log API (`GET /nutrition/{activity_id}`) response extended with `off_id`, `serving_grams`, and per-100g macro values (`kcal_100g`, `carbs_100g`, `sugars_100g`, `proteins_100g`, `fat_100g`, `sat_fat_100g`, `fiber_100g`, `salt_100g`)
+
+### Changed
+- Graphs tab restructured: Total and Season sections each contain their own Activities & Distance charts and Nutrition Charts subsection
+- `loadNutritionCharts()` refactored to accept a `scope` parameter (`'total'` / `'season'`) with fully scoped canvas and element IDs
+
+---
+
 ## [0.4.3] - 2026-04-05
 
 ### Added

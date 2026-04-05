@@ -1,6 +1,6 @@
 # 🥗 Strava intake tracking app
 
-![Version](https://img.shields.io/badge/version-0.4.2-orange)
+![Version](https://img.shields.io/badge/version-0.5.0-orange)
 ![Python](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-ready-2496ED?logo=docker&logoColor=white)
@@ -31,7 +31,8 @@
 - **Nutrition logging** — Associate foods and quantities to each activity
 - **Nutrition summary** — Total kcal and carbohydrate intake per activity
 - **Statistics** — *Total Stats*: all-time activities, distance, calories, nutrition; *Season Stats*: same metrics filtered by selected season
-- **Graphs** — Activities per month and distance per month bar charts (Chart.js); season filter supported
+- **Graphs** — Activities per month and distance per month bar charts; 5 nutrition charts per section (kcal scatter, carbs scatter, kcal ratio bar, macros doughnut, kcal by sport type); Total (all-time) and Season sections with dynamic labels; Chart.js
+- **Activity detail — Nutrition Summary** — Shown for tracked activities: stat cards (kcal consumed, carbs/h), macros donut, kcal consumed vs burned bar, visual food list with proportional bars and clickable food detail modal
 - **Activity type filters** — Exclude sport types from stats and graphs; persisted in database
 - **Settings tab** — Appearance (dark/light/system theme), Language (placeholder), Activity Filters
 - **Sidebar navigation** — Collapsible vertical sidebar; collapse state persisted in localStorage

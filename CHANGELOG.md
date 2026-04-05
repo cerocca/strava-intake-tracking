@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.3] - 2026-04-05
+
+### Added
+- Food Database: OFF product page link on foods imported from OpenFoodFacts (visible badge next to food name)
+- Static files: Cache-Control: no-store header for JS and CSS files to prevent stale cache issues during development
+
+### Fixed
+- OpenFoodFacts import: fixed off_id capture using correct field name (p.code || p.id instead of p.code || p._id)
+
+---
+
 ## [0.4.2] - 2026-04-04
 
 ### Fixed

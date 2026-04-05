@@ -20,6 +20,7 @@ class Food(Base):
     salt = Column(Float, nullable=True)
     serving_grams = Column(Float, nullable=True)  # grams per serving (suggestion only)
     notes = Column(String, nullable=True)
+    off_id = Column(String, nullable=True)  # OpenFoodFacts product barcode/code
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     nutrition_logs = relationship("NutritionLog", back_populates="food", cascade="all, delete-orphan")

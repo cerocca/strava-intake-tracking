@@ -15,13 +15,16 @@
 - [ ] **Minor UI polish** — ongoing refinements to spacing, typography, and layout details
 - [ ] **Dynamic version alert** — notify user when local version is behind latest GitHub release
 - [ ] **Language support** — additional languages beyond English placeholder
-- [ ] **OpenFoodFacts link** — link to product page on imported foods
 - [ ] Sync all Strava activities (currently limited to last 100)
-- [ ] Foods added in local DB may go on OpenFoodFacts
+- [ ] Foods added in local DB may go on OpenFoodFacts (deferred)
 
 ---
 
 ## ✅ Completed
+
+### v0.4.3
+- [x] Food Database: OFF product page link (badge) on foods imported from OpenFoodFacts
+- [x] Static files: Cache-Control: no-store for JS and CSS to prevent stale cache
 
 ### v0.4.2
 - [x] Activities list: removed duplicate energy badge (⚡ kJ appears only once per card)

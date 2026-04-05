@@ -31,6 +31,7 @@ class FoodIn(BaseModel):
     salt: Optional[float] = None
     serving_grams: Optional[float] = None
     notes: Optional[str] = None
+    off_id: Optional[str] = None
 
 
 @router.get("/export-csv")
@@ -177,4 +178,5 @@ def _food_dict(f: Food) -> dict:
         "salt": f.salt,
         "serving_grams": f.serving_grams,
         "notes": f.notes,
+        "off_id": f.off_id,
     }

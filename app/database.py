@@ -40,6 +40,7 @@ def _migrate_db():
         ("activities", "weighted_average_watts", "REAL"),
         ("activities", "max_watts", "REAL"),
         ("foods", "serving_grams", "REAL"),
+        ("foods", "off_id", "TEXT"),
         ("seasons", "year", "INTEGER"),
     ]
     with engine.connect() as conn:

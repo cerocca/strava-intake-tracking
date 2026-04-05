@@ -3,6 +3,7 @@
 // ============================================================
 let _editingFoodId = null;
 let _viewMode = false;
+let _offCurrentCode = null;
 const _foodsMap = {};
 
 async function loadFoods() {
@@ -36,7 +37,7 @@ function renderFoodsTable(foods) {
   tbody.innerHTML = foods.map(f => `
     <tr>
       <td>
-        <strong class="food-name-link" onclick="viewFoodModal(_foodsMap[${f.id}])" style="cursor:pointer;color:var(--strava)">${escHtml(f.name)}</strong>
+        <strong class="food-name-link" onclick="viewFoodModal(_foodsMap[${f.id}])" style="cursor:pointer;color:var(--strava)">${escHtml(f.name)}</strong>${f.off_id ? ` <a class="off-link" href="https://world.openfoodfacts.org/product/${encodeURIComponent(f.off_id)}" target="_blank" rel="noopener" title="View on OpenFoodFacts">O.F.Facts ↗</a>` : ''}
         ${f.brand ? `<div style="font-size:.78rem;color:var(--text-muted)">${escHtml(f.brand)}</div>` : ''}
       </td>
       <td class="mono">${fmt(f.calories)}</td>
@@ -144,6 +145,8 @@ function _fillFromOFF(index) {
     if (match) set('serving_grams', parseFloat(match[1].replace(',', '.')));
   }
 
+  _offCurrentCode = p.code || p.id || null;
+
   document.getElementById('off-results').classList.add('hidden');
   document.getElementById('off-name-input').value = '';
   document.getElementById('off-barcode-input').value = '';
@@ -156,6 +159,7 @@ function _resetOFFSearch() {
   document.getElementById('off-barcode-input').value = '';
   document.getElementById('off-results').classList.add('hidden');
   window._offProducts = [];
+  _offCurrentCode = null;
 }
 
 function viewFoodModal(food) {
@@ -165,7 +169,9 @@ function viewFoodModal(food) {
   const title = document.getElementById('food-modal-title');
   const form = document.getElementById('food-form');
 
-  title.textContent = food.name;
+  title.innerHTML = escHtml(food.name) + (food.off_id
+    ? ` <a class="off-link off-link-modal" href="https://world.openfoodfacts.org/product/${encodeURIComponent(food.off_id)}" target="_blank" rel="noopener" title="View on OpenFoodFacts">O.F.Facts ↗</a>`
+    : '');
   form.reset();
   form.querySelector('[name=food_id]').value = food.id;
 
@@ -185,13 +191,14 @@ function viewFoodModal(food) {
 function openFoodModal(food = null) {
   _viewMode = false;
   _editingFoodId = food ? food.id : null;
+  _offCurrentCode = food ? (food.off_id || null) : null;
   // Show OFF search only when adding a new food
   const offSection = document.getElementById('off-search-section');
   if (food) {
     offSection.classList.add('hidden');
   } else {
-    offSection.classList.remove('hidden');
     _resetOFFSearch();
+    offSection.classList.remove('hidden');
   }
   const title = document.getElementById('food-modal-title');
   const form = document.getElementById('food-form');
@@ -241,6 +248,7 @@ async function submitFoodForm(event) {
     salt: _fv(form.salt.value),
     serving_grams: _fv(form.serving_grams.value),
     notes: form.notes.value.trim() || null,
+    off_id: _offCurrentCode || null,
   };
 
   try {

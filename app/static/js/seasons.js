@@ -127,8 +127,10 @@ function renderSeasonsList() {
       <div class="season-item-info">
         <button class="sort-col sort-col-year${_seasonsSortCol === 'year'       ? ' active' : ''}" onclick="setSeasonsSort('year')">Year ${_sortIndicator('year')}</button>
         <button class="sort-col sort-col-name${_seasonsSortCol === 'name'       ? ' active' : ''}" onclick="setSeasonsSort('name')">Name ${_sortIndicator('name')}</button>
+        <span class="sort-col sort-col-type">Type</span>
         <button class="sort-col sort-col-start${_seasonsSortCol === 'start_date' ? ' active' : ''}" onclick="setSeasonsSort('start_date')">Start date ${_sortIndicator('start_date')}</button>
         <button class="sort-col sort-col-end${_seasonsSortCol === 'end_date'   ? ' active' : ''}" onclick="setSeasonsSort('end_date')">End date ${_sortIndicator('end_date')}</button>
+        <span class="sort-col sort-col-notes">Notes</span>
       </div>
       <div class="season-item-actions" aria-hidden="true">
         <span class="btn btn-ghost btn-xs sort-spacer">Edit</span>
@@ -142,10 +144,12 @@ function renderSeasonsList() {
     : sorted.map(s => `
         <div class="season-item">
           <div class="season-item-info">
-            ${s.year ? `<span class="season-year-badge">${s.year}</span>` : ''}
+            <span class="season-col-year">${s.year ? `<span class="season-year-badge">${s.year}</span>` : ''}</span>
             <strong>${escHtml(s.name)}</strong>
-            ${s.season_type ? `<span class="season-type-tag">${escHtml(s.season_type)}</span>` : ''}
-            <span class="season-dates">${s.start_date} → ${s.end_date}</span>
+            <span class="season-col-type">${s.season_type ? `<span class="season-type-tag">${escHtml(s.season_type)}</span>` : ''}</span>
+            <span class="season-col-date">${s.start_date}</span>
+            <span class="season-col-date">${s.end_date}</span>
+            <span class="season-col-notes">${s.notes ? escHtml(s.notes) : ''}</span>
           </div>
           <div class="season-item-actions">
             <button class="btn btn-ghost btn-xs" onclick="editSeason(${s.id})">Edit</button>
@@ -166,6 +170,7 @@ function editSeason(id) {
   document.getElementById('season-type').value = s.season_type || '';
   document.getElementById('season-start').value = s.start_date;
   document.getElementById('season-end').value = s.end_date;
+  document.getElementById('season-notes').value = s.notes || '';
   document.getElementById('season-form-title').textContent = 'Edit Season';
   document.getElementById('season-save-btn').textContent = 'Save Changes';
   document.getElementById('season-error').classList.add('hidden');
@@ -196,6 +201,7 @@ async function submitSeasonForm(event) {
     season_type: document.getElementById('season-type').value.trim() || null,
     start_date: document.getElementById('season-start').value,
     end_date: document.getElementById('season-end').value,
+    notes: document.getElementById('season-notes').value.trim() || null,
   };
 
   const errorEl = document.getElementById('season-error');
@@ -223,8 +229,6 @@ async function submitSeasonForm(event) {
 function populateSeasonDropdowns(seasons) {
   const dropdowns = [
     { id: 'filter-season', defaultLabel: 'All seasons' },
-    { id: 'stats-filter-season', defaultLabel: 'Select a season…' },
-    { id: 'graphs-filter-season', defaultLabel: 'Select a season…' },
   ];
   dropdowns.forEach(({ id, defaultLabel }) => {
     const el = document.getElementById(id);
@@ -238,6 +242,12 @@ function populateSeasonDropdowns(seasons) {
       if (String(s.id) === current) opt.selected = true;
       el.appendChild(opt);
     });
+  });
+
+  // Reset lazy-loaded dropdowns so they repopulate on next tab switch
+  ['stats-season-dropdown', 'graphs-season-dropdown'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '<option value="">Select a season\u2026</option>';
   });
 }
 

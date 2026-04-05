@@ -103,7 +103,41 @@ async function loadTotalGraphs() {
   await loadNutritionCharts('total', null);
 }
 
-async function loadSeasonGraphs() {
+function switchGraphsTab(tab) {
+  document.querySelectorAll('#graphs-tab-switcher .tab-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.tab === tab));
+
+  const isSeason = tab === 'season';
+  document.getElementById('graphs-season-selector').style.display = isSeason ? 'block' : 'none';
+  document.getElementById('graphs-total-block').style.display = isSeason ? 'none' : 'block';
+  document.getElementById('graphs-season-block').style.display = isSeason ? 'block' : 'none';
+
+  if (isSeason) {
+    populateGraphsSeasonDropdown();
+  } else {
+    loadTotalGraphs();
+  }
+}
+
+async function populateGraphsSeasonDropdown() {
+  const res = await fetch('/seasons');
+  const seasons = await res.json();
+  const sel = document.getElementById('graphs-season-dropdown');
+  if (sel.options.length > 1) return;
+  seasons.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.id;
+    opt.textContent = s.name;
+    sel.appendChild(opt);
+  });
+}
+
+function onGraphsSeasonChange() {
+  const id = document.getElementById('graphs-season-dropdown').value;
+  if (id) loadSeasonGraphs(id);
+}
+
+async function loadSeasonGraphs(seasonId = null) {
   const emptyEl = document.getElementById('season-graphs-empty');
   const contentEl = document.getElementById('season-graphs-content');
 
@@ -114,15 +148,15 @@ async function loadSeasonGraphs() {
     return;
   }
 
-  const seasonId = document.getElementById('graphs-filter-season')?.value;
-  if (!seasonId) {
+  const id = seasonId || document.getElementById('graphs-season-dropdown')?.value;
+  if (!id) {
     emptyEl.textContent = 'Select a season to view filtered graphs.';
     emptyEl.classList.remove('hidden');
     contentEl.classList.add('hidden');
     _destroyChart('chart-season-activities');
     _destroyChart('chart-season-distance');
     ['chart-scatter-kcal-season', 'chart-scatter-carbs-season', 'chart-kcal-ratio-season',
-     'chart-macros-donut-season', 'chart-kcal-sport-season'].forEach(id => _destroyChart(id));
+     'chart-macros-donut-season', 'chart-kcal-sport-season'].forEach(cid => _destroyChart(cid));
     return;
   }
 
@@ -131,7 +165,7 @@ async function loadSeasonGraphs() {
 
   // Look up full season object for label updates
   const season = (typeof _seasonsData !== 'undefined' && _seasonsData)
-    ? _seasonsData.find(s => String(s.id) === String(seasonId)) ?? null
+    ? _seasonsData.find(s => String(s.id) === String(id)) ?? null
     : null;
 
   // Update Activities & Distance title and date subtitle
@@ -144,12 +178,12 @@ async function loadSeasonGraphs() {
   }
 
   try {
-    const data = await api(`/activities/graphs?season_id=${seasonId}`);
+    const data = await api(`/activities/graphs?season_id=${id}`);
     _renderGraphs(data, 'season');
   } catch (e) {
     showToast('Failed to load season graphs: ' + e.message, 'error');
   }
-  await loadNutritionCharts('season', season ?? { id: seasonId });
+  await loadNutritionCharts('season', season ?? { id });
 }
 
 async function loadNutritionCharts(scope, seasonData = null) {
@@ -424,5 +458,5 @@ async function loadNutritionCharts(scope, seasonData = null) {
 }
 
 async function loadGraphs() {
-  await Promise.all([loadTotalGraphs(), loadSeasonGraphs()]);
+  await loadTotalGraphs();
 }

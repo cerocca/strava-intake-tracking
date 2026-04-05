@@ -95,8 +95,9 @@ function connectStrava() {
 
 async function syncActivities() {
   const btn = document.getElementById('btn-sync');
+  const labelEl = btn.querySelector('.sidebar-label');
   btn.disabled = true;
-  btn.textContent = '↻ Syncing…';
+  if (labelEl) labelEl.textContent = 'Syncing…';
   try {
     const data = await api('/auth/sync', { method: 'POST' });
     showToast(`Sync complete: ${data.synced} new, ${data.updated} updated`, 'success');
@@ -106,7 +107,7 @@ async function syncActivities() {
     showToast(e.message, 'error');
   } finally {
     btn.disabled = false;
-    btn.textContent = '↻ Sync';
+    if (labelEl) labelEl.textContent = 'Sync Strava';
   }
 }
 

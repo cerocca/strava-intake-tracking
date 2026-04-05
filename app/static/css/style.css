@@ -998,20 +998,20 @@ body {
 }
 .season-item:last-child { border-bottom: none; }
 
-.season-item-info { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; flex: 1; min-width: 0; }
+.season-item-info { display: flex; flex-wrap: nowrap; align-items: center; gap: 16px; flex: 1; min-width: 0; }
 .season-item-info strong { font-size: .9rem; min-width: 120px; }
 
 .season-type-tag {
   font-size: .75rem; color: var(--text-muted);
   background: var(--bg); border: 1px solid var(--border);
   border-radius: 20px; padding: 1px 8px;
-  min-width: 60px; margin-right: 12px;
 }
-.season-dates {
-  font-size: .78rem; color: var(--text-muted);
-  font-family: 'DM Mono', monospace;
-  min-width: 180px;
-}
+
+/* Column wrapper spans — always rendered, ensure header/row alignment */
+.season-col-year  { min-width: 44px; flex-shrink: 0; }
+.season-col-type  { min-width: 90px; flex-shrink: 0; }
+.season-col-date  { min-width: 90px; flex-shrink: 0; font-size: .78rem; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+.season-col-notes { min-width: 80px; font-size: .78rem; color: var(--text-muted); font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .season-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
 .season-year-badge {
@@ -1022,8 +1022,6 @@ body {
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 1px 7px;
-  flex-shrink: 0;
-  min-width: 44px;
 }
 
 .seasons-toolbar {
@@ -1056,8 +1054,12 @@ body {
 .sort-indicator.active { opacity: 1; }
 .sort-col-year  { min-width: 44px; }
 .sort-col-name  { min-width: 120px; }
+.sort-col-type  { min-width: 90px; cursor: default; }
+.sort-col-type:hover  { background: none; color: var(--text-muted); }
 .sort-col-start { min-width: 90px; }
-.sort-col-end   { min-width: 80px; }
+.sort-col-end   { min-width: 90px; }
+.sort-col-notes { min-width: 80px; cursor: default; }
+.sort-col-notes:hover { background: none; color: var(--text-muted); }
 
 .seasons-form-wrap {
   background: var(--surface);
@@ -1427,4 +1429,29 @@ body {
   }
 
   .graphs-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   Tab Switcher (Statistics / Graphs section tabs)
+   ============================================================ */
+.tab-switcher {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+.tab-switcher .tab-btn {
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.tab-switcher .tab-btn.active {
+  background: var(--strava);
+  color: #fff;
+  border-color: var(--strava);
 }

@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.2] - 2026-04-05
+
+### Fixed
+- **Sync button**: `syncActivities()` was calling `btn.textContent = …` which destroyed the inner `<span class="sidebar-icon">` and `<span class="sidebar-label">` elements, leaving the button as unstyled plain text after sync; now updates only the label span's text
+- **Version number**: `APP_VERSION` in `config.py` was stuck at `"0.4.3"`; updated to `"0.5.1"` to match the actual release
+
+---
+
+## [0.5.1] - 2026-04-05
+
+### Added
+- **Statistics tab — Total/Season tab switcher**: replaces the always-visible dual-section layout; Total and Season views are now independent tabs with a `.tab-switcher` component; Season tab shows a lazy-loaded season dropdown
+- **Graphs tab — Total/Season tab switcher**: same pattern as Statistics; Total tab shows all-time charts, Season tab shows a season dropdown + filtered charts; switching back to Total reloads unfiltered data
+- **Reusable `.tab-switcher` CSS component**: shared between Statistics and Graphs sections
+- **Season notes field**: optional free-text notes on each season; stored in DB (safe migration), shown in the form and in the seasons list as a dedicated column with header
+
+### Changed
+- Statistics section header renamed from "Total Stats" / "Season Stats" to a single "Statistics" heading with tab buttons
+- Graphs section headers renamed from "Total Graphs" / "Season Graphs" to a single "Graphs" heading with tab buttons
+- `loadSeasonStats()` and `loadSeasonGraphs()` accept an optional `seasonId` parameter; fall back to reading the new per-section dropdowns when not provided
+- `loadGraphs()` now only loads total graphs (season graphs load on demand via the Season tab)
+- `populateSeasonDropdowns()` in seasons.js no longer manages the stats/graphs dropdowns; those are lazily populated and reset on seasons change
+- Seasons list: columns are now always-present wrapper spans (Year, Name, Type, Start date, End date, Notes) with matching header labels and consistent min-widths — fixes misalignment when optional fields are absent
+
+---
+
 ## [0.5.0] - 2026-04-05
 
 ### Added

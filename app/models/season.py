@@ -11,3 +11,4 @@ class Season(Base):
     season_type = Column(String, nullable=True)
     start_date = Column(String, nullable=False)  # YYYY-MM-DD
     end_date = Column(String, nullable=False)     # YYYY-MM-DD
+    notes = Column(String, nullable=True)

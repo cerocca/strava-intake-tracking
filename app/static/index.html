@@ -212,150 +212,168 @@
 
         <!-- TAB: Statistics -->
         <section id="tab-stats" class="tab-content hidden">
-          <div class="section-header"><h2>Total Stats</h2></div>
+          <div class="section-header"><h2>Statistics</h2></div>
 
-          <div class="stats-section-label">Activities</div>
-          <div class="stats-grid">
-            <div class="stat-card"><div class="stat-value" id="stat-total-activities">&#8212;</div><div class="stat-label">Total Activities</div></div>
-            <div class="stat-card"><div class="stat-value" id="stat-tracked-activities">&#8212;</div><div class="stat-label">Tracked Activities</div></div>
-            <div class="stat-card"><div class="stat-value" id="stat-total-distance">&#8212;</div><div class="stat-label">Total Distance (km)</div></div>
-            <div class="stat-card"><div class="stat-value" id="stat-total-calories">&#8212;</div><div class="stat-label">Calories Burned (kJ)</div></div>
-            <div class="stat-card"><div class="stat-value" id="stat-total-foods">&#8212;</div><div class="stat-label">Foods in Database</div></div>
+          <div class="tab-switcher" id="stats-tab-switcher">
+            <button class="tab-btn active" data-tab="total" onclick="switchStatsTab('total')">Total</button>
+            <button class="tab-btn" data-tab="season" onclick="switchStatsTab('season')">Season</button>
           </div>
 
-          <div class="stats-section-label">Nutrition Consumed <span style="font-weight:400;text-transform:none;letter-spacing:0">(tracked activities only)</span></div>
-          <div class="stats-grid">
-            <div class="stat-card"><div class="stat-value" id="stat-total-kcal-consumed">&#8212;</div><div class="stat-label">Total kcal</div></div>
-            <div class="stat-card"><div class="stat-value" id="stat-avg-kcal-consumed">&#8212;</div><div class="stat-label">Avg kcal / activity</div></div>
-            <div class="stat-card"><div class="stat-value" id="stat-total-carbs">&#8212;</div><div class="stat-label">Total Carbs (g)</div></div>
-            <div class="stat-card"><div class="stat-value" id="stat-avg-carbs">&#8212;</div><div class="stat-label">Avg Carbs / activity (g)</div></div>
-            <div class="stat-card"><div class="stat-value" id="stat-total-sugars">&#8212;</div><div class="stat-label">Total Sugars (g)</div></div>
-            <div class="stat-card"><div class="stat-value" id="stat-avg-sugars">&#8212;</div><div class="stat-label">Avg Sugars / activity (g)</div></div>
+          <!-- Season dropdown (hidden by default) -->
+          <div id="stats-season-selector" style="display:none; margin-bottom:16px;">
+            <select id="stats-season-dropdown" class="filter-select" style="max-width:260px;" onchange="onStatsSeasonChange()">
+              <option value="">Select a season&#8230;</option>
+            </select>
           </div>
 
-          <div class="section-header" style="margin-top:36px">
-            <h2>Season Stats</h2>
-            <div class="header-actions">
-              <select id="stats-filter-season" class="filter-select" onchange="loadSeasonStats()">
-                <option value="">Select a season&#8230;</option>
-              </select>
-            </div>
-          </div>
-          <div id="season-stats-empty" class="season-stats-empty hidden"></div>
-          <div id="season-stats-content" class="hidden">
+          <!-- Total stats block -->
+          <div id="stats-total-block">
             <div class="stats-section-label">Activities</div>
             <div class="stats-grid">
-              <div class="stat-card"><div class="stat-value" id="season-stat-total-activities">&#8212;</div><div class="stat-label">Total Activities</div></div>
-              <div class="stat-card"><div class="stat-value" id="season-stat-tracked-activities">&#8212;</div><div class="stat-label">Tracked Activities</div></div>
-              <div class="stat-card"><div class="stat-value" id="season-stat-total-distance">&#8212;</div><div class="stat-label">Total Distance (km)</div></div>
-              <div class="stat-card"><div class="stat-value" id="season-stat-total-calories">&#8212;</div><div class="stat-label">Calories Burned (kJ)</div></div>
+              <div class="stat-card"><div class="stat-value" id="stat-total-activities">&#8212;</div><div class="stat-label">Total Activities</div></div>
+              <div class="stat-card"><div class="stat-value" id="stat-tracked-activities">&#8212;</div><div class="stat-label">Tracked Activities</div></div>
+              <div class="stat-card"><div class="stat-value" id="stat-total-distance">&#8212;</div><div class="stat-label">Total Distance (km)</div></div>
+              <div class="stat-card"><div class="stat-value" id="stat-total-calories">&#8212;</div><div class="stat-label">Calories Burned (kJ)</div></div>
+              <div class="stat-card"><div class="stat-value" id="stat-total-foods">&#8212;</div><div class="stat-label">Foods in Database</div></div>
             </div>
+
             <div class="stats-section-label">Nutrition Consumed <span style="font-weight:400;text-transform:none;letter-spacing:0">(tracked activities only)</span></div>
             <div class="stats-grid">
-              <div class="stat-card"><div class="stat-value" id="season-stat-total-kcal-consumed">&#8212;</div><div class="stat-label">Total kcal</div></div>
-              <div class="stat-card"><div class="stat-value" id="season-stat-avg-kcal-consumed">&#8212;</div><div class="stat-label">Avg kcal / activity</div></div>
-              <div class="stat-card"><div class="stat-value" id="season-stat-total-carbs">&#8212;</div><div class="stat-label">Total Carbs (g)</div></div>
-              <div class="stat-card"><div class="stat-value" id="season-stat-avg-carbs">&#8212;</div><div class="stat-label">Avg Carbs / activity (g)</div></div>
-              <div class="stat-card"><div class="stat-value" id="season-stat-total-sugars">&#8212;</div><div class="stat-label">Total Sugars (g)</div></div>
-              <div class="stat-card"><div class="stat-value" id="season-stat-avg-sugars">&#8212;</div><div class="stat-label">Avg Sugars / activity (g)</div></div>
+              <div class="stat-card"><div class="stat-value" id="stat-total-kcal-consumed">&#8212;</div><div class="stat-label">Total kcal</div></div>
+              <div class="stat-card"><div class="stat-value" id="stat-avg-kcal-consumed">&#8212;</div><div class="stat-label">Avg kcal / activity</div></div>
+              <div class="stat-card"><div class="stat-value" id="stat-total-carbs">&#8212;</div><div class="stat-label">Total Carbs (g)</div></div>
+              <div class="stat-card"><div class="stat-value" id="stat-avg-carbs">&#8212;</div><div class="stat-label">Avg Carbs / activity (g)</div></div>
+              <div class="stat-card"><div class="stat-value" id="stat-total-sugars">&#8212;</div><div class="stat-label">Total Sugars (g)</div></div>
+              <div class="stat-card"><div class="stat-value" id="stat-avg-sugars">&#8212;</div><div class="stat-label">Avg Sugars / activity (g)</div></div>
+            </div>
+          </div>
+
+          <!-- Season stats block (hidden by default) -->
+          <div id="stats-season-block" style="display:none;">
+            <div id="season-stats-empty" class="season-stats-empty hidden"></div>
+            <div id="season-stats-content" class="hidden">
+              <div class="stats-section-label">Activities</div>
+              <div class="stats-grid">
+                <div class="stat-card"><div class="stat-value" id="season-stat-total-activities">&#8212;</div><div class="stat-label">Total Activities</div></div>
+                <div class="stat-card"><div class="stat-value" id="season-stat-tracked-activities">&#8212;</div><div class="stat-label">Tracked Activities</div></div>
+                <div class="stat-card"><div class="stat-value" id="season-stat-total-distance">&#8212;</div><div class="stat-label">Total Distance (km)</div></div>
+                <div class="stat-card"><div class="stat-value" id="season-stat-total-calories">&#8212;</div><div class="stat-label">Calories Burned (kJ)</div></div>
+              </div>
+              <div class="stats-section-label">Nutrition Consumed <span style="font-weight:400;text-transform:none;letter-spacing:0">(tracked activities only)</span></div>
+              <div class="stats-grid">
+                <div class="stat-card"><div class="stat-value" id="season-stat-total-kcal-consumed">&#8212;</div><div class="stat-label">Total kcal</div></div>
+                <div class="stat-card"><div class="stat-value" id="season-stat-avg-kcal-consumed">&#8212;</div><div class="stat-label">Avg kcal / activity</div></div>
+                <div class="stat-card"><div class="stat-value" id="season-stat-total-carbs">&#8212;</div><div class="stat-label">Total Carbs (g)</div></div>
+                <div class="stat-card"><div class="stat-value" id="season-stat-avg-carbs">&#8212;</div><div class="stat-label">Avg Carbs / activity (g)</div></div>
+                <div class="stat-card"><div class="stat-value" id="season-stat-total-sugars">&#8212;</div><div class="stat-label">Total Sugars (g)</div></div>
+                <div class="stat-card"><div class="stat-value" id="season-stat-avg-sugars">&#8212;</div><div class="stat-label">Avg Sugars / activity (g)</div></div>
+              </div>
             </div>
           </div>
         </section>
 
         <!-- TAB: Graphs -->
         <section id="tab-graphs" class="tab-content hidden">
+          <div class="section-header"><h2>Graphs</h2></div>
 
-          <!-- Total Graphs -->
-          <div class="section-header"><h2>Total Graphs</h2></div>
-          <div class="stats-section-label">Activities &amp; Distance</div>
-          <p class="graphs-subsection-subtitle">Last 12 months</p>
-          <div class="graphs-grid">
-            <div class="graph-card">
-              <div class="graph-card-title">Activities per month</div>
-              <canvas id="chart-total-activities"></canvas>
-            </div>
-            <div class="graph-card">
-              <div class="graph-card-title">Distance per month (km)</div>
-              <canvas id="chart-total-distance"></canvas>
-            </div>
+          <div class="tab-switcher" id="graphs-tab-switcher">
+            <button class="tab-btn active" data-tab="total" onclick="switchGraphsTab('total')">Total</button>
+            <button class="tab-btn" data-tab="season" onclick="switchGraphsTab('season')">Season</button>
           </div>
 
-          <h3 class="graphs-subsection-title">Nutrition Charts &#8212; All Time</h3>
-          <p class="graphs-subsection-subtitle">All tracked activities since the beginning</p>
-          <div id="nutrition-charts-empty-total" class="season-stats-empty hidden"></div>
-          <div id="nutrition-charts-content-total" class="hidden">
-            <div class="graphs-grid">
-              <div class="graph-card">
-                <div class="graph-card-title">Kcal consumed vs kJ produced</div>
-                <canvas id="chart-scatter-kcal-total"></canvas>
-              </div>
-              <div class="graph-card">
-                <div class="graph-card-title">Carbs consumed vs duration</div>
-                <canvas id="chart-scatter-carbs-total"></canvas>
-              </div>
-              <div class="graph-card">
-                <div class="graph-card-title">Kcal ratio consumed / burned</div>
-                <canvas id="chart-kcal-ratio-total"></canvas>
-              </div>
-              <div class="graph-card">
-                <div class="graph-card-title">Macros distribution</div>
-                <canvas id="chart-macros-donut-total"></canvas>
-              </div>
-              <div class="graph-card">
-                <div class="graph-card-title">Kcal consumed by sport type</div>
-                <canvas id="chart-kcal-sport-total"></canvas>
-              </div>
-            </div>
+          <!-- Season dropdown (hidden by default) -->
+          <div id="graphs-season-selector" style="display:none; margin-bottom:16px;">
+            <select id="graphs-season-dropdown" class="filter-select" style="max-width:260px;" onchange="onGraphsSeasonChange()">
+              <option value="">Select a season&#8230;</option>
+            </select>
           </div>
 
-          <!-- Season Graphs -->
-          <div class="section-header" style="margin-top:36px">
-            <h2>Season Graphs</h2>
-            <div class="header-actions">
-              <select id="graphs-filter-season" class="filter-select" onchange="loadSeasonGraphs()">
-                <option value="">Select a season&#8230;</option>
-              </select>
-            </div>
-          </div>
-          <div id="season-graphs-empty" class="season-stats-empty hidden"></div>
-          <div id="season-graphs-content" class="hidden">
-            <div id="season-activity-distance-title" class="stats-section-label">Activities &amp; Distance</div>
-            <p id="season-activity-date-subtitle" class="graphs-subsection-subtitle">Last 12 months</p>
+          <!-- Total graphs block -->
+          <div id="graphs-total-block">
+            <div class="stats-section-label">Activities &amp; Distance</div>
+            <p class="graphs-subsection-subtitle">Last 12 months</p>
             <div class="graphs-grid">
               <div class="graph-card">
                 <div class="graph-card-title">Activities per month</div>
-                <canvas id="chart-season-activities"></canvas>
+                <canvas id="chart-total-activities"></canvas>
               </div>
               <div class="graph-card">
                 <div class="graph-card-title">Distance per month (km)</div>
-                <canvas id="chart-season-distance"></canvas>
+                <canvas id="chart-total-distance"></canvas>
               </div>
             </div>
 
-            <h3 id="season-nutrition-charts-title" class="graphs-subsection-title">Nutrition Charts &#8212; Last 12 Months</h3>
-            <p id="season-nutrition-charts-subtitle" class="graphs-subsection-subtitle">Tracked activities in the last 12 months</p>
-            <div id="nutrition-charts-empty-season" class="season-stats-empty hidden"></div>
-            <div id="nutrition-charts-content-season" class="hidden">
+            <h3 class="graphs-subsection-title">Nutrition Charts &#8212; All Time</h3>
+            <p class="graphs-subsection-subtitle">All tracked activities since the beginning</p>
+            <div id="nutrition-charts-empty-total" class="season-stats-empty hidden"></div>
+            <div id="nutrition-charts-content-total" class="hidden">
               <div class="graphs-grid">
                 <div class="graph-card">
                   <div class="graph-card-title">Kcal consumed vs kJ produced</div>
-                  <canvas id="chart-scatter-kcal-season"></canvas>
+                  <canvas id="chart-scatter-kcal-total"></canvas>
                 </div>
                 <div class="graph-card">
                   <div class="graph-card-title">Carbs consumed vs duration</div>
-                  <canvas id="chart-scatter-carbs-season"></canvas>
+                  <canvas id="chart-scatter-carbs-total"></canvas>
                 </div>
                 <div class="graph-card">
                   <div class="graph-card-title">Kcal ratio consumed / burned</div>
-                  <canvas id="chart-kcal-ratio-season"></canvas>
+                  <canvas id="chart-kcal-ratio-total"></canvas>
                 </div>
                 <div class="graph-card">
                   <div class="graph-card-title">Macros distribution</div>
-                  <canvas id="chart-macros-donut-season"></canvas>
+                  <canvas id="chart-macros-donut-total"></canvas>
                 </div>
                 <div class="graph-card">
                   <div class="graph-card-title">Kcal consumed by sport type</div>
-                  <canvas id="chart-kcal-sport-season"></canvas>
+                  <canvas id="chart-kcal-sport-total"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Season graphs block (hidden by default) -->
+          <div id="graphs-season-block" style="display:none;">
+            <div id="season-graphs-empty" class="season-stats-empty hidden"></div>
+            <div id="season-graphs-content" class="hidden">
+              <div id="season-activity-distance-title" class="stats-section-label">Activities &amp; Distance</div>
+              <p id="season-activity-date-subtitle" class="graphs-subsection-subtitle">Last 12 months</p>
+              <div class="graphs-grid">
+                <div class="graph-card">
+                  <div class="graph-card-title">Activities per month</div>
+                  <canvas id="chart-season-activities"></canvas>
+                </div>
+                <div class="graph-card">
+                  <div class="graph-card-title">Distance per month (km)</div>
+                  <canvas id="chart-season-distance"></canvas>
+                </div>
+              </div>
+
+              <h3 id="season-nutrition-charts-title" class="graphs-subsection-title">Nutrition Charts &#8212; Last 12 Months</h3>
+              <p id="season-nutrition-charts-subtitle" class="graphs-subsection-subtitle">Tracked activities in the last 12 months</p>
+              <div id="nutrition-charts-empty-season" class="season-stats-empty hidden"></div>
+              <div id="nutrition-charts-content-season" class="hidden">
+                <div class="graphs-grid">
+                  <div class="graph-card">
+                    <div class="graph-card-title">Kcal consumed vs kJ produced</div>
+                    <canvas id="chart-scatter-kcal-season"></canvas>
+                  </div>
+                  <div class="graph-card">
+                    <div class="graph-card-title">Carbs consumed vs duration</div>
+                    <canvas id="chart-scatter-carbs-season"></canvas>
+                  </div>
+                  <div class="graph-card">
+                    <div class="graph-card-title">Kcal ratio consumed / burned</div>
+                    <canvas id="chart-kcal-ratio-season"></canvas>
+                  </div>
+                  <div class="graph-card">
+                    <div class="graph-card-title">Macros distribution</div>
+                    <canvas id="chart-macros-donut-season"></canvas>
+                  </div>
+                  <div class="graph-card">
+                    <div class="graph-card-title">Kcal consumed by sport type</div>
+                    <canvas id="chart-kcal-sport-season"></canvas>
+                  </div>
                 </div>
               </div>
             </div>
@@ -399,6 +417,10 @@
                 <div class="form-group">
                   <label>End date *</label>
                   <input type="date" id="season-end" class="input" required />
+                </div>
+                <div class="form-group span-2">
+                  <label>Notes</label>
+                  <textarea id="season-notes" class="input" rows="2" style="resize:vertical;" placeholder="Optional notes&#8230;"></textarea>
                 </div>
               </div>
               <div class="seasons-form-footer">

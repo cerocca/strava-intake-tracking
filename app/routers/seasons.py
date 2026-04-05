@@ -14,6 +14,7 @@ class SeasonCreate(BaseModel):
     season_type: str | None = None
     start_date: str  # YYYY-MM-DD
     end_date: str    # YYYY-MM-DD
+    notes: str | None = None
 
 
 class SeasonUpdate(BaseModel):
@@ -22,6 +23,7 @@ class SeasonUpdate(BaseModel):
     season_type: str | None = None
     start_date: str
     end_date: str
+    notes: str | None = None
 
 
 def _check_overlap(db: Session, start: str, end: str, exclude_id: int | None = None) -> Season | None:
@@ -43,6 +45,7 @@ def _season_dict(s: Season) -> dict:
         "season_type": s.season_type,
         "start_date": s.start_date,
         "end_date": s.end_date,
+        "notes": s.notes,
     }
 
 
@@ -72,6 +75,7 @@ async def create_season(data: SeasonCreate, db: Session = Depends(get_db)):
         season_type=data.season_type,
         start_date=data.start_date,
         end_date=data.end_date,
+        notes=data.notes,
     )
     db.add(season)
     db.commit()
@@ -97,6 +101,7 @@ async def update_season(season_id: int, data: SeasonUpdate, db: Session = Depend
     season.season_type = data.season_type
     season.start_date = data.start_date
     season.end_date = data.end_date
+    season.notes = data.notes
     db.commit()
     db.refresh(season)
     return _season_dict(season)

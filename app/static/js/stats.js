@@ -35,20 +35,52 @@ async function loadTotalStats() {
   }
 }
 
-async function loadSeasonStats() {
+function switchStatsTab(tab) {
+  document.querySelectorAll('#stats-tab-switcher .tab-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.tab === tab));
+
+  const isSeason = tab === 'season';
+  document.getElementById('stats-season-selector').style.display = isSeason ? 'block' : 'none';
+  document.getElementById('stats-total-block').style.display = isSeason ? 'none' : 'block';
+  document.getElementById('stats-season-block').style.display = isSeason ? 'block' : 'none';
+
+  if (isSeason) {
+    populateStatsSeasonDropdown();
+  }
+}
+
+async function populateStatsSeasonDropdown() {
+  const res = await fetch('/seasons');
+  const seasons = await res.json();
+  const sel = document.getElementById('stats-season-dropdown');
+  if (sel.options.length > 1) return;
+  seasons.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.id;
+    opt.textContent = s.name;
+    sel.appendChild(opt);
+  });
+}
+
+function onStatsSeasonChange() {
+  const id = document.getElementById('stats-season-dropdown').value;
+  if (id) loadSeasonStats(id);
+}
+
+async function loadSeasonStats(seasonId = null) {
   const emptyEl = document.getElementById('season-stats-empty');
   const contentEl = document.getElementById('season-stats-content');
 
   // Check if any seasons exist
   if (typeof _seasonsData !== 'undefined' && _seasonsData.length === 0) {
-    emptyEl.textContent = 'No seasons defined yet. Create one from the user menu.';
+    emptyEl.textContent = 'No seasons defined yet. Create one in the Seasons section.';
     emptyEl.classList.remove('hidden');
     contentEl.classList.add('hidden');
     return;
   }
 
-  const seasonId = document.getElementById('stats-filter-season')?.value;
-  if (!seasonId) {
+  const id = seasonId || document.getElementById('stats-season-dropdown')?.value;
+  if (!id) {
     emptyEl.textContent = 'Select a season to view filtered stats.';
     emptyEl.classList.remove('hidden');
     contentEl.classList.add('hidden');
@@ -58,7 +90,7 @@ async function loadSeasonStats() {
   emptyEl.classList.add('hidden');
 
   try {
-    const data = await api(`/activities/stats?season_id=${seasonId}`);
+    const data = await api(`/activities/stats?season_id=${id}`);
     contentEl.classList.remove('hidden');
 
     document.getElementById('season-stat-total-activities').textContent = data.total_activities ?? '0';

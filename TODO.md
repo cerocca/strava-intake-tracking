@@ -6,7 +6,6 @@
 
 ## 🗺 Roadmap / Future ideas
 
-- [ ] **Valutare tab Graphs e Statistics**: considerare l'unificazione o la separazione più netta tra sezione Total e sezione Season nei tab Graphs e Statistics
 - [ ] **Minor UI polish** — ongoing refinements to spacing, typography, and layout details
 - [ ] **Dynamic version alert** — notify user when local version is behind latest GitHub release
 - [ ] **Language support** — additional languages beyond English placeholder
@@ -15,6 +14,15 @@
 ---
 
 ## ✅ Completed
+
+### v0.5.2
+- [x] **Sync button broken after sync**: `btn.textContent` was destroying the icon/label spans; fixed to update only the label span
+- [x] **Version number stuck at 0.4.3**: updated `APP_VERSION` in `config.py` to `0.5.2`
+
+### v0.5.1
+- [x] **Statistics tab — Total/Season tab switcher**: independent tabs with lazy season dropdown; replaces always-visible dual sections
+- [x] **Graphs tab — Total/Season tab switcher**: same pattern; switching back to Total reloads unfiltered data
+- [x] **Season notes field**: optional notes on each season; form field + column in seasons list with proper header alignment
 
 ### v0.5.0
 - [x] **Graphs tab — extended charts**: 5 nutrition charts (scatter, bar, doughnut) in both Total and Season sections; scoped canvas IDs; `GET /activities/graphs/nutrition` endpoint with season_id filter

@@ -42,6 +42,7 @@ def _migrate_db():
         ("foods", "serving_grams", "REAL"),
         ("foods", "off_id", "TEXT"),
         ("seasons", "year", "INTEGER"),
+        ("seasons", "notes", "TEXT"),
     ]
     with engine.connect() as conn:
         for table, col, col_type in new_columns:

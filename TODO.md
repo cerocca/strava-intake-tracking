@@ -6,7 +6,7 @@
 
 ## 🗺 Roadmap / Future ideas
 
-- [ ] **Minor UI polish** — ongoing refinements to spacing, typography, and layout details
+- [ ] **Minor UI polish** — ongoing refinements to spacing, typography, and layout details; usare skill `frontend-design` di Anthropic come guida per il passaggio di polish UI una volta completata la struttura funzionale
 - [ ] **Dynamic version alert** — notify user when local version is behind latest GitHub release
 - [ ] **Language support** — additional languages beyond English placeholder
 - [ ] Sync all Strava activities (currently limited to last 100)

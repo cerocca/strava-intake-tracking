@@ -63,7 +63,7 @@ function _ensureSeasonsToolbar() {
   toolbar.className = 'seasons-toolbar';
   toolbar.innerHTML = `
     <input type="search" id="seasons-search-input" class="input seasons-search-input"
-           placeholder="Search seasons…" oninput="setSeasonsSearch(this.value)" />
+           placeholder="${t('seasons.searchPlaceholder')}" oninput="setSeasonsSearch(this.value)" />
   `;
   container.parentElement.insertBefore(toolbar, container);
 }
@@ -78,8 +78,8 @@ function _resetSeasonForm() {
   form.reset();
   document.getElementById('season-form-id').value = '';
   document.getElementById('season-year').value = '';
-  document.getElementById('season-form-title').textContent = 'New Season';
-  document.getElementById('season-save-btn').textContent = 'Create Season';
+  document.getElementById('season-form-title').textContent = t('seasons.formNew');
+  document.getElementById('season-save-btn').textContent = t('seasons.formCreate');
   document.getElementById('season-error').classList.add('hidden');
   document.getElementById('season-error').textContent = '';
 }
@@ -105,7 +105,7 @@ async function refreshSeasonsList() {
     if (typeof loadSeasonStats === 'function') loadSeasonStats();
     if (typeof loadSeasonGraphs === 'function') loadSeasonGraphs();
   } catch (e) {
-    showToast('Failed to load seasons: ' + e.message, 'error');
+    showToast(t('toast.failedToLoadSeasons', { msg: e.message }), 'error');
   }
 }
 
@@ -115,7 +115,7 @@ function renderSeasonsList() {
   _ensureSeasonsToolbar();
 
   if (_seasonsData.length === 0) {
-    container.innerHTML = '<p style="color:var(--text-muted);font-size:.85rem;padding:12px 0">No seasons defined yet.</p>';
+    container.innerHTML = `<p style="color:var(--text-muted);font-size:.85rem;padding:12px 0">${t('seasons.noSeasons')}</p>`;
     return;
   }
 
@@ -125,22 +125,22 @@ function renderSeasonsList() {
   const header = `
     <div class="seasons-sort-header">
       <div class="season-item-info">
-        <button class="sort-col sort-col-year${_seasonsSortCol === 'year'       ? ' active' : ''}" onclick="setSeasonsSort('year')">Year ${_sortIndicator('year')}</button>
-        <button class="sort-col sort-col-name${_seasonsSortCol === 'name'       ? ' active' : ''}" onclick="setSeasonsSort('name')">Name ${_sortIndicator('name')}</button>
-        <span class="sort-col sort-col-type">Type</span>
-        <button class="sort-col sort-col-start${_seasonsSortCol === 'start_date' ? ' active' : ''}" onclick="setSeasonsSort('start_date')">Start date ${_sortIndicator('start_date')}</button>
-        <button class="sort-col sort-col-end${_seasonsSortCol === 'end_date'   ? ' active' : ''}" onclick="setSeasonsSort('end_date')">End date ${_sortIndicator('end_date')}</button>
-        <span class="sort-col sort-col-notes">Notes</span>
+        <button class="sort-col sort-col-year${_seasonsSortCol === 'year'       ? ' active' : ''}" onclick="setSeasonsSort('year')">${t('seasons.colYear')} ${_sortIndicator('year')}</button>
+        <button class="sort-col sort-col-name${_seasonsSortCol === 'name'       ? ' active' : ''}" onclick="setSeasonsSort('name')">${t('seasons.colName')} ${_sortIndicator('name')}</button>
+        <span class="sort-col sort-col-type">${t('seasons.colType')}</span>
+        <button class="sort-col sort-col-start${_seasonsSortCol === 'start_date' ? ' active' : ''}" onclick="setSeasonsSort('start_date')">${t('seasons.colStart')} ${_sortIndicator('start_date')}</button>
+        <button class="sort-col sort-col-end${_seasonsSortCol === 'end_date'   ? ' active' : ''}" onclick="setSeasonsSort('end_date')">${t('seasons.colEnd')} ${_sortIndicator('end_date')}</button>
+        <span class="sort-col sort-col-notes">${t('seasons.colNotes')}</span>
       </div>
       <div class="season-item-actions" aria-hidden="true">
-        <span class="btn btn-ghost btn-xs sort-spacer">Edit</span>
-        <span class="btn btn-danger btn-xs sort-spacer">Del</span>
+        <span class="btn btn-ghost btn-xs sort-spacer">${t('seasons.edit')}</span>
+        <span class="btn btn-danger btn-xs sort-spacer">${t('seasons.delete')}</span>
       </div>
     </div>
   `;
 
   const items = sorted.length === 0
-    ? '<p style="color:var(--text-muted);font-size:.85rem;padding:12px 0">No seasons match your search.</p>'
+    ? `<p style="color:var(--text-muted);font-size:.85rem;padding:12px 0">${t('seasons.noMatch')}</p>`
     : sorted.map(s => `
         <div class="season-item">
           <div class="season-item-info">
@@ -152,8 +152,8 @@ function renderSeasonsList() {
             <span class="season-col-notes">${s.notes ? escHtml(s.notes) : ''}</span>
           </div>
           <div class="season-item-actions">
-            <button class="btn btn-ghost btn-xs" onclick="editSeason(${s.id})">Edit</button>
-            <button class="btn btn-danger btn-xs" onclick="deleteSeason(${s.id})">Delete</button>
+            <button class="btn btn-ghost btn-xs" onclick="editSeason(${s.id})">${t('seasons.edit')}</button>
+            <button class="btn btn-danger btn-xs" onclick="deleteSeason(${s.id})">${t('seasons.delete')}</button>
           </div>
         </div>
       `).join('');
@@ -171,8 +171,8 @@ function editSeason(id) {
   document.getElementById('season-start').value = s.start_date;
   document.getElementById('season-end').value = s.end_date;
   document.getElementById('season-notes').value = s.notes || '';
-  document.getElementById('season-form-title').textContent = 'Edit Season';
-  document.getElementById('season-save-btn').textContent = 'Save Changes';
+  document.getElementById('season-form-title').textContent = t('seasons.formEdit');
+  document.getElementById('season-save-btn').textContent = t('seasons.formSave');
   document.getElementById('season-error').classList.add('hidden');
   const section = document.getElementById('season-form-section');
   section.classList.remove('hidden');
@@ -181,10 +181,10 @@ function editSeason(id) {
 
 async function deleteSeason(id) {
   const s = _seasonsData.find(x => x.id === id);
-  if (!s || !confirm(`Delete season "${s.name}"?`)) return;
+  if (!s || !confirm(t('seasons.deleteConfirm', { name: s.name }))) return;
   try {
     await api(`/seasons/${id}`, { method: 'DELETE' });
-    showToast('Season deleted', 'success');
+    showToast(t('seasons.deleted'), 'success');
     await refreshSeasonsList();
   } catch (e) {
     showToast('Error: ' + e.message, 'error');
@@ -211,10 +211,10 @@ async function submitSeasonForm(event) {
   try {
     if (id) {
       await api(`/seasons/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
-      showToast('Season updated', 'success');
+      showToast(t('seasons.updated'), 'success');
     } else {
       await api('/seasons', { method: 'POST', body: JSON.stringify(payload) });
-      showToast('Season created', 'success');
+      showToast(t('seasons.created'), 'success');
     }
     closeSeasonForm();
     await refreshSeasonsList();
@@ -228,7 +228,7 @@ async function submitSeasonForm(event) {
 
 function populateSeasonDropdowns(seasons) {
   const dropdowns = [
-    { id: 'filter-season', defaultLabel: 'All seasons' },
+    { id: 'filter-season', defaultLabel: t('seasons.allSeasons') },
   ];
   dropdowns.forEach(({ id, defaultLabel }) => {
     const el = document.getElementById(id);
@@ -247,7 +247,7 @@ function populateSeasonDropdowns(seasons) {
   // Reset lazy-loaded dropdowns so they repopulate on next tab switch
   ['stats-season-dropdown', 'graphs-season-dropdown'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.innerHTML = '<option value="">Select a season\u2026</option>';
+    if (el) el.innerHTML = `<option value="">${t('stats.selectSeason')}</option>`;
   });
 }
 

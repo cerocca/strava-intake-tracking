@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from contextlib import asynccontextmanager
+import glob
 import os
 
 from app.database import init_db
@@ -56,3 +57,12 @@ async def health():
 @app.get("/version")
 async def version():
     return {"version": APP_VERSION}
+
+
+@app.get("/locales")
+async def list_locales():
+    """Return sorted list of available locale codes from app/static/locales/."""
+    locales_dir = os.path.join(static_dir, "locales")
+    files = glob.glob(os.path.join(locales_dir, "*.json"))
+    codes = sorted(os.path.splitext(os.path.basename(f))[0] for f in files)
+    return codes

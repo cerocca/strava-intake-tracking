@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.0] - 2026-04-05
+
+### Added
+- **i18n (multi-language support)**: full internationalisation with no build step required
+  - `app/static/locales/en.json` — master English locale (229 keys)
+  - `app/static/locales/it.json` — Italian translation (229 keys)
+  - `app/static/js/i18n.js` — thin loader exposing `window.t(key, vars)` and `window.initI18n(settings)`
+  - `GET /locales` endpoint: lists available language codes from `app/static/locales/*.json`
+  - Language preference stored via existing `/settings` key=`language` (zero schema changes)
+  - Language dropdown in Settings tab; auto-reloads on change (no extra save button)
+  - Adding `locales/de.json` makes Deutsch appear in the dropdown with zero code changes
+- **Translation coverage**: all JS-rendered strings replaced with `t()` calls; static HTML elements use `data-i18n` / `data-i18n-placeholder` attributes applied at init before any tab renders
+- **Chart.js translated**: dataset labels, axis titles, and tooltip labels use `t()` for all charts (scatter, bar, doughnut)
+
+### Changed
+- `DOMContentLoaded` in `app.js` now fetches `/settings` at startup to pass language preference to `initI18n()` before tabs render
+- Language section in Settings replaced from disabled placeholder to functional `<select id="language-select">`
+
+---
+
 ## [0.5.2] - 2026-04-05
 
 ### Fixed

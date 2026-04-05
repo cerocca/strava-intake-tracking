@@ -89,8 +89,8 @@ function _renderGraphs(data, prefix) {
   const labels = slice.map(d => _formatMonth(d.month));
   const counts = slice.map(d => d.activity_count);
   const distances = slice.map(d => d.total_distance_km);
-  _buildBarChart(`chart-${prefix}-activities`, labels, counts, 'activities');
-  _buildBarChart(`chart-${prefix}-distance`, labels, distances, 'km');
+  _buildBarChart(`chart-${prefix}-activities`, labels, counts, t('graphs.activities'));
+  _buildBarChart(`chart-${prefix}-distance`, labels, distances, t('graphs.km'));
 }
 
 async function loadTotalGraphs() {
@@ -98,7 +98,7 @@ async function loadTotalGraphs() {
     const data = await api('/activities/graphs');
     _renderGraphs(data, 'total');
   } catch (e) {
-    showToast('Failed to load graphs: ' + e.message, 'error');
+    showToast(t('toast.failedToLoadGraphs', { msg: e.message }), 'error');
   }
   await loadNutritionCharts('total', null);
 }
@@ -142,7 +142,7 @@ async function loadSeasonGraphs(seasonId = null) {
   const contentEl = document.getElementById('season-graphs-content');
 
   if (typeof _seasonsData !== 'undefined' && _seasonsData.length === 0) {
-    emptyEl.textContent = 'No seasons defined yet. Create one in the Seasons section.';
+    emptyEl.textContent = t('graphs.noSeasons');
     emptyEl.classList.remove('hidden');
     contentEl.classList.add('hidden');
     return;
@@ -150,7 +150,7 @@ async function loadSeasonGraphs(seasonId = null) {
 
   const id = seasonId || document.getElementById('graphs-season-dropdown')?.value;
   if (!id) {
-    emptyEl.textContent = 'Select a season to view filtered graphs.';
+    emptyEl.textContent = t('graphs.selectSeasonPrompt');
     emptyEl.classList.remove('hidden');
     contentEl.classList.add('hidden');
     _destroyChart('chart-season-activities');
@@ -172,7 +172,7 @@ async function loadSeasonGraphs(seasonId = null) {
   if (season) {
     const actTitleEl = document.getElementById('season-activity-distance-title');
     const actSubtitleEl = document.getElementById('season-activity-date-subtitle');
-    if (actTitleEl) actTitleEl.textContent = `Activities \u0026 Distance \u2014 ${season.name}`;
+    if (actTitleEl) actTitleEl.textContent = `${t('graphs.activitiesDistance')} \u2014 ${season.name}`;
     if (actSubtitleEl) actSubtitleEl.textContent =
       `${_fmtSeasonDate(season.start_date)} \u2192 ${_fmtSeasonDate(season.end_date)}`;
   }
@@ -181,7 +181,7 @@ async function loadSeasonGraphs(seasonId = null) {
     const data = await api(`/activities/graphs?season_id=${id}`);
     _renderGraphs(data, 'season');
   } catch (e) {
-    showToast('Failed to load season graphs: ' + e.message, 'error');
+    showToast(t('toast.failedToLoadSeasonGraphs', { msg: e.message }), 'error');
   }
   await loadNutritionCharts('season', season ?? { id });
 }
@@ -198,7 +198,7 @@ async function loadNutritionCharts(scope, seasonData = null) {
   if (scope === 'season' && seasonData?.name) {
     const titleEl = document.getElementById('season-nutrition-charts-title');
     const subtitleEl = document.getElementById('season-nutrition-charts-subtitle');
-    if (titleEl) titleEl.textContent = `Nutrition Charts \u2014 ${seasonData.name}`;
+    if (titleEl) titleEl.textContent = `${t('graphs.nutritionChartsAllTime').split('\u2014')[0].trim()} \u2014 ${seasonData.name}`;
     if (subtitleEl) subtitleEl.textContent =
       `${_fmtSeasonDate(seasonData.start_date)} \u2192 ${_fmtSeasonDate(seasonData.end_date)}`;
   }
@@ -207,7 +207,7 @@ async function loadNutritionCharts(scope, seasonData = null) {
   try {
     data = await api(url);
   } catch (e) {
-    showToast('Failed to load nutrition charts: ' + e.message, 'error');
+    showToast(t('toast.failedToLoadNutritionCharts', { msg: e.message }), 'error');
     return;
   }
 
@@ -222,7 +222,7 @@ async function loadNutritionCharts(scope, seasonData = null) {
   Object.values(ids).forEach(id => _destroyChart(id));
 
   if (data.length === 0) {
-    if (emptyEl) { emptyEl.textContent = 'No tracked activities yet.'; emptyEl.classList.remove('hidden'); }
+    if (emptyEl) { emptyEl.textContent = t('graphs.noTrackedActivities'); emptyEl.classList.remove('hidden'); }
     contentEl?.classList.add('hidden');
     return;
   }
@@ -258,12 +258,12 @@ async function loadNutritionCharts(scope, seasonData = null) {
         },
         scales: {
           x: {
-            title: { display: true, text: 'kJ produced', color: CHART_DEFAULTS.tickColor, font: { family: CHART_DEFAULTS.font, size: 11 } },
+            title: { display: true, text: t('graphs.kjProduced'), color: CHART_DEFAULTS.tickColor, font: { family: CHART_DEFAULTS.font, size: 11 } },
             ticks: { color: CHART_DEFAULTS.tickColor, font: { family: CHART_DEFAULTS.monoFont, size: 11 } },
             grid: { color: CHART_DEFAULTS.gridColor },
           },
           y: {
-            title: { display: true, text: 'kcal consumed', color: CHART_DEFAULTS.tickColor, font: { family: CHART_DEFAULTS.font, size: 11 } },
+            title: { display: true, text: t('graphs.kcalConsumed'), color: CHART_DEFAULTS.tickColor, font: { family: CHART_DEFAULTS.font, size: 11 } },
             beginAtZero: true,
             ticks: { color: CHART_DEFAULTS.tickColor, font: { family: CHART_DEFAULTS.monoFont, size: 11 } },
             grid: { color: CHART_DEFAULTS.gridColor },
@@ -301,12 +301,12 @@ async function loadNutritionCharts(scope, seasonData = null) {
         },
         scales: {
           x: {
-            title: { display: true, text: 'Duration (min)', color: CHART_DEFAULTS.tickColor, font: { family: CHART_DEFAULTS.font, size: 11 } },
+            title: { display: true, text: t('graphs.durationMin'), color: CHART_DEFAULTS.tickColor, font: { family: CHART_DEFAULTS.font, size: 11 } },
             ticks: { color: CHART_DEFAULTS.tickColor, font: { family: CHART_DEFAULTS.monoFont, size: 11 } },
             grid: { color: CHART_DEFAULTS.gridColor },
           },
           y: {
-            title: { display: true, text: 'Carbs (g)', color: CHART_DEFAULTS.tickColor, font: { family: CHART_DEFAULTS.font, size: 11 } },
+            title: { display: true, text: t('graphs.carbsG'), color: CHART_DEFAULTS.tickColor, font: { family: CHART_DEFAULTS.font, size: 11 } },
             beginAtZero: true,
             ticks: { color: CHART_DEFAULTS.tickColor, font: { family: CHART_DEFAULTS.monoFont, size: 11 } },
             grid: { color: CHART_DEFAULTS.gridColor },
@@ -342,7 +342,7 @@ async function loadNutritionCharts(scope, seasonData = null) {
           tooltip: {
             callbacks: {
               title: items => ratioData[items[0].dataIndex].name,
-              label: ctx => `Ratio: ${ctx.parsed.y}`,
+              label: ctx => `${t('graphs.ratio')} ${ctx.parsed.y}`,
             },
             bodyFont: { family: CHART_DEFAULTS.monoFont },
             titleFont: { family: CHART_DEFAULTS.font },
@@ -375,7 +375,12 @@ async function loadNutritionCharts(scope, seasonData = null) {
     _charts[ids.macrosDonut] = new Chart(ctxDonut, {
       type: 'doughnut',
       data: {
-        labels: ['Carbs', 'Proteins', 'Fats', 'Sugars'],
+        labels: [
+          t('nutrition.macro.carbs'),
+          t('nutrition.macro.proteins'),
+          t('nutrition.macro.fats'),
+          t('nutrition.macro.sugars'),
+        ],
         datasets: [{
           data: [totalCarbs, totalProtein, totalFat, totalSugar],
           backgroundColor: ['#FC4C02', '#3b82f6', '#10b981', '#f59e0b'],
@@ -409,11 +414,11 @@ async function loadNutritionCharts(scope, seasonData = null) {
   // Chart 5 — Kcal consumed by sport type (bar)
   const bySport = {};
   data.forEach(a => {
-    const t = a.sport_type || 'Unknown';
-    bySport[t] = (bySport[t] || 0) + a.kcal_consumed;
+    const type = a.sport_type || 'Unknown';
+    bySport[type] = (bySport[type] || 0) + a.kcal_consumed;
   });
   const sportLabels = Object.keys(bySport);
-  const sportValues = sportLabels.map(t => +bySport[t].toFixed(0));
+  const sportValues = sportLabels.map(type => +bySport[type].toFixed(0));
 
   const ctxSport = document.getElementById(ids.kcalSport)?.getContext('2d');
   if (ctxSport) {

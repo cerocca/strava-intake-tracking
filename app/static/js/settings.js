@@ -2,8 +2,42 @@
 // Settings tab
 // ============================================================
 
+const LANG_NAMES = {
+  en: 'English',
+  it: 'Italiano',
+  de: 'Deutsch',
+  fr: 'Français',
+  es: 'Español',
+  pt: 'Português',
+};
+
 async function loadSettings() {
-  await loadActivityTypeFilters();
+  await Promise.all([loadActivityTypeFilters(), loadLanguageSelect()]);
+}
+
+async function loadLanguageSelect() {
+  const select = document.getElementById('language-select');
+  if (!select) return;
+  try {
+    const codes = await api('/locales');
+    select.innerHTML = codes.map(code => {
+      const name = LANG_NAMES[code] || code.toUpperCase();
+      const selected = code === window._currentLang ? ' selected' : '';
+      return `<option value="${code}"${selected}>${name}</option>`;
+    }).join('');
+  } catch {
+    // non-critical: leave select empty
+  }
+}
+
+async function saveLanguage(lang) {
+  try {
+    await api('/settings', {
+      method: 'POST',
+      body: JSON.stringify({ key: 'language', value: lang }),
+    });
+  } catch {}
+  location.reload();
 }
 
 async function loadActivityTypeFilters() {
@@ -17,7 +51,7 @@ async function loadActivityTypeFilters() {
     const excluded = JSON.parse(settingsData.excluded_activity_types || '[]');
     renderActivityTypeFilters(types, excluded);
   } catch (e) {
-    if (container) container.innerHTML = '<p class="settings-placeholder">Failed to load activity types.</p>';
+    if (container) container.innerHTML = `<p class="settings-placeholder">${t('settings.failedToLoad')}</p>`;
   }
 }
 
@@ -25,7 +59,7 @@ function renderActivityTypeFilters(types, excluded) {
   const container = document.getElementById('activity-type-filters');
   if (!container) return;
   if (types.length === 0) {
-    container.innerHTML = '<p class="settings-placeholder">No activity types found. Sync Strava to get started.</p>';
+    container.innerHTML = `<p class="settings-placeholder">${t('settings.noActivityTypes')}</p>`;
     return;
   }
   container.innerHTML = types.map(type => `
@@ -52,6 +86,6 @@ async function saveActivityTypeFilter() {
     if (state.currentTab === 'stats') loadStats();
     if (state.currentTab === 'graphs') loadGraphs();
   } catch (e) {
-    showToast('Failed to save setting: ' + e.message, 'error');
+    showToast(t('toast.failedToSaveSetting', { msg: e.message }), 'error');
   }
 }

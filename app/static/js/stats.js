@@ -31,7 +31,7 @@ async function loadTotalStats() {
     document.getElementById('stat-avg-sugars').textContent =
       data.avg_sugars_consumed != null ? data.avg_sugars_consumed.toLocaleString() : '0';
   } catch (e) {
-    showToast('Failed to load stats: ' + e.message, 'error');
+    showToast(t('toast.failedToLoadStats', { msg: e.message }), 'error');
   }
 }
 
@@ -73,7 +73,7 @@ async function loadSeasonStats(seasonId = null) {
 
   // Check if any seasons exist
   if (typeof _seasonsData !== 'undefined' && _seasonsData.length === 0) {
-    emptyEl.textContent = 'No seasons defined yet. Create one in the Seasons section.';
+    emptyEl.textContent = t('stats.noSeasons');
     emptyEl.classList.remove('hidden');
     contentEl.classList.add('hidden');
     return;
@@ -81,7 +81,7 @@ async function loadSeasonStats(seasonId = null) {
 
   const id = seasonId || document.getElementById('stats-season-dropdown')?.value;
   if (!id) {
-    emptyEl.textContent = 'Select a season to view filtered stats.';
+    emptyEl.textContent = t('stats.selectSeasonPrompt');
     emptyEl.classList.remove('hidden');
     contentEl.classList.add('hidden');
     return;
@@ -113,6 +113,6 @@ async function loadSeasonStats(seasonId = null) {
     document.getElementById('season-stat-avg-sugars').textContent =
       data.avg_sugars_consumed != null ? data.avg_sugars_consumed.toLocaleString() : '0';
   } catch (e) {
-    showToast('Failed to load season stats: ' + e.message, 'error');
+    showToast(t('toast.failedToLoadSeasonStats', { msg: e.message }), 'error');
   }
 }

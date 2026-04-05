@@ -97,17 +97,17 @@ async function syncActivities() {
   const btn = document.getElementById('btn-sync');
   const labelEl = btn.querySelector('.sidebar-label');
   btn.disabled = true;
-  if (labelEl) labelEl.textContent = 'Syncing…';
+  if (labelEl) labelEl.textContent = t('nav.syncing');
   try {
     const data = await api('/auth/sync', { method: 'POST' });
-    showToast(`Sync complete: ${data.synced} new, ${data.updated} updated`, 'success');
+    showToast(t('toast.syncComplete', { synced: data.synced, updated: data.updated }), 'success');
     loadActivities(true);
     loadStats();
   } catch (e) {
     showToast(e.message, 'error');
   } finally {
     btn.disabled = false;
-    if (labelEl) labelEl.textContent = 'Sync Strava';
+    if (labelEl) labelEl.textContent = t('nav.syncStrava');
   }
 }
 
@@ -119,7 +119,7 @@ async function disconnect() {
     state.athletePhoto = '';
     state.athleteId = null;
     updateAuthUI(false, '', '', null);
-    showToast('Disconnected from Strava', 'info');
+    showToast(t('toast.disconnected'), 'info');
   } catch (e) {
     showToast(e.message, 'error');
   }
@@ -147,7 +147,7 @@ function updateAuthUI(connected, name, photoUrl, athleteId) {
   document.getElementById('user-menu-disconnect').classList.toggle('hidden', !connected);
 
   // Dropdown: profile name
-  document.getElementById('user-menu-name').textContent = connected && name ? name : 'Not connected';
+  document.getElementById('user-menu-name').textContent = connected && name ? name : t('user.notConnected');
 
   // Dropdown: View Strava profile link
   const stravaLink = document.getElementById('user-menu-strava-link');
@@ -204,9 +204,11 @@ async function initFooter() {
       if (tag) {
         const latestEl = document.getElementById('footer-latest');
         const linkEl = document.getElementById('footer-latest-link');
-        linkEl.textContent = `latest: ${tag}`;
-        linkEl.href = url;
-        latestEl.classList.remove('hidden');
+        if (linkEl) {
+          linkEl.textContent = `latest: ${tag}`;
+          linkEl.href = url;
+        }
+        if (latestEl) latestEl.classList.remove('hidden');
       }
     }
   } catch {}
@@ -218,6 +220,14 @@ async function initFooter() {
 document.addEventListener('DOMContentLoaded', async () => {
   initTheme();
   initSidebar();
+
+  // Fetch settings once for i18n language preference
+  let _initSettings = {};
+  try {
+    _initSettings = await api('/settings');
+  } catch {}
+  await initI18n(_initSettings);
+
   await checkAuthStatus();
   // Set initial tab classes correctly
   document.querySelectorAll('.tab-content').forEach(s => {

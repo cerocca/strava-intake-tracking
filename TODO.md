@@ -8,7 +8,7 @@
 
 - [ ] **Minor UI polish** — ongoing refinements to spacing, typography, and layout details; usare skill `frontend-design` di Anthropic come guida per il passaggio di polish UI una volta completata la struttura funzionale
 - [ ] **Dynamic version alert** — notify user when local version is behind latest GitHub release
-- [ ] **Language support** — additional languages beyond English placeholder
+- [x] **Language support** — full i18n via `app/static/locales/*.json`; English + Italian; adding a new language requires only a new JSON file
 - [ ] Sync all Strava activities (currently limited to last 100)
 
 ---

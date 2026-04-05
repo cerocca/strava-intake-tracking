@@ -12,7 +12,7 @@ async function loadFoods() {
     const foods = await api(`/foods${search ? `?search=${encodeURIComponent(search)}` : ''}`);
     renderFoodsTable(foods);
   } catch (e) {
-    showToast('Failed to load foods: ' + e.message, 'error');
+    showToast(t('toast.failedToLoadFoods', { msg: e.message }), 'error');
   }
 }
 
@@ -37,7 +37,7 @@ function renderFoodsTable(foods) {
   tbody.innerHTML = foods.map(f => `
     <tr>
       <td>
-        <strong class="food-name-link" onclick="viewFoodModal(_foodsMap[${f.id}])" style="cursor:pointer;color:var(--strava)">${escHtml(f.name)}</strong>${f.off_id ? ` <a class="off-link" href="https://world.openfoodfacts.org/product/${encodeURIComponent(f.off_id)}" target="_blank" rel="noopener" title="View on OpenFoodFacts">O.F.Facts ↗</a>` : ''}
+        <strong class="food-name-link" onclick="viewFoodModal(_foodsMap[${f.id}])" style="cursor:pointer;color:var(--strava)">${escHtml(f.name)}</strong>${f.off_id ? ` <a class="off-link" href="https://world.openfoodfacts.org/product/${encodeURIComponent(f.off_id)}" target="_blank" rel="noopener" title="View on OpenFoodFacts">${t('foods.off.viewLink')}</a>` : ''}
         ${f.brand ? `<div style="font-size:.78rem;color:var(--text-muted)">${escHtml(f.brand)}</div>` : ''}
       </td>
       <td class="mono">${fmt(f.calories)}</td>
@@ -49,8 +49,8 @@ function renderFoodsTable(foods) {
       <td class="mono">${fmt(f.salt, 'g')}</td>
       <td>
         <div class="actions">
-          <button class="btn btn-ghost btn-xs" onclick="openFoodModal(_foodsMap[${f.id}])">Edit</button>
-          <button class="btn btn-ghost btn-xs" style="color:#ef4444" onclick="deleteFoodItem(${f.id}, '${escHtml(f.name)}')">Del</button>
+          <button class="btn btn-ghost btn-xs" onclick="openFoodModal(_foodsMap[${f.id}])">${t('foods.edit')}</button>
+          <button class="btn btn-ghost btn-xs" style="color:#ef4444" onclick="deleteFoodItem(${f.id}, '${escHtml(f.name)}')">${t('foods.delete')}</button>
         </div>
       </td>
     </tr>
@@ -65,11 +65,11 @@ async function searchOFF() {
   const resultsEl = document.getElementById('off-results');
 
   if (!name && !barcode) {
-    showToast('Enter a name or barcode', 'error');
+    showToast(t('foods.off.enterNameOrBarcode'), 'error');
     return;
   }
 
-  resultsEl.innerHTML = '<div class="off-loading">Searching…</div>';
+  resultsEl.innerHTML = `<div class="off-loading">${t('foods.off.searching')}</div>`;
   resultsEl.classList.remove('hidden');
 
   try {
@@ -85,7 +85,7 @@ async function searchOFF() {
     }
 
     if (products.length === 0) {
-      resultsEl.innerHTML = '<div class="off-no-results">No results found.</div>';
+      resultsEl.innerHTML = `<div class="off-no-results">${t('foods.off.noResults')}</div>`;
       return;
     }
 
@@ -105,7 +105,7 @@ async function searchOFF() {
     window._offProducts = products;
 
   } catch (e) {
-    resultsEl.innerHTML = '<div class="off-no-results">Network error. Please try again.</div>';
+    resultsEl.innerHTML = `<div class="off-no-results">${t('foods.off.networkError')}</div>`;
   }
 }
 
@@ -170,7 +170,7 @@ function viewFoodModal(food) {
   const form = document.getElementById('food-form');
 
   title.innerHTML = escHtml(food.name) + (food.off_id
-    ? ` <a class="off-link off-link-modal" href="https://world.openfoodfacts.org/product/${encodeURIComponent(food.off_id)}" target="_blank" rel="noopener" title="View on OpenFoodFacts">O.F.Facts ↗</a>`
+    ? ` <a class="off-link off-link-modal" href="https://world.openfoodfacts.org/product/${encodeURIComponent(food.off_id)}" target="_blank" rel="noopener" title="View on OpenFoodFacts">${t('foods.off.viewLink')}</a>`
     : '');
   form.reset();
   form.querySelector('[name=food_id]').value = food.id;
@@ -203,7 +203,7 @@ function openFoodModal(food = null) {
   const title = document.getElementById('food-modal-title');
   const form = document.getElementById('food-form');
 
-  title.textContent = food ? 'Edit Food' : 'Add Food';
+  title.textContent = food ? t('foods.modal.editTitle') : t('foods.modal.addTitle');
   form.reset();
   form.querySelector('[name=food_id]').value = food ? food.id : '';
 
@@ -254,10 +254,10 @@ async function submitFoodForm(event) {
   try {
     if (_editingFoodId) {
       await api(`/foods/${_editingFoodId}`, { method: 'PUT', body: JSON.stringify(data) });
-      showToast('Food updated', 'success');
+      showToast(t('foods.updated'), 'success');
     } else {
       await api('/foods', { method: 'POST', body: JSON.stringify(data) });
-      showToast('Food added', 'success');
+      showToast(t('foods.added'), 'success');
     }
     document.getElementById('food-modal').classList.add('hidden');
     loadFoods();
@@ -267,10 +267,10 @@ async function submitFoodForm(event) {
 }
 
 async function deleteFoodItem(id, name) {
-  if (!confirm(`Delete "${name}"?`)) return;
+  if (!confirm(t('foods.deleteConfirm', { name }))) return;
   try {
     await api(`/foods/${id}`, { method: 'DELETE' });
-    showToast('Food deleted', 'success');
+    showToast(t('foods.deleted'), 'success');
     loadFoods();
   } catch (e) {
     showToast(e.message, 'error');
@@ -282,7 +282,7 @@ async function deleteFoodItem(id, name) {
 async function exportFoodsCSV() {
   try {
     const resp = await fetch('/foods/export-csv');
-    if (!resp.ok) throw new Error('Export failed');
+    if (!resp.ok) throw new Error(t('foods.exportFailed'));
     const blob = await resp.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -300,9 +300,12 @@ async function importFoodsCSV(event) {
   formData.append('file', file);
   try {
     const resp = await fetch('/foods/import-csv', { method: 'POST', body: formData });
-    if (!resp.ok) throw new Error('Import failed');
+    if (!resp.ok) throw new Error(t('foods.importFailed'));
     const data = await resp.json();
-    showToast(`Imported ${data.imported} foods${data.errors?.length ? ` (${data.errors.length} errors)` : ''}`, 'success');
+    const msg = data.errors?.length
+      ? t('foods.importedWithErrors', { n: data.imported, e: data.errors.length })
+      : t('foods.imported', { n: data.imported });
+    showToast(msg, 'success');
     loadFoods();
   } catch (e) {
     showToast(e.message, 'error');

@@ -18,7 +18,7 @@ Cartella locale: /Users/ciru/strava-intake-tracking
 ```
 strava-intake-tracking/
 ├── app/
-│   ├── main.py              # Entry point FastAPI
+│   ├── main.py              # Entry point FastAPI; GET /locales lists available locale codes
 │   ├── config.py            # Configurazione e variabili env
 │   ├── database.py          # Setup SQLite/SQLAlchemy + _migrate_db()
 │   ├── models/
@@ -40,14 +40,18 @@ strava-intake-tracking/
 │   └── static/
 │       ├── index.html
 │       ├── css/style.css
+│       ├── locales/
+│       │   ├── en.json          # Master locale (229 keys); always loaded as fallback
+│       │   └── it.json          # Italian translation; add <code>.json here for new languages
 │       └── js/
-│           ├── app.js           # Core state, theme, sidebar collapse, tab switching
+│           ├── i18n.js          # Thin loader: window.t(key,vars), window.initI18n(settings)
+│           ├── app.js           # Core state, theme, sidebar collapse, tab switching; calls initI18n at startup
 │           ├── activities.js    # Activity list/cards; escHtml() global utility; season badge
 │           ├── foods.js
 │           ├── stats.js         # loadTotalStats() + loadSeasonStats() separati
 │           ├── seasons.js       # Full-page seasons tab; collapsible form; year field; dropdown populate
 │           ├── graphs.js        # Chart.js bar charts: activities/month + distance/month
-│           └── settings.js      # Activity type filters; theme radio wired in HTML
+│           └── settings.js      # Activity type filters; language dropdown (GET /locales); theme radio wired in HTML
 ├── tests/
 ├── docker/Dockerfile
 ├── docker-compose.yml

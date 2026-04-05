@@ -64,12 +64,12 @@ async function loadSportTypes() {
     const types = await api('/activities/sport_types');
     const select = document.getElementById('filter-sport-type');
     // Keep first option (All types), rebuild rest
-    select.innerHTML = '<option value="">All types</option>';
-    types.forEach(t => {
+    select.innerHTML = `<option value="">${t('activities.allTypes')}</option>`;
+    types.forEach(type => {
       const opt = document.createElement('option');
-      opt.value = t;
-      opt.textContent = t;
-      if (t === actState.filterSportType) opt.selected = true;
+      opt.value = type;
+      opt.textContent = type;
+      if (type === actState.filterSportType) opt.selected = true;
       select.appendChild(opt);
     });
   } catch {
@@ -115,7 +115,7 @@ async function loadActivities(reset = true) {
     actState.skip = actState.items.length;
     renderActivities();
   } catch (e) {
-    showToast('Failed to load activities: ' + e.message, 'error');
+    showToast(t('toast.failedToLoadActivities', { msg: e.message }), 'error');
   }
 }
 
@@ -127,7 +127,7 @@ function renderActivities() {
   const loadMoreWrap = document.getElementById('load-more-wrap');
 
   const items = actState.items;
-  counter.textContent = actState.total > 0 ? `${actState.total} activities` : '';
+  counter.textContent = actState.total > 0 ? t('activities.count', { n: actState.total }) : '';
 
   // Always keep grid/list visibility in sync with viewMode
   if (actState.viewMode === 'list') {
@@ -171,20 +171,20 @@ function _renderCard(a) {
       <div class="activity-stats">
         <div class="activity-stat">
           <span class="activity-stat-value">${formatDistance(a.distance)}</span>
-          <span class="activity-stat-label">Distance</span>
+          <span class="activity-stat-label">${t('activities.distance')}</span>
         </div>
         <div class="activity-stat">
           <span class="activity-stat-value">${formatDuration(a.moving_time)}</span>
-          <span class="activity-stat-label">Duration</span>
+          <span class="activity-stat-label">${t('activities.duration')}</span>
         </div>
         ${a.total_elevation_gain ? `<div class="activity-stat">
           <span class="activity-stat-value">${Math.round(a.total_elevation_gain)} m</span>
-          <span class="activity-stat-label">Elevation</span>
+          <span class="activity-stat-label">${t('activities.elevation')}</span>
         </div>` : ''}
       </div>
       <div class="activity-badges">
         ${a.calories ? `<div class="activity-kcal-badge">⚡ ${Math.round(a.calories)} kJ</div>` : ''}
-        ${a.has_nutrition ? `<div class="activity-nutrition-badge">🥗 Tracked</div>` : ''}
+        ${a.has_nutrition ? `<div class="activity-nutrition-badge">🥗 ${t('activities.tracked')}</div>` : ''}
         ${a.season_name ? `<span class="activity-season-badge">🗓 ${escHtml(a.season_name)}</span>` : ''}
       </div>
     </div>
@@ -200,12 +200,12 @@ function _renderListItem(a) {
         <div class="ali-meta">${escHtml(a.sport_type || '')}${a.sport_type && a.start_date ? ' · ' : ''}${formatDate(a.start_date)}</div>
       </div>
       <div class="ali-stats">
-        ${a.distance ? `<div class="ali-stat"><span class="ali-stat-value">${formatDistance(a.distance)}</span><span class="ali-stat-label">Dist</span></div>` : ''}
-        ${a.moving_time ? `<div class="ali-stat"><span class="ali-stat-value">${formatDuration(a.moving_time)}</span><span class="ali-stat-label">Time</span></div>` : ''}
+        ${a.distance ? `<div class="ali-stat"><span class="ali-stat-value">${formatDistance(a.distance)}</span><span class="ali-stat-label">${t('activities.dist')}</span></div>` : ''}
+        ${a.moving_time ? `<div class="ali-stat"><span class="ali-stat-value">${formatDuration(a.moving_time)}</span><span class="ali-stat-label">${t('activities.time')}</span></div>` : ''}
       </div>
       <div class="ali-badges">
         ${a.calories ? `<div class="activity-kcal-badge">⚡ ${Math.round(a.calories)} kJ</div>` : ''}
-        ${a.has_nutrition ? `<div class="activity-nutrition-badge">🥗 Tracked</div>` : ''}
+        ${a.has_nutrition ? `<div class="activity-nutrition-badge">🥗 ${t('activities.tracked')}</div>` : ''}
         ${a.season_name ? `<span class="activity-season-badge">🗓 ${escHtml(a.season_name)}</span>` : ''}
       </div>
     </div>
@@ -228,7 +228,7 @@ async function openActivityDetail(activityId) {
     renderActivityDetail(activity);
     await loadNutritionLog(activityId);
   } catch (e) {
-    showToast('Failed to load activity: ' + e.message, 'error');
+    showToast(t('toast.failedToLoadActivity', { msg: e.message }), 'error');
   }
 }
 
@@ -248,23 +248,23 @@ function showActivityList() {
 function renderActivityDetail(a) {
   const powerSection = (a.average_watts || a.weighted_average_watts || a.max_watts || a.calories) ? `
     <div class="power-section">
-      <div class="power-section-title">Power Metrics</div>
+      <div class="power-section-title">${t('activity.powerMetrics')}</div>
       <div class="power-stats">
         ${a.average_watts ? `<div class="power-stat">
           <div class="value">${Math.round(a.average_watts)} W</div>
-          <div class="label">Avg Power</div>
+          <div class="label">${t('activity.avgPower')}</div>
         </div>` : ''}
         ${a.weighted_average_watts ? `<div class="power-stat">
           <div class="value">${Math.round(a.weighted_average_watts)} W</div>
-          <div class="label">Weighted Avg</div>
+          <div class="label">${t('activity.weightedAvg')}</div>
         </div>` : ''}
         ${a.max_watts ? `<div class="power-stat">
           <div class="value">${Math.round(a.max_watts)} W</div>
-          <div class="label">Max Power</div>
+          <div class="label">${t('activity.maxPower')}</div>
         </div>` : ''}
         ${a.calories ? `<div class="power-stat">
           <div class="value" style="color:var(--strava)">${Math.round(a.calories)}</div>
-          <div class="label">Total Work (kJ)</div>
+          <div class="label">${t('activity.totalWork')}</div>
         </div>` : ''}
       </div>
     </div>
@@ -282,14 +282,14 @@ function renderActivityDetail(a) {
         ${a.season ? `<span class="activity-season-badge">🗓 ${escHtml(a.season.name)}</span>` : ''}
       </div>
       <div class="activity-detail-stats">
-        ${a.distance ? `<div class="activity-detail-stat"><div class="value">${formatDistance(a.distance)}</div><div class="label">Distance</div></div>` : ''}
-        ${a.moving_time ? `<div class="activity-detail-stat"><div class="value">${formatDuration(a.moving_time)}</div><div class="label">Moving time</div></div>` : ''}
-        ${a.elapsed_time ? `<div class="activity-detail-stat"><div class="value">${formatDuration(a.elapsed_time)}</div><div class="label">Elapsed time</div></div>` : ''}
-        ${a.total_elevation_gain ? `<div class="activity-detail-stat"><div class="value">${Math.round(a.total_elevation_gain)} m</div><div class="label">Elevation</div></div>` : ''}
+        ${a.distance ? `<div class="activity-detail-stat"><div class="value">${formatDistance(a.distance)}</div><div class="label">${t('activities.distance')}</div></div>` : ''}
+        ${a.moving_time ? `<div class="activity-detail-stat"><div class="value">${formatDuration(a.moving_time)}</div><div class="label">${t('activities.movingTime')}</div></div>` : ''}
+        ${a.elapsed_time ? `<div class="activity-detail-stat"><div class="value">${formatDuration(a.elapsed_time)}</div><div class="label">${t('activities.elapsedTime')}</div></div>` : ''}
+        ${a.total_elevation_gain ? `<div class="activity-detail-stat"><div class="value">${Math.round(a.total_elevation_gain)} m</div><div class="label">${t('activities.elevation')}</div></div>` : ''}
       </div>
       ${powerSection}
       <a class="strava-link" href="${a.strava_url}" target="_blank" rel="noopener">
-        View on Strava ↗
+        ${t('activity.viewOnStrava')}
       </a>
     </div>
   `;
@@ -303,7 +303,7 @@ async function loadNutritionLog(activityId) {
     const logs = await api(`/nutrition/${activityId}`);
     renderNutritionLog(logs);
   } catch (e) {
-    showToast('Failed to load nutrition log: ' + e.message, 'error');
+    showToast(t('toast.failedToLoadNutrition', { msg: e.message }), 'error');
   }
 }
 
@@ -350,13 +350,13 @@ function renderNutritionLog(logs) {
   }, { calories: 0, carbohydrates: 0, sugars: 0, proteins: 0, fats: 0 });
 
   summaryEl.innerHTML = logs.length === 0
-    ? '<span style="color:var(--text-muted);font-size:.85rem">No foods logged yet.</span>'
+    ? `<span style="color:var(--text-muted);font-size:.85rem">${t('nutrition.noFoodsLogged')}</span>`
     : `
-      <div class="nutr-chip"><div class="nv">${totals.calories.toFixed(0)}</div><div class="nl">kcal</div></div>
-      <div class="nutr-chip"><div class="nv">${totals.carbohydrates.toFixed(1)}g</div><div class="nl">Carbs</div></div>
-      <div class="nutr-chip"><div class="nv">${totals.sugars.toFixed(1)}g</div><div class="nl">Sugars</div></div>
-      <div class="nutr-chip"><div class="nv">${totals.proteins.toFixed(1)}g</div><div class="nl">Proteins</div></div>
-      <div class="nutr-chip"><div class="nv">${totals.fats.toFixed(1)}g</div><div class="nl">Fats</div></div>
+      <div class="nutr-chip"><div class="nv">${totals.calories.toFixed(0)}</div><div class="nl">${t('nutrition.macro.kcalChip')}</div></div>
+      <div class="nutr-chip"><div class="nv">${totals.carbohydrates.toFixed(1)}g</div><div class="nl">${t('nutrition.macro.carbsChip')}</div></div>
+      <div class="nutr-chip"><div class="nv">${totals.sugars.toFixed(1)}g</div><div class="nl">${t('nutrition.macro.sugarsChip')}</div></div>
+      <div class="nutr-chip"><div class="nv">${totals.proteins.toFixed(1)}g</div><div class="nl">${t('nutrition.macro.proteinsChip')}</div></div>
+      <div class="nutr-chip"><div class="nv">${totals.fats.toFixed(1)}g</div><div class="nl">${t('nutrition.macro.fatsChip')}</div></div>
     `;
 
   if (logs.length === 0) {
@@ -368,7 +368,15 @@ function renderNutritionLog(logs) {
     <table class="log-table">
       <thead>
         <tr>
-          <th>Food</th><th>Portion</th><th>QTY</th><th>kcal</th><th>Carbs</th><th>Sugars</th><th>Prot</th><th>Fats</th><th></th>
+          <th>${t('nutrition.table.food')}</th>
+          <th>${t('nutrition.table.portion')}</th>
+          <th>${t('nutrition.table.qty')}</th>
+          <th>${t('nutrition.table.kcal')}</th>
+          <th>${t('nutrition.table.carbs')}</th>
+          <th>${t('nutrition.table.sugars')}</th>
+          <th>${t('nutrition.table.prot')}</th>
+          <th>${t('nutrition.table.fats')}</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -400,7 +408,7 @@ async function removeNutritionLogs(ids) {
     await Promise.all(ids.map(id => api(`/nutrition/${id}`, { method: 'DELETE' })));
     await loadNutritionLog(actState.currentId);
     loadStats();
-    showToast('Removed', 'success');
+    showToast(t('nutrition.removed'), 'success');
   } catch (e) {
     showToast(e.message, 'error');
   }
@@ -421,7 +429,7 @@ async function _doFoodSearch() {
     const url = q ? `/foods?search=${encodeURIComponent(q)}&limit=10` : `/foods?limit=200`;
     _foodResults = await api(url);
     if (_foodResults.length === 0) {
-      dropdown.innerHTML = '<div class="dropdown-item" style="color:var(--text-muted)">No results</div>';
+      dropdown.innerHTML = `<div class="dropdown-item" style="color:var(--text-muted)">${t('nutrition.noResults')}</div>`;
     } else {
       dropdown.innerHTML = _foodResults.map(f => `
         <div class="dropdown-item" onclick="selectFood(${f.id})">
@@ -448,7 +456,7 @@ function selectFood(foodId) {
   const servingHint = document.getElementById('serving-hint');
   if (food.serving_grams) {
     qtyInput.value = food.serving_grams;
-    servingHint.textContent = `serving: ${food.serving_grams}g`;
+    servingHint.textContent = t('nutrition.serving', { n: food.serving_grams });
     servingHint.classList.remove('hidden');
   } else {
     qtyInput.value = '';
@@ -467,8 +475,8 @@ document.addEventListener('click', e => {
 async function addFoodToActivity() {
   const foodId = parseInt(document.getElementById('food-search-input').dataset.selectedId);
   const qty = parseFloat(document.getElementById('food-quantity').value);
-  if (!foodId) { showToast('Select a food first', 'error'); return; }
-  if (!qty || qty <= 0) { showToast('Enter a valid quantity in grams', 'error'); return; }
+  if (!foodId) { showToast(t('nutrition.selectFood'), 'error'); return; }
+  if (!qty || qty <= 0) { showToast(t('nutrition.enterQuantity'), 'error'); return; }
   if (!actState.currentId) return;
 
   try {
@@ -482,7 +490,7 @@ async function addFoodToActivity() {
     document.getElementById('serving-hint').classList.add('hidden');
     await loadNutritionLog(actState.currentId);
     loadStats();
-    showToast('Food added', 'success');
+    showToast(t('nutrition.foodAdded'), 'success');
   } catch (e) {
     showToast(e.message, 'error');
   }
@@ -529,20 +537,20 @@ function renderNutritionViz(logs) {
 
   section.innerHTML = `
     <div class="nutrition-viz-card">
-      <div class="nvs-title">Nutrition Summary</div>
+      <div class="nvs-title">${t('nutrition.viz.title')}</div>
 
       <div class="nvs-stats-row">
         <div class="nvs-stat">
           <div class="nvs-stat-value">${totalKcal.toFixed(0)}</div>
-          <div class="nvs-stat-label">kcal consumed</div>
+          <div class="nvs-stat-label">${t('nutrition.summary.kcalConsumed')}</div>
         </div>
         <div class="nvs-stat">
           <div class="nvs-stat-value">${carbsMoving}</div>
-          <div class="nvs-stat-label">Carbs/h (moving)</div>
+          <div class="nvs-stat-label">${t('nutrition.summary.carbsMoving')}</div>
         </div>
         <div class="nvs-stat">
           <div class="nvs-stat-value">${carbsElapsed}</div>
-          <div class="nvs-stat-label">Carbs/h (elapsed)</div>
+          <div class="nvs-stat-label">${t('nutrition.summary.carbsElapsed')}</div>
         </div>
       </div>
 
@@ -585,7 +593,12 @@ function _buildActivityDonut(canvasId, carbs, protein, fat, sugar) {
   _actDetailCharts[canvasId] = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: ['Carbs', 'Proteins', 'Fats', 'Sugars'],
+      labels: [
+        t('nutrition.macro.carbs'),
+        t('nutrition.macro.proteins'),
+        t('nutrition.macro.fats'),
+        t('nutrition.macro.sugars'),
+      ],
       datasets: [{
         data: [carbs, protein, fat, sugar],
         backgroundColor: ['#FC4C02', '#3b82f6', '#10b981', '#f59e0b'],
@@ -620,7 +633,7 @@ function _buildActivityKcalCompare(canvasId, consumed, burned) {
   _actDetailCharts[canvasId] = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['kcal consumed', 'kcal burned'],
+      labels: [t('nutrition.macro.kcalConsumed'), t('nutrition.macro.kcalBurned')],
       datasets: [{
         data: [consumed, burned],
         backgroundColor: ['#FC4C02', '#6366f1'],
@@ -671,26 +684,26 @@ function openFoodDetail(logId) {
   }
 
   const macros = [
-    { label: 'Calories',       value: log.kcal_100g,    unit: ' kcal' },
-    { label: 'Carbohydrates',  value: log.carbs_100g,   unit: 'g' },
-    { label: 'Sugars',         value: log.sugars_100g,  unit: 'g' },
-    { label: 'Protein',        value: log.proteins_100g,unit: 'g' },
-    { label: 'Fat',            value: log.fat_100g,     unit: 'g' },
-    { label: 'Saturated fat',  value: log.sat_fat_100g, unit: 'g' },
-    { label: 'Fiber',          value: log.fiber_100g,   unit: 'g' },
-    { label: 'Salt',           value: log.salt_100g,    unit: 'g' },
+    { key: 'nutrition.detail.calories',      value: log.kcal_100g,    unit: ' kcal' },
+    { key: 'nutrition.detail.carbohydrates', value: log.carbs_100g,   unit: 'g' },
+    { key: 'nutrition.detail.sugars',        value: log.sugars_100g,  unit: 'g' },
+    { key: 'nutrition.detail.protein',       value: log.proteins_100g, unit: 'g' },
+    { key: 'nutrition.detail.fat',           value: log.fat_100g,     unit: 'g' },
+    { key: 'nutrition.detail.saturatedFat',  value: log.sat_fat_100g, unit: 'g' },
+    { key: 'nutrition.detail.fiber',         value: log.fiber_100g,   unit: 'g' },
+    { key: 'nutrition.detail.salt',          value: log.salt_100g,    unit: 'g' },
   ].filter(m => m.value != null);
 
   document.getElementById('food-detail-macros').innerHTML = macros.map(m =>
     `<div class="food-detail-row">
-      <span>${escHtml(m.label)}</span>
-      <span class="mono">${m.value}${m.unit} <span class="food-detail-per100">/ 100g</span></span>
+      <span>${escHtml(t(m.key))}</span>
+      <span class="mono">${m.value}${m.unit} <span class="food-detail-per100">${t('nutrition.detail.per100g')}</span></span>
     </div>`
   ).join('');
 
   const servingEl = document.getElementById('food-detail-serving');
   if (log.serving_grams) {
-    servingEl.textContent = `Serving size: ${log.serving_grams}g`;
+    servingEl.textContent = t('nutrition.servingSize', { n: log.serving_grams });
     servingEl.classList.remove('hidden');
   } else {
     servingEl.classList.add('hidden');

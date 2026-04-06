@@ -17,7 +17,8 @@ Complete installation, configuration, and technical reference.
 9. [Project structure](#project-structure)
 10. [Tech stack](#tech-stack)
 11. [Database & migrations](#database--migrations)
-12. [Localization](#localization)
+12. [Tests](#tests)
+13. [Localization](#localization)
 
 ---
 
@@ -275,6 +276,15 @@ To inspect the database directly:
 sqlite3 data/intaketracking.db
 .tables
 .schema activities
+```
+
+---
+
+## Tests
+
+```bash
+source venv/bin/activate
+pytest tests/ -v
 ```
 
 ---

@@ -91,15 +91,6 @@ Interactive Swagger UI available at [http://localhost:8000/docs](http://localhos
 
 ---
 
-## 🧪 Tests
-
-```bash
-source venv/bin/activate
-pytest tests/ -v
-```
-
----
-
 ## 📄 License
 
 MIT

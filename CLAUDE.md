@@ -28,20 +28,20 @@ strava-intake-tracking/
 │   │   ├── nutrition_log.py # NutritionLog (FK activity+food, quantity_grams)
 │   │   └── season.py        # Season (name, season_type, year, start_date, end_date)
 │   ├── routers/
-│   │   ├── strava.py        # OAuth2 + sync attività; returns athlete_photo, athlete_id
+│   │   ├── strava.py        # Two routers: router(/auth) + strava_router(/strava); _upsert_activities() shared helper; POST /strava/sync-all for full history; returns athlete_photo, athlete_id
 │   │   ├── activities.py    # Lista, dettaglio, filtri, stats, graphs aggregation; _get_excluded_types()
 │   │   ├── foods.py         # CRUD database alimentare
 │   │   ├── nutrition.py     # Log nutrizione per attività
 │   │   ├── seasons.py       # CRUD /seasons con validazione overlap; year field; order by year DESC
 │   │   └── settings.py      # GET/POST /settings — key/value app settings (upsert)
 │   ├── services/
-│   │   ├── strava_service.py    # Token store JSON, auto refresh, fetch Strava
+│   │   ├── strava_service.py    # Token store JSON, auto refresh, fetch Strava; fetch_all_activities() paginates all pages
 │   │   └── nutrition_service.py # Macro totals per attività
 │   └── static/
 │       ├── index.html
 │       ├── css/style.css
 │       ├── locales/
-│       │   ├── en.json          # Master locale (229 keys); always loaded as fallback
+│       │   ├── en.json          # Master locale (234 keys); always loaded as fallback
 │       │   └── it.json          # Italian translation; add <code>.json here for new languages
 │       └── js/
 │           ├── i18n.js          # Thin loader: window.t(key,vars), window.initI18n(settings)
@@ -51,7 +51,7 @@ strava-intake-tracking/
 │           ├── stats.js         # loadTotalStats() + loadSeasonStats() separati
 │           ├── seasons.js       # Full-page seasons tab; collapsible form; year field; dropdown populate
 │           ├── graphs.js        # Chart.js bar charts: activities/month + distance/month
-│           └── settings.js      # Activity type filters; language dropdown (GET /locales); theme radio wired in HTML
+│           └── settings.js      # Activity type filters; language dropdown (GET /locales); theme radio wired in HTML; Strava history section (loadStravaHistorySection)
 ├── tests/
 ├── docker/Dockerfile
 ├── docker-compose.yml

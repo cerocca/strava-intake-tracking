@@ -114,3 +114,16 @@ async def fetch_activities(per_page: int = 100, page: int = 1) -> list[dict]:
     if resp.status_code != 200:
         return []
     return resp.json()
+
+
+async def fetch_all_activities() -> list[dict]:
+    """Fetch every activity from Strava by paginating until empty."""
+    all_activities: list[dict] = []
+    page = 1
+    while True:
+        batch = await fetch_activities(per_page=200, page=page)
+        if not batch:
+            break
+        all_activities.extend(batch)
+        page += 1
+    return all_activities

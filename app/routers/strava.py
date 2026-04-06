@@ -11,6 +11,7 @@ import app.services.strava_service as strava_service
 from datetime import datetime, timezone
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+strava_router = APIRouter(prefix="/strava", tags=["strava"])
 
 STRAVA_AUTH_URL = "https://www.strava.com/oauth/authorize"
 
@@ -80,15 +81,19 @@ async def sync_activities(db: Session = Depends(get_db)):
             raise HTTPException(status_code=401, detail="Not connected to Strava")
         return {"synced": 0, "updated": 0, "total": 0}
 
+    synced, updated = _upsert_activities(activities, db)
+    db.commit()
+    return {"synced": synced, "updated": updated, "total": len(activities)}
+
+
+def _upsert_activities(activities: list[dict], db: Session) -> tuple[int, int]:
+    """Upsert a list of Strava activity dicts into the DB. Returns (synced, updated)."""
     synced = 0
     updated = 0
-
     for act_data in activities:
-        # Store kilojoules directly (total mechanical work as shown on Strava)
         kj = act_data.get("kilojoules") or 0
         calories = round(kj, 1) if kj > 0 else None
 
-        # Parse ISO date
         start_date = None
         if raw_date := act_data.get("start_date"):
             try:
@@ -127,6 +132,26 @@ async def sync_activities(db: Session = Depends(get_db)):
             )
             db.add(activity)
             synced += 1
+    return synced, updated
 
+
+@strava_router.post("/sync-all")
+async def sync_all_activities(db: Session = Depends(get_db)):
+    """Fetch and upsert the complete Strava activity history (all pages)."""
+    athlete = await strava_service.fetch_athlete()
+    if athlete:
+        token = strava_service.load_token()
+        if token:
+            token["athlete"] = athlete
+            strava_service.save_token(token)
+
+    activities = await strava_service.fetch_all_activities()
+    if not activities:
+        token = strava_service.load_token()
+        if not token:
+            raise HTTPException(status_code=401, detail="Not connected to Strava")
+        return {"synced": 0, "updated": 0, "total": 0}
+
+    synced, updated = _upsert_activities(activities, db)
     db.commit()
     return {"synced": synced, "updated": updated, "total": len(activities)}

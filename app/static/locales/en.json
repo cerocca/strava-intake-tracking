@@ -14,6 +14,9 @@
   "user.connectStrava": "Connect Strava",
   "user.disconnect": "Disconnect",
 
+  "user_menu.sync_last_activities": "Sync last activities",
+  "user_menu.sync_result": "Synced {count} new activities",
+
   "activities.title": "Recent Activities",
   "activities.allTypes": "All types",
   "activities.allActivities": "All activities",
@@ -215,6 +218,9 @@
 
   "settings.title": "Settings",
   "settings.appearance": "Appearance",
+  "settings.strava_history.title": "Strava history sync",
+  "settings.strava_history.description": "To import activities older than the last 100, run this command from your terminal while the app is running:",
+  "settings.strava_history.note": "This may take a moment depending on the size of your Strava history.",
   "settings.themeLight": "Light",
   "settings.themeDark": "Dark",
   "settings.themeSystem": "System",

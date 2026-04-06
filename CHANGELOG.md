@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.1] - 2026-04-06
+
+### Added
+- **Full history sync endpoint** — `POST /strava/sync-all` paginates through the entire Strava history (200 activities per page) and upserts all records; accessible via curl while the app is running
+- **Settings tab — Strava history sync section** — new card with translated title, description, `curl` command code block, and note; all strings in `en.json` and `it.json`
+- **New i18n keys** — `user_menu.sync_last_activities`, `user_menu.sync_result`, `settings.strava_history.title`, `settings.strava_history.description`, `settings.strava_history.note` added to `en.json` and `it.json`
+
+### Changed
+- **Strava sync moved to user dropdown** — "Sync last activities" button in the header avatar menu; shows spinner label while running, then displays synced count for 3 s before resetting; sidebar sync button removed
+- **User dropdown — divider** — separator added between athlete name block and "View Strava profile"
+- **User dropdown — styling** — "View Strava profile" in Strava orange (`#FC4C02`); "Disconnect" in red (`#dc2626`, bold)
+- **Backend refactor** — `_upsert_activities()` extracted as shared helper in `strava.py`; both `/auth/sync` and `/strava/sync-all` use it; `fetch_all_activities()` added to `strava_service.py`
+
+---
+
 ## [0.6.0] - 2026-04-05
 
 ### Added

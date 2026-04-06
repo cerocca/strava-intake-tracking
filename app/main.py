@@ -25,6 +25,7 @@ app = FastAPI(
 
 # API routers
 app.include_router(strava.router)
+app.include_router(strava.strava_router)
 app.include_router(activities.router)
 app.include_router(foods.router)
 app.include_router(nutrition.router)

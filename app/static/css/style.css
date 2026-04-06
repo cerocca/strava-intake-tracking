@@ -952,25 +952,19 @@ body {
 .user-menu-lang-label { font-size: .875rem; color: var(--text); }
 .user-menu-lang-select { width: 100%; font-size: .8rem; padding: 4px 8px; }
 
-.user-menu-strava-link {
-  display: block;
-  padding: 4px 16px 10px;
-  font-size: .78rem; color: var(--strava);
-  text-decoration: none;
-}
-.user-menu-strava-link:hover { text-decoration: underline; }
-
 .user-menu-item {
   display: block; width: 100%;
   padding: 10px 16px;
   background: none; border: none; cursor: pointer;
-  font-family: inherit; font-size: .875rem; line-height: 1.5;
-  color: var(--text); text-align: left;
+  font-family: inherit; font-size: .875rem; font-weight: 400; line-height: 1.5;
+  color: var(--text); text-align: left; text-decoration: none;
   transition: background .1s;
 }
 .user-menu-item:hover { background: var(--bg); }
 .user-menu-lang.user-menu-item { cursor: default; }
 .user-menu-lang.user-menu-item:hover { background: none; }
+#user-menu-strava-link { color: #FC4C02; }
+#user-menu-disconnect { color: #dc2626; font-weight: 600; }
 
 /* ============================================================
    Seasons page (full tab)
@@ -1318,6 +1312,19 @@ body {
   font-size: .85rem;
   color: var(--text-muted);
   margin-bottom: 12px;
+}
+
+.settings-code-block {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-family: 'DM Mono', 'Fira Mono', monospace;
+  font-size: .8rem;
+  color: var(--text);
+  margin: 0 0 12px;
+  overflow-x: auto;
+  white-space: pre;
 }
 
 .type-filters-wrap {

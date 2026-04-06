@@ -52,8 +52,12 @@
                 </div>
                 <span id="user-menu-name" class="user-menu-name" data-i18n="user.notConnected">Not connected</span>
               </div>
-              <a id="user-menu-strava-link" href="#" target="_blank" rel="noopener" class="user-menu-strava-link hidden" data-i18n="user.viewStravaProfile">View Strava profile &#8599;</a>
               <div class="user-menu-sep"></div>
+              <a id="user-menu-strava-link" href="#" target="_blank" rel="noopener" class="user-menu-item hidden" data-i18n="user.viewStravaProfile">View Strava profile &#8599;</a>
+              <button id="user-menu-sync" class="user-menu-item hidden" onclick="syncActivitiesFromMenu()">
+                <span id="user-menu-sync-label" data-i18n="user_menu.sync_last_activities">Sync last activities</span>
+              </button>
+              <div id="user-menu-sep-connected" class="user-menu-sep hidden"></div>
               <button id="user-menu-connect" class="user-menu-item" onclick="connectStrava(); closeUserMenu()" data-i18n="user.connectStrava">Connect Strava</button>
               <button id="user-menu-disconnect" class="user-menu-item hidden" onclick="disconnect(); closeUserMenu()" data-i18n="user.disconnect">Disconnect</button>
             </div>
@@ -95,11 +99,6 @@
         </div>
 
         <div class="sidebar-bottom">
-          <!-- Sync Strava -->
-          <button id="btn-sync" class="sidebar-sync hidden" onclick="syncActivities()">
-            <span class="sidebar-icon">&#8635;</span>
-            <span class="sidebar-label" data-i18n="nav.syncStrava">Sync Strava</span>
-          </button>
           <!-- Footer info -->
           <div class="sidebar-footer">
             <div class="sidebar-footer-row sidebar-label">
@@ -486,6 +485,13 @@
             <div id="activity-type-filters" class="type-filters-wrap">
               <p class="settings-placeholder" data-i18n="settings.loading">Loading&#8230;</p>
             </div>
+          </div>
+
+          <div class="settings-section">
+            <h3 class="settings-section-title" id="settings-strava-history-title"></h3>
+            <p class="settings-section-desc" id="settings-strava-history-desc"></p>
+            <pre class="settings-code-block"><code>curl -X POST http://localhost:8000/strava/sync-all</code></pre>
+            <p class="settings-section-desc" id="settings-strava-history-note"></p>
           </div>
         </section>
 

@@ -14,6 +14,9 @@
   "user.connectStrava": "Connetti Strava",
   "user.disconnect": "Disconnetti",
 
+  "user_menu.sync_last_activities": "Sincronizza ultime attivit\u00e0",
+  "user_menu.sync_result": "Sincronizzate {count} nuove attivit\u00e0",
+
   "activities.title": "Attivit\u00e0 Recenti",
   "activities.allTypes": "Tutti i tipi",
   "activities.allActivities": "Tutte le attivit\u00e0",
@@ -215,6 +218,9 @@
 
   "settings.title": "Impostazioni",
   "settings.appearance": "Aspetto",
+  "settings.strava_history.title": "Sincronizzazione storico Strava",
+  "settings.strava_history.description": "Per importare attivit\u00e0 precedenti alle ultime 100, esegui questo comando dal terminale mentre l\u2019app \u00e8 in esecuzione:",
+  "settings.strava_history.note": "Potrebbe richiedere qualche momento in base alla dimensione dello storico Strava.",
   "settings.themeLight": "Chiaro",
   "settings.themeDark": "Scuro",
   "settings.themeSystem": "Sistema",

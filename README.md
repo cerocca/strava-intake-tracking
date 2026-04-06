@@ -1,6 +1,6 @@
 # 🥗 Strava intake tracking app
 
-![Version](https://img.shields.io/badge/version-0.6.0-orange)
+![Version](https://img.shields.io/badge/version-0.6.1-orange)
 ![Python](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-ready-2496ED?logo=docker&logoColor=white)
@@ -38,7 +38,8 @@
 - **Settings tab** — Appearance (dark/light/system theme), Language selector, Activity Filters
 - **Sidebar navigation** — Collapsible vertical sidebar; collapse state persisted in localStorage
 - **Dark / light / system theme** — CSS custom properties; theme preference persisted in localStorage
-- **User menu** — Header avatar dropdown: Strava profile (name, photo, link), Connect/Disconnect
+- **User menu** — Header avatar dropdown: athlete name & photo → divider → View Strava profile (orange) → Sync last activities → divider → Disconnect (red); sync shows live count on completion
+- **Strava history sync** — Full history import via `curl -X POST http://localhost:8000/strava/sync-all`; instructions and curl command shown in the Settings tab
 - **Dynamic version** — Local version + latest GitHub release link in sidebar footer
 - **Docker ready** — One-command self-hosted deploy
 

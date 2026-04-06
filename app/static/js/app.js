@@ -93,21 +93,24 @@ function connectStrava() {
   window.location.href = '/auth/strava';
 }
 
-async function syncActivities() {
-  const btn = document.getElementById('btn-sync');
-  const labelEl = btn.querySelector('.sidebar-label');
+async function syncActivitiesFromMenu() {
+  const btn = document.getElementById('user-menu-sync');
+  const labelEl = document.getElementById('user-menu-sync-label');
   btn.disabled = true;
   if (labelEl) labelEl.textContent = t('nav.syncing');
   try {
     const data = await api('/auth/sync', { method: 'POST' });
-    showToast(t('toast.syncComplete', { synced: data.synced, updated: data.updated }), 'success');
+    if (labelEl) labelEl.textContent = t('user_menu.sync_result', { count: data.synced });
     loadActivities(true);
     loadStats();
+    setTimeout(() => {
+      if (labelEl) labelEl.textContent = t('user_menu.sync_last_activities');
+      btn.disabled = false;
+    }, 3000);
   } catch (e) {
     showToast(e.message, 'error');
-  } finally {
     btn.disabled = false;
-    if (labelEl) labelEl.textContent = t('nav.syncStrava');
+    if (labelEl) labelEl.textContent = t('user_menu.sync_last_activities');
   }
 }
 
@@ -139,12 +142,11 @@ async function checkAuthStatus() {
 }
 
 function updateAuthUI(connected, name, photoUrl, athleteId) {
-  // Header: Sync button only
-  document.getElementById('btn-sync').classList.toggle('hidden', !connected);
-
   // Dropdown: connect / disconnect buttons
   document.getElementById('user-menu-connect').classList.toggle('hidden', connected);
   document.getElementById('user-menu-disconnect').classList.toggle('hidden', !connected);
+  document.getElementById('user-menu-sync').classList.toggle('hidden', !connected);
+  document.getElementById('user-menu-sep-connected').classList.toggle('hidden', !connected);
 
   // Dropdown: profile name
   document.getElementById('user-menu-name').textContent = connected && name ? name : t('user.notConnected');

@@ -13,6 +13,16 @@ const LANG_NAMES = {
 
 async function loadSettings() {
   await Promise.all([loadActivityTypeFilters(), loadLanguageSelect()]);
+  loadStravaHistorySection();
+}
+
+function loadStravaHistorySection() {
+  const titleEl = document.getElementById('settings-strava-history-title');
+  const descEl = document.getElementById('settings-strava-history-desc');
+  const noteEl = document.getElementById('settings-strava-history-note');
+  if (titleEl) titleEl.textContent = t('settings.strava_history.title');
+  if (descEl) descEl.textContent = t('settings.strava_history.description');
+  if (noteEl) noteEl.textContent = t('settings.strava_history.note');
 }
 
 async function loadLanguageSelect() {

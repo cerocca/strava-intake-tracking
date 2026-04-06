@@ -282,8 +282,17 @@ sqlite3 data/intaketracking.db
 
 ## Tests
 
+Unit tests cover activities, foods, and nutrition log endpoints.
+
+First, activate the virtual environment (this tells the terminal to use the project's local packages rather than system-wide ones):
+
 ```bash
 source venv/bin/activate
+```
+
+Then run the tests (`-v` prints each test result individually):
+
+```bash
 pytest tests/ -v
 ```
 

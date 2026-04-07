@@ -1,3 +1,5 @@
+<div align="center">
+
 # 🥗 Strava Intake Tracker
 
 _Self-hosted sports nutrition tracker integrated with Strava._
@@ -9,7 +11,9 @@ _Self-hosted sports nutrition tracker integrated with Strava._
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-active-brightgreen)
 
-> **Note:** This app is in no way affiliated with or part of the official Strava software suite.
+_This app is in no way affiliated with or part of the official Strava software suite._
+
+</div>
 
 ---
 

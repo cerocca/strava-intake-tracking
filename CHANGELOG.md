@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.5] - 2026-04-07
+
+### Added
+- **Responsive layout — mobile & tablet**: three explicit breakpoints (640px / 768px / 1024px); no horizontal scroll at any viewport width
+- **Sidebar bottom nav on mobile (≤768px)**: sidebar becomes a fixed bottom tab bar with icon + short label; hides sidebar footer and toggle button; accounts for safe-area-inset on notched devices
+- **Touch targets**: all interactive elements (buttons, selects, inputs, tab buttons) enforce ≥44px min-height on mobile
+- **Stat cards grid collapse**: auto-fill grid → 2-col at ≤1024px → 1-col at ≤640px
+- **Graph canvas constraints**: `.graph-card canvas { max-width: 100%; display: block; }` prevents Chart.js overflow on narrow viewports
+- **Seasons horizontal scroll**: `.seasons-list-page { overflow-x: auto }` with `min-width: 740px` on header and rows; content always fully visible regardless of screen width
+
+### Changed
+- **Activity card hover**: added `transform: translateY(-2px)` lift + `border-color: rgba(252,76,2,.28)` accent; transition extended to include transform
+- **Badge padding**: `.activity-kcal-badge`, `.activity-nutrition-badge`, `.activity-season-badge` padding rounded to 4px multiples; `line-height: 1` for consistent vertical alignment
+- **Logo**: text span hidden on mobile (≤768px), keeping only the icon
+- **Toast**: repositioned to `bottom: 80px` on mobile so it clears the bottom nav bar
+- **`body`**: `overflow-x: hidden` added to prevent global horizontal bleed
+
+---
+
 ## [0.6.1] - 2026-04-06
 
 ### Added

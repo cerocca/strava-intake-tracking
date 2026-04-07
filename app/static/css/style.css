@@ -52,6 +52,7 @@ body {
   color: var(--text);
   line-height: 1.5;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* ============================================================
@@ -254,6 +255,7 @@ body {
   padding: 28px 24px;
   min-width: 0;
   max-width: 1000px;
+  overflow-x: hidden;
 }
 
 .tab-content { display: none; }
@@ -326,11 +328,12 @@ body {
   border-radius: var(--radius);
   padding: 18px 20px;
   cursor: pointer;
-  transition: box-shadow .15s, border-color .15s;
+  transition: box-shadow .15s, border-color .15s, transform .15s;
 }
 .activity-card:hover {
   box-shadow: var(--shadow-md);
-  border-color: var(--border);
+  border-color: rgba(252,76,2,.28);
+  transform: translateY(-2px);
 }
 
 .activity-card-header {
@@ -376,16 +379,18 @@ body {
   display: inline-flex; align-items: center; gap: 5px;
   background: #fff7ed; color: #c2410c;
   border: 1px solid #fed7aa;
-  border-radius: 20px; padding: 3px 10px;
-  font-size: .8rem; font-weight: 500;
+  border-radius: 20px; padding: 4px 10px;
+  font-size: .78rem; font-weight: 500;
+  line-height: 1;
 }
 
 .activity-nutrition-badge {
   display: inline-flex; align-items: center; gap: 5px;
   background: #f0fdf4; color: #15803d;
   border: 1px solid #bbf7d0;
-  border-radius: 20px; padding: 3px 10px;
-  font-size: .8rem; font-weight: 500;
+  border-radius: 20px; padding: 4px 10px;
+  font-size: .78rem; font-weight: 500;
+  line-height: 1;
 }
 
 /* Dark mode badge overrides */
@@ -976,6 +981,8 @@ body {
   padding: 4px 20px;
   margin-bottom: 20px;
   min-height: 60px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .season-form-section {
@@ -989,6 +996,7 @@ body {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 14px 0;
   border-bottom: 1px solid var(--border);
+  min-width: 740px;
 }
 .season-item:last-child { border-bottom: none; }
 
@@ -1032,6 +1040,7 @@ body {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 6px 0 8px;
   border-bottom: 2px solid var(--border);
+  min-width: 740px;
   margin-bottom: 2px;
 }
 .sort-spacer { visibility: hidden; pointer-events: none; }
@@ -1089,8 +1098,8 @@ body {
   display: inline-flex; align-items: center; gap: 4px;
   background: #eff6ff; color: #1d4ed8;
   border: 1px solid #bfdbfe;
-  border-radius: 20px; padding: 2px 9px;
-  font-size: .78rem; font-weight: 500;
+  border-radius: 20px; padding: 4px 9px;
+  font-size: .78rem; font-weight: 500; line-height: 1;
   margin-left: 8px; vertical-align: middle;
 }
 
@@ -1235,6 +1244,12 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 20px 24px;
+  min-width: 0;
+}
+
+.graph-card canvas {
+  max-width: 100%;
+  display: block;
 }
 .graph-card-title {
   font-size: .8rem; font-weight: 600; color: var(--text-muted);
@@ -1372,32 +1387,42 @@ body {
 }
 
 /* ============================================================
-   Responsive
+   Responsive — breakpoints: 1024px | 768px | 640px
    ============================================================ */
-@media (max-width: 640px) {
-  .form-grid { grid-template-columns: 1fr; }
-  .span-2 { grid-column: span 1; }
-  .activities-grid { grid-template-columns: 1fr; }
-  .data-table { font-size: .8rem; }
-  .data-table td, .data-table th { padding: 8px 10px; }
-  .seasons-page { grid-template-columns: 1fr; }
+
+/* Desktop medium: explicit 2-col stats floor */
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
+/* Tablet (≤768px): sidebar → bottom nav, touch targets, layout */
 @media (max-width: 768px) {
-  /* Sidebar becomes horizontal bottom tab bar */
+  /* ---- Layout ---- */
   .app-body { flex-direction: column; }
 
+  .main {
+    padding: 20px 16px 80px;
+    max-width: 100%;
+  }
+
+  /* ---- Header: hide logo text, hide desktop sidebar toggle ---- */
+  .logo > span { display: none; }
+  .sidebar-toggle-btn { display: none; }
+
+  /* ---- Sidebar → fixed bottom nav bar ---- */
   .sidebar {
     position: fixed;
     bottom: 0; left: 0; right: 0;
     top: auto;
     height: auto;
-    width: 100% !important; /* override collapsed */
+    width: 100% !important;
     flex-direction: row;
-    padding: 6px 4px;
+    padding: 4px 2px env(safe-area-inset-bottom, 0px);
     z-index: 90;
     border-right: none;
-    border-top: 1px solid rgba(255,255,255,.1);
+    border-top: 1px solid rgba(255,255,255,.12);
     overflow: visible;
   }
 
@@ -1405,37 +1430,83 @@ body {
     flex-direction: row;
     width: 100%;
     justify-content: space-around;
+    gap: 0;
   }
 
   .sidebar-item {
     flex-direction: column;
-    padding: 8px 4px;
+    padding: 6px 4px;
+    min-height: 52px;
     border-radius: var(--radius-sm);
     border-left: none !important;
-    border-bottom: 3px solid transparent;
+    border-bottom: 2px solid transparent;
     align-items: center;
     justify-content: center;
     flex: 1;
     gap: 2px;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
+    letter-spacing: 0;
   }
+
   .sidebar-item.active {
     border-bottom-color: #FC4C02;
     padding-left: 4px;
   }
 
   .sidebar-icon { font-size: 1.2rem; margin-right: 0 !important; }
-  .sidebar-label { display: none !important; }
+  .sidebar-label { display: block !important; font-size: 0.58rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 52px; }
 
   .sidebar-bottom { display: none; }
-  .sidebar-toggle-btn { display: none; }
 
-  .main {
-    padding: 20px 16px 88px;
-    max-width: 100%;
-  }
+  /* ---- Toast: above bottom nav ---- */
+  .toast { bottom: 80px; right: 16px; left: 16px; max-width: none; }
 
+  /* ---- Graphs: single column ---- */
   .graphs-grid { grid-template-columns: 1fr; }
+
+  /* ---- Stats: 2-col ---- */
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* ---- Touch targets (min 44px) ---- */
+  .btn { min-height: 44px; }
+  .btn-sm { min-height: 36px; }
+  .btn-xs { min-height: 32px; }
+  .filter-select { min-height: 44px; padding: 8px 10px; }
+  .input { min-height: 44px; padding: 10px 12px; }
+  .view-toggle-btn { min-height: 44px; padding: 10px 14px; }
+  .user-menu-item { min-height: 44px; display: flex; align-items: center; }
+  .tab-switcher .tab-btn { min-height: 40px; padding: 8px 16px; }
+}
+
+/* Mobile (≤640px): full single-column layout */
+@media (max-width: 640px) {
+  /* ---- Typography ---- */
+  .section-header h2 { font-size: 1.1rem; }
+  .stat-value { font-size: 1.7rem; }
+
+  /* ---- Grids → 1 col ---- */
+  .form-grid { grid-template-columns: 1fr; }
+  .span-2 { grid-column: span 1; }
+  .activities-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .graphs-grid { grid-template-columns: 1fr; }
+
+  /* ---- Main: tighter padding ---- */
+  .main { padding: 16px 14px 80px; }
+
+  /* ---- Forms ---- */
+  .form-row { flex-wrap: wrap; }
+  .input-sm { width: 100%; flex: 1; min-width: 80px; }
+
+  /* ---- Tables ---- */
+  .data-table { font-size: .8rem; }
+  .data-table td, .data-table th { padding: 8px 10px; }
+
+  /* ---- Activity detail ---- */
+  .activity-detail-stats { flex-wrap: wrap; }
+  .activity-detail-stat { min-width: 80px; flex: 1; }
+
+  /* seasons scroll handled globally in base CSS */
 }
 
 /* ============================================================

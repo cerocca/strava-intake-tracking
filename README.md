@@ -1,6 +1,6 @@
 # 🥗 Strava Intake Tracker
 
-![Version](https://img.shields.io/badge/version-0.6.1-orange)
+![Version](https://img.shields.io/badge/version-0.6.5-orange)
 ![Python](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-ready-2496ED?logo=docker&logoColor=white)
@@ -52,7 +52,8 @@ Strava Intake Tracker connects to your Strava account and lets you log the food 
 **App & UX**
 - Dark / light / system theme with CSS custom properties
 - Multi-language UI (English and Italian included; drop a `locales/<code>.json` to add more)
-- Collapsible sidebar; collapse state persisted in localStorage
+- Collapsible sidebar on desktop; bottom nav bar on mobile/tablet (≤768px)
+- Responsive layout: 3 breakpoints (640 / 768 / 1024px), no horizontal scroll, touch targets ≥44px
 - User menu: athlete name & photo → View Strava profile → Sync last activities → Disconnect
 - Dynamic version display with latest GitHub release link
 - Docker-ready for one-command self-hosted deploy

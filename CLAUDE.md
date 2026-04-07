@@ -70,6 +70,19 @@ strava-intake-tracking/
 └── ERRORS.md
 ```
 
+## Convenzioni CSS (style.css)
+
+- **Custom properties**: preservare sempre `--bg`, `--surface`, `--border`, `--text`, `--text-muted`, `--text-light`, `--accent`, `--strava`, `--radius`, `--radius-sm`, `--shadow`, `--shadow-md`, `--header-h`, `--sidebar-w`
+- **Breakpoints responsive** (aggiungere sempre in fondo al file, nell'ordine):
+  - `max-width: 1024px` — stat grid 2-col
+  - `max-width: 768px` — sidebar → bottom nav fisso, touch targets ≥44px, logo text nascosto, toast sopra nav
+  - `max-width: 640px` — 1-col per tutto, font più piccoli, form stack, padding ridotto
+- **Mobile sidebar**: a ≤768px `.sidebar` diventa `position: fixed; bottom: 0; flex-direction: row`; `.sidebar-label` rimane visibile (font 0.58rem); `.sidebar-bottom` nascosto; `.sidebar-toggle-btn` nascosto
+- **Horizontal scroll controllato**: usare `overflow-x: auto` sul container specifico (es. `.seasons-list-page`), non su `.main`; `.main` mantiene `overflow-x: hidden` per evitare che il contenuto trasbordasse sul sidebar; impostare `min-width` coerente su header e righe della tabella
+- **Spacing rhythm**: multipli di 4px/8px per padding e margin; badge `padding: 4px Xpx`
+- **Touch targets**: su mobile tutti gli elementi interattivi devono avere `min-height: 44px`
+- **Canvas Chart.js**: `.graph-card canvas { max-width: 100%; display: block; }` — non rimuovere
+
 ## Regole di sviluppo (OBBLIGATORIE)
 
 ### Prima di scrivere codice

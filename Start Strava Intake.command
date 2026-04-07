@@ -1,7 +1,7 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 source venv/bin/activate
-nohup uvicorn app.main:app --reload --port 8000 > logs/server.log 2>&1 &
+nohup uvicorn app.main:app --reload --port 8000 --host 0.0.0.0 > logs/server.log 2>&1 &
 echo "Server started. PID: $!"
 echo $! > logs/server.pid
 echo ""

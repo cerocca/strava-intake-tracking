@@ -20,7 +20,12 @@
       "Bash(python -c \"import app.main; print\\(''OK''\\)\")",
       "Bash(chmod +x \"/Users/ciru/strava-intake-tracking/Start Strava Intake.command\")",
       "Bash(chmod +x /Users/ciru/strava-intake-tracking/start.sh)",
-      "Bash(chmod +x \"/Users/ciru/strava-intake-tracking/Stop Strava Intake.command\")"
+      "Bash(chmod +x \"/Users/ciru/strava-intake-tracking/Stop Strava Intake.command\")",
+      "Bash(grep -n \"'Tracked'\\\\|'Distance'\\\\|'Duration'\\\\|'Save'\\\\|'Delete'\\\\|'Loading'\\\\|' Error'\" app/static/js/*.js)",
+      "Bash(grep -n '\"Tracked\"\\\\|\"Distance\"\\\\|\"Duration\"\\\\|\"Save\"\\\\|\"Delete\"\\\\|\"Loading\"' app/static/js/*.js)",
+      "Bash(curl -s http://localhost:8000/static/css/style.css)",
+      "Bash(kill %1)",
+      "Bash(pkill -f \"uvicorn app.main\")"
     ]
   }
 }

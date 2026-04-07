@@ -1,13 +1,13 @@
 # 🥗 Strava Intake Tracker
 
+_Self-hosted sports nutrition tracker integrated with Strava._
+
 ![Version](https://img.shields.io/badge/version-0.6.6-orange)
 ![Python](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-ready-2496ED?logo=docker&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-active-brightgreen)
-
-> Self-hosted sports nutrition tracker integrated with Strava.
 
 > **Note:** This app is in no way affiliated with or part of the official Strava software suite.
 

@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🥗 Strava Intake Tracker
+# <big>🥗 Strava Intake Tracker</big>
 
-_Self-hosted sports nutrition tracker integrated with Strava._
+### _Self-hosted sports nutrition tracker integrated with Strava._
 
 ![Version](https://img.shields.io/badge/version-0.6.6-orange)
 ![Python](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white)

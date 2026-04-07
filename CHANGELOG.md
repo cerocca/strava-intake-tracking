@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.6] - 2026-04-07
+
+### Added
+- **`GET /version/latest`** — backend endpoint that proxies the GitHub releases API (httpx, 3 s timeout); returns `{"latest": "x.y.z", "url": "..."}` or `{"latest": null, "url": null}` on any error; never crashes the app
+- **Version alert banner** — dismissible banner injected above the main content area when the local version is behind the latest GitHub release; uses `--accent` left border and `--surface` background; close button (×)
+- **Sidebar version number** — `#sidebar-version` populated from `GET /version` at startup; shows `vX.Y.Z`
+
+### Changed
+- **Sidebar footer — "Powered by Strava"**: replaced plain text + broken external SVG (403) with a reliable inline HTML badge — Strava flame icon + `STRAVA` wordmark in `--strava` orange; no external image dependency
+- **`APP_VERSION`** bumped to `0.6.6`
+- **`initFooter()` in `app.js`**: split into two independent `try/catch` blocks so sidebar version always updates even if the GitHub check fails or times out
+
+---
+
 ## [0.6.5] - 2026-04-07
 
 ### Added

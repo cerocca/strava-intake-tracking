@@ -1,6 +1,6 @@
 # 🥗 Strava Intake Tracker
 
-![Version](https://img.shields.io/badge/version-0.6.5-orange)
+![Version](https://img.shields.io/badge/version-0.6.6-orange)
 ![Python](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-ready-2496ED?logo=docker&logoColor=white)

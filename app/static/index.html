@@ -101,18 +101,23 @@
         <div class="sidebar-bottom">
           <!-- Footer info -->
           <div class="sidebar-footer">
-            <div class="sidebar-footer-row sidebar-label">
-              <span id="footer-version">v0.3.0</span>
-            </div>
-            <div class="sidebar-footer-row sidebar-label">
-              <span><span data-i18n="nav.poweredBy">Powered by</span> <a href="https://www.strava.com" target="_blank" rel="noopener" class="footer-strava-link"><strong>Strava</strong></a></span>
-            </div>
+            <div class="sidebar-version" id="sidebar-version">v—</div>
+            <a href="https://www.strava.com" target="_blank" rel="noopener" class="powered-by-strava-badge">
+              <span class="powered-by-label">Powered by</span>
+              <svg class="strava-flame-sm" width="13" height="13" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+                <path d="M14 3L6 10h4v8h8v-8h4L14 3z" fill="#FC4C02"/>
+              </svg>
+              <span class="strava-wordmark">STRAVA</span>
+            </a>
           </div>
         </div>
       </nav>
 
       <!-- Main content -->
       <main class="main">
+
+        <!-- Version alert banner (shown by JS when update available) -->
+        <div id="version-alert-banner" class="version-alert-banner hidden"></div>
 
         <!-- TAB: Activities -->
         <section id="tab-activities" class="tab-content active">

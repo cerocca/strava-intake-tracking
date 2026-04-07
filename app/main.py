@@ -4,6 +4,7 @@ from fastapi.responses import FileResponse
 from contextlib import asynccontextmanager
 import glob
 import os
+import httpx
 
 from app.database import init_db
 from app.routers import strava, foods, nutrition, activities, seasons, settings
@@ -58,6 +59,25 @@ async def health():
 @app.get("/version")
 async def version():
     return {"version": APP_VERSION}
+
+
+@app.get("/version/latest")
+async def version_latest():
+    try:
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            resp = await client.get(
+                "https://api.github.com/repos/cerocca/strava-intake-tracking/releases/latest",
+                headers={"Accept": "application/vnd.github+json"},
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            tag = data.get("tag_name", "")
+            url = data.get("html_url", "")
+            # Strip leading 'v' for consistent comparison
+            version_str = tag.lstrip("v") if tag else None
+            return {"latest": version_str, "url": url or None}
+    except Exception:
+        return {"latest": None, "url": None}
 
 
 @app.get("/locales")

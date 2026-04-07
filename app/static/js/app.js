@@ -189,29 +189,49 @@ function showToast(message, type = 'success') {
 }
 
 // ============================================================
-// Footer: dynamic version
+// Semver comparison (major.minor.patch integers)
+// Returns true if a < b
+// ============================================================
+function _semverLt(a, b) {
+  const parse = s => String(s).split('.').map(n => parseInt(n, 10) || 0);
+  const [aMaj, aMin, aPatch] = parse(a);
+  const [bMaj, bMin, bPatch] = parse(b);
+  if (aMaj !== bMaj) return aMaj < bMaj;
+  if (aMin !== bMin) return aMin < bMin;
+  return aPatch < bPatch;
+}
+
+// ============================================================
+// Version alert banner
+// ============================================================
+function _showVersionBanner(latestVersion, releaseUrl) {
+  const banner = document.getElementById('version-alert-banner');
+  if (!banner) return;
+  banner.innerHTML =
+    `⬆ A new version is available: <strong>v${latestVersion}</strong> — ` +
+    `<a href="${releaseUrl}" target="_blank" rel="noopener">View release notes</a>` +
+    `<button class="version-alert-close" onclick="this.parentElement.classList.add('hidden')" aria-label="Dismiss">×</button>`;
+  banner.classList.remove('hidden');
+}
+
+// ============================================================
+// Footer + version check
 // ============================================================
 async function initFooter() {
+  let localVer = null;
+
   try {
     const data = await api('/version');
-    document.getElementById('footer-version').textContent = `v${data.version}`;
+    localVer = data.version;
+    document.getElementById('sidebar-version').textContent = `v${localVer}`;
   } catch {}
 
   try {
-    const resp = await fetch('https://api.github.com/repos/cerocca/strava-intake-tracking/releases/latest');
-    if (resp.ok) {
-      const release = await resp.json();
-      const tag = release.tag_name;
-      const url = release.html_url;
-      if (tag) {
-        const latestEl = document.getElementById('footer-latest');
-        const linkEl = document.getElementById('footer-latest-link');
-        if (linkEl) {
-          linkEl.textContent = `latest: ${tag}`;
-          linkEl.href = url;
-        }
-        if (latestEl) latestEl.classList.remove('hidden');
-      }
+    const latestData = await api('/version/latest');
+    const latestVer = latestData.latest;
+    const releaseUrl = latestData.url;
+    if (localVer && latestVer && releaseUrl && _semverLt(localVer, latestVer)) {
+      _showVersionBanner(latestVer, releaseUrl);
     }
   } catch {}
 }

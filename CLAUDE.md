@@ -5,7 +5,7 @@
 Self-hosted sports nutrition tracker integrated with Strava.
 Deployable as a Docker container.
 
-GitHub repo: https://github.com/YOUR_GITHUB_USERNAME/strava-intake-tracking
+GitHub repo: https://github.com/cerocca/strava-intake-tracking
 
 ## Tech stack
 
